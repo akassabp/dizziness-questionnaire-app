@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Restricted Nebula dizziness questionnaire and expert weight configuration." />
+    <title>Nebula Questionnaire</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2300244d'/%3E%3Cpath d='M13 45V18h8l11 15 11-15h8v27h-8V30L32 44 21 30v15z' fill='%23ffcb05'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Dizziness classification project</p>
+        <h1>Nebula Questionnaire</h1>
+      </div>
+      <div class="header-note">Expert-weighted research prototype</div>
+    </header>
+
+    <nav class="tabs" aria-label="Application views">
+      <button class="tab active" data-view="questionnaire" aria-selected="true">Questionnaire</button>
+      <button class="tab" data-view="configuration" aria-selected="false">Weight configuration</button>
+    </nav>
+
+    <main>
+      <section id="questionnaire-view" class="view active">
+        <div class="workspace-grid">
+          <aside class="question-nav" aria-label="Question navigation">
+            <div class="nav-heading">
+              <span>Restricted question set</span>
+              <strong id="question-count"></strong>
+            </div>
+            <div id="question-list"></div>
+            <button id="clear-answers" class="button secondary full-width">Clear answers</button>
+          </aside>
+
+          <section class="question-panel" aria-live="polite">
+            <div class="question-meta" id="question-meta"></div>
+            <h2 id="question-prompt"></h2>
+            <div id="answer-options" class="answer-options"></div>
+            <div class="question-controls">
+              <button id="previous-question" class="button secondary">Previous</button>
+              <button id="next-question" class="button primary">Next</button>
+            </div>
+          </section>
+
+          <aside class="results-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Current result</p>
+                <h2>Category support</h2>
+              </div>
+              <span id="answered-count" class="count-pill"></span>
+            </div>
+            <div id="score-list" class="score-list"></div>
+            <p class="clinical-note">Research use only. Scores reflect configured questionnaire evidence and are not a diagnosis.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section id="configuration-view" class="view">
+        <div class="configuration-header">
+          <div>
+            <p class="eyebrow">Workbook defaults</p>
+            <h2>Expert weight configuration</h2>
+            <p>Only editable single-choice answers listed on the diagnosis sheets appear here. “No” answers have no assigned weight.</p>
+          </div>
+          <div class="configuration-actions">
+            <button id="restore-defaults" class="button secondary">Restore defaults</button>
+            <button id="export-configuration" class="button secondary">Export JSON</button>
+            <button id="update-model" class="button primary">Update scoring model</button>
+          </div>
+        </div>
+
+        <div class="configuration-summary" id="configuration-summary"></div>
+        <div class="filter-row">
+          <label>
+            Class
+            <select id="category-filter"></select>
+          </label>
+          <label class="search-label">
+            Find a question or answer
+            <input id="rule-search" type="search" placeholder="Search configuration" />
+          </label>
+        </div>
+        <div id="configuration-list" class="configuration-list"></div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="questionnaire-data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
