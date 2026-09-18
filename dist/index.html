@@ -8,7 +8,18 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2300244d'/%3E%3Cpath d='M13 45V18h8l11 15 11-15h8v27h-8V30L32 44 21 30v15z' fill='%23ffcb05'/%3E%3C/svg%3E" />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body class="auth-locked">
+    <section id="access-gate" class="access-gate" aria-labelledby="access-title">
+      <form id="access-form" class="access-card">
+        <p class="eyebrow">Dizziness classification project</p>
+        <h1 id="access-title">Nebula Questionnaire</h1>
+        <p>Enter the project access code to continue.</p>
+        <label for="access-code">Access code</label>
+        <input id="access-code" type="password" autocomplete="current-password" required autofocus />
+        <p id="access-error" class="access-error" role="alert"></p>
+        <button class="button primary" type="submit">Open application</button>
+      </form>
+    </section>
     <header class="app-header">
       <div>
         <p class="eyebrow">Dizziness classification project</p>

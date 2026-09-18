@@ -4,6 +4,38 @@
   const data = window.NEBULA_DATA;
   if (!data) throw new Error("Questionnaire data did not load.");
 
+  const ACCESS_HASH = "0f7a4f8120712df5464758e375faf9829818369c774fcedb64ed7bd3b62f5ea1";
+  const accessGate = document.getElementById("access-gate");
+  const accessForm = document.getElementById("access-form");
+  const accessCode = document.getElementById("access-code");
+  const accessError = document.getElementById("access-error");
+
+  async function sha256(value) {
+    const bytes = new TextEncoder().encode(value);
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  }
+
+  function unlockApplication() {
+    sessionStorage.setItem("nebula-access", "granted");
+    document.body.classList.remove("auth-locked");
+    accessGate.hidden = true;
+  }
+
+  if (sessionStorage.getItem("nebula-access") === "granted") unlockApplication();
+
+  accessForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    accessError.textContent = "";
+    if (await sha256(accessCode.value) === ACCESS_HASH) {
+      accessCode.value = "";
+      unlockApplication();
+    } else {
+      accessError.textContent = "Incorrect access code.";
+      accessCode.select();
+    }
+  });
+
   const STORAGE_KEY = "nebula-expert-weights-v1";
   const state = {
     currentQuestion: 0,

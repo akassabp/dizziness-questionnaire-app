@@ -2,6 +2,8 @@
 
 Local static web version of the restricted Nebula dizziness questionnaire.
 
+Public site access uses a lightweight browser-side access-code screen. This is a convenience gate and is not equivalent to server-side authentication.
+
 ## Included behavior
 
 - Uses only questions referenced by the diagnosis sheets in `data/OTO Dizziness Questionnaire -Nebula cloud 5-9-241.xlsx`.
