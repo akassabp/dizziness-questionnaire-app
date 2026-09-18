@@ -313,60 +313,6 @@
   els.export.addEventListener("click", exportConfiguration);
   els.update.addEventListener("click", updateScoringModel);
 
-  function registerWebMcpTools() {
-    const context = document.modelContext;
-    if (!context?.registerTool) return;
-    const register = (tool) => Promise.resolve(context.registerTool(tool)).catch(() => {});
-    register({
-      name: "read_nebula_scores",
-      title: "Read questionnaire scores",
-      description: "Read the currently displayed category support scores from the questionnaire.",
-      inputSchema: { type: "object", properties: {}, additionalProperties: false },
-      annotations: { readOnlyHint: true, untrustedContentHint: false },
-      execute: () => ({ answeredQuestions: data.questions.filter(isAnswered).length, scores: scoreAnswers() }),
-    });
-    register({
-      name: "stage_nebula_weights",
-      title: "Stage expert weights",
-      description: "Stage one or more editable expert weights without applying them to questionnaire scoring.",
-      inputSchema: {
-        type: "object",
-        properties: {
-          weights: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: { category: { type: "string" }, questionId: { type: "string" }, answer: { type: "string" }, weight: { type: "number", minimum: 0, maximum: 100 } },
-              required: ["category", "questionId", "answer", "weight"],
-              additionalProperties: false,
-            },
-          },
-        },
-        required: ["weights"],
-        additionalProperties: false,
-      },
-      annotations: { readOnlyHint: false, untrustedContentHint: false },
-      execute: ({ weights }) => {
-        const failures = [];
-        weights.forEach((item) => {
-          if (!updateDraftWeight(ruleKey(item), item.weight)) failures.push(item);
-        });
-        renderConfiguration();
-        if (failures.length) throw new Error(`${failures.length} weight entries were invalid or not editable.`);
-        return { staged: weights.length };
-      },
-    });
-    register({
-      name: "apply_nebula_weights",
-      title: "Apply expert weights",
-      description: "Apply the currently staged expert weights to the questionnaire scoring model and save them in this browser.",
-      inputSchema: { type: "object", properties: {}, additionalProperties: false },
-      annotations: { readOnlyHint: false, untrustedContentHint: false },
-      execute: updateScoringModel,
-    });
-  }
-
   renderCurrentQuestion();
   renderConfiguration();
-  registerWebMcpTools();
 })();
