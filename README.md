@@ -1,17 +1,18 @@
 # Nebula Questionnaire Web App
 
-Local static web version of the restricted Nebula dizziness questionnaire.
+Static web version of the configurable Nebula dizziness questionnaire.
 
 Public site access uses a lightweight browser-side access-code screen. This is a convenience gate and is not equivalent to server-side authentication.
 
 ## Included behavior
 
-- Uses only questions referenced by the diagnosis sheets in `data/OTO Dizziness Questionnaire -Nebula cloud 5-9-241.xlsx`.
-- Uses workbook-derived default expert weights only.
-- Excludes `No` from weighted configuration rules.
-- Keeps checklist/multi-select scoring at the workbook defaults without showing those entries in the configuration screen.
-- Allows experts to edit single-select weights and apply them to scoring.
-- Stores the applied configuration only in the current browser.
+- Starts with the questions, classes, and expert weights derived from `data/OTO Dizziness Questionnaire -Nebula cloud 5-9-241.xlsx`.
+- Allows experts to add, edit, remove, and reorder questions and answers.
+- Supports both single-choice and checklist questions.
+- Allows any answer to carry a 0–100 weight for any diagnostic class.
+- Allows diagnostic classes to be added or removed.
+- Imports and exports the complete configuration as JSON.
+- Stores the applied configuration in the current browser; JSON export is the portable backup and sharing format.
 - Does not include trained or data-derived machine-learning weights.
 
 ## Refresh questionnaire data

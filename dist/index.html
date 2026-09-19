@@ -30,7 +30,7 @@
 
     <nav class="tabs" aria-label="Application views">
       <button class="tab active" data-view="questionnaire" aria-selected="true">Questionnaire</button>
-      <button class="tab" data-view="configuration" aria-selected="false">Weight configuration</button>
+      <button class="tab" data-view="configuration" aria-selected="false">Configuration</button>
     </nav>
 
     <main>
@@ -38,7 +38,7 @@
         <div class="workspace-grid">
           <aside class="question-nav" aria-label="Question navigation">
             <div class="nav-heading">
-              <span>Restricted question set</span>
+              <span>Question set</span>
               <strong id="question-count"></strong>
             </div>
             <div id="question-list"></div>
@@ -72,21 +72,25 @@
       <section id="configuration-view" class="view">
         <div class="configuration-header">
           <div>
-            <p class="eyebrow">Workbook defaults</p>
-            <h2>Expert weight configuration</h2>
-            <p>Only editable single-choice answers listed on the diagnosis sheets appear here. “No” answers have no assigned weight.</p>
+            <p class="eyebrow">Questionnaire builder</p>
+            <h2>Questions, answers, and weights</h2>
+            <p>The workbook configuration is the starting point. Create a custom questionnaire, assign any answer to one or more classes, then apply it or save the complete setup as JSON.</p>
           </div>
           <div class="configuration-actions">
+            <button id="add-question" class="button secondary">Add question</button>
+            <button id="add-category" class="button secondary">Add class</button>
+            <button id="import-configuration" class="button secondary">Import JSON</button>
+            <input id="configuration-file" type="file" accept="application/json,.json" hidden />
             <button id="restore-defaults" class="button secondary">Restore defaults</button>
             <button id="export-configuration" class="button secondary">Export JSON</button>
-            <button id="update-model" class="button primary">Update scoring model</button>
+            <button id="update-model" class="button primary">Apply configuration</button>
           </div>
         </div>
 
         <div class="configuration-summary" id="configuration-summary"></div>
         <div class="filter-row">
           <label>
-            Class
+            Class filter
             <select id="category-filter"></select>
           </label>
           <label class="search-label">
