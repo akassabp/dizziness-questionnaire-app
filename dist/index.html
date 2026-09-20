@@ -20,21 +20,37 @@
         <button class="button primary" type="submit">Open application</button>
       </form>
     </section>
-    <header class="app-header">
-      <div>
-        <p class="eyebrow">Dizziness classification project</p>
-        <h1>Nebula Questionnaire</h1>
-      </div>
-      <div class="header-note">Expert-weighted research prototype</div>
-    </header>
+    <div class="app-shell">
+      <aside class="app-ribbon">
+        <div class="ribbon-brand">
+          <span class="brand-mark">N</span>
+          <div><strong>Nebula</strong><small>Dizziness project</small></div>
+        </div>
+        <nav class="tabs" aria-label="Application views">
+          <button class="tab active" data-view="questionnaire" aria-selected="true"><span class="tab-icon">Q</span><span>Questionnaire</span></button>
+          <button class="tab" data-view="configuration" aria-selected="false"><span class="tab-icon">⚙</span><span>Configuration</span></button>
+        </nav>
+        <div class="ribbon-note">Research prototype<br />Rule-based screening only</div>
+      </aside>
 
-    <nav class="tabs" aria-label="Application views">
-      <button class="tab active" data-view="questionnaire" aria-selected="true">Questionnaire</button>
-      <button class="tab" data-view="configuration" aria-selected="false">Configuration</button>
-    </nav>
+      <div class="app-stage">
+        <header class="app-header">
+          <div>
+            <p class="eyebrow">Dizziness classification project</p>
+            <h1>Nebula Questionnaire</h1>
+            <p class="header-subtitle">Patient entry with live, editable category scoring</p>
+          </div>
+          <button id="new-questionnaire" class="button secondary">New questionnaire</button>
+        </header>
 
-    <main>
+        <main>
       <section id="questionnaire-view" class="view active">
+        <div class="patient-strip">
+          <label>Anonymous patient ID<input id="patient-id" placeholder="Optional anonymous ID" /></label>
+          <label>Visit date<input id="visit-date" type="date" /></label>
+          <label>Birth year<input id="birth-year" type="number" min="1900" max="2100" placeholder="Unknown" /></label>
+          <label>Notes<input id="visit-notes" placeholder="Optional visit notes" /></label>
+        </div>
         <div class="workspace-grid">
           <aside class="question-nav" aria-label="Question navigation">
             <div class="nav-heading">
@@ -100,7 +116,9 @@
         </div>
         <div id="configuration-list" class="configuration-list"></div>
       </section>
-    </main>
+        </main>
+      </div>
+    </div>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script src="questionnaire-data.js"></script>
