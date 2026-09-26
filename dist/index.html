@@ -1,127 +1,79 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Restricted Nebula dizziness questionnaire and expert weight configuration." />
-    <title>Nebula Questionnaire</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2300244d'/%3E%3Cpath d='M13 45V18h8l11 15 11-15h8v27h-8V30L32 44 21 30v15z' fill='%23ffcb05'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body class="auth-locked">
-    <section id="access-gate" class="access-gate" aria-labelledby="access-title">
-      <form id="access-form" class="access-card">
-        <p class="eyebrow">Dizziness classification project</p>
-        <h1 id="access-title">Nebula Questionnaire</h1>
-        <p>Enter the project access code to continue.</p>
-        <label for="access-code">Access code</label>
-        <input id="access-code" type="password" autocomplete="current-password" required autofocus />
-        <p id="access-error" class="access-error" role="alert"></p>
-        <button class="button primary" type="submit">Open application</button>
-      </form>
-    </section>
-    <div class="app-shell">
-      <aside class="app-ribbon">
-        <div class="ribbon-brand">
-          <span class="brand-mark">N</span>
-          <div><strong>Nebula</strong><small>Dizziness project</small></div>
-        </div>
-        <nav class="tabs" aria-label="Application views">
-          <button class="tab active" data-view="questionnaire" aria-selected="true"><span class="tab-icon">Q</span><span>Questionnaire</span></button>
-          <button class="tab" data-view="configuration" aria-selected="false"><span class="tab-icon">⚙</span><span>Configuration</span></button>
-        </nav>
-        <div class="ribbon-note">Research prototype<br />Rule-based screening only</div>
-      </aside>
-
-      <div class="app-stage">
-        <header class="app-header">
-          <div>
-            <p class="eyebrow">Dizziness classification project</p>
-            <h1>Nebula Questionnaire</h1>
-            <p class="header-subtitle">Patient entry with live, editable category scoring</p>
-          </div>
-          <button id="new-questionnaire" class="button secondary">New questionnaire</button>
-        </header>
-
-        <main>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Nebula dizziness questionnaire scoring platform." />
+  <title>Nebula Questionnaire Scoring Platform</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="auth-locked">
+  <section id="access-gate" class="access-gate" aria-labelledby="access-title">
+    <form id="access-form" class="access-card">
+      <p class="eyebrow">Dizziness classification project</p>
+      <h1 id="access-title">Nebula Questionnaire</h1>
+      <p>Enter the project access code to continue.</p>
+      <label for="access-code">Access code</label>
+      <input id="access-code" type="password" autocomplete="current-password" required autofocus />
+      <p id="access-error" class="access-error" role="alert"></p>
+      <button class="primary" type="submit">Open application</button>
+    </form>
+  </section>
+  <div class="window-shell">
+    <nav class="tabs" aria-label="Application views">
+      <button class="tab active" data-view="questionnaire" aria-selected="true">Questionnaire</button>
+      <button class="tab" data-view="configuration" aria-selected="false">Model Configuration</button>
+    </nav>
+    <main>
       <section id="questionnaire-view" class="view active">
-        <div class="patient-strip">
-          <label>Anonymous patient ID<input id="patient-id" placeholder="Optional anonymous ID" /></label>
+        <header class="view-header">
+          <div><h1>Nebula Questionnaire</h1><p>Patient entry with live, editable category scoring</p></div>
+          <div class="header-actions"><button id="new-questionnaire">New questionnaire</button><button id="load-session">Load session</button><input id="session-file" type="file" accept="application/json,.json" hidden /><button id="save-session" class="primary">Save session</button></div>
+        </header>
+        <div class="patient-strip panel">
+          <label>Anonymous patient ID<input id="patient-id" placeholder="Required anonymous ID" /></label>
           <label>Visit date<input id="visit-date" type="date" /></label>
           <label>Birth year<input id="birth-year" type="number" min="1900" max="2100" placeholder="Unknown" /></label>
           <label>Notes<input id="visit-notes" placeholder="Optional visit notes" /></label>
         </div>
-        <div class="workspace-grid">
-          <aside class="question-nav" aria-label="Question navigation">
-            <div class="nav-heading">
-              <span>Question set</span>
-              <strong id="question-count"></strong>
-            </div>
-            <div id="question-list"></div>
-            <button id="clear-answers" class="button secondary full-width">Clear answers</button>
-          </aside>
-
-          <section class="question-panel" aria-live="polite">
-            <div class="question-meta" id="question-meta"></div>
-            <h2 id="question-prompt"></h2>
-            <div id="answer-options" class="answer-options"></div>
-            <div class="question-controls">
-              <button id="previous-question" class="button secondary">Previous</button>
-              <button id="next-question" class="button primary">Next</button>
-            </div>
+        <div class="questionnaire-grid">
+          <aside class="question-list-panel panel"><div id="question-list" class="question-list"></div></aside>
+          <section class="question-panel panel">
+            <div class="question-status"><strong id="question-meta"></strong><span id="answer-state">Not answered</span></div>
+            <h2 id="question-prompt"></h2><div id="answer-options" class="answer-options"></div>
+            <div class="question-controls"><button id="previous-question">Previous</button><button id="clear-answer">Clear answer</button><span></span><button id="next-question" class="primary">Next</button></div>
           </section>
-
-          <aside class="results-panel">
-            <div class="panel-heading">
-              <div>
-                <p class="eyebrow">Current result</p>
-                <h2>Category support</h2>
-              </div>
-              <span id="answered-count" class="count-pill"></span>
-            </div>
-            <div id="score-list" class="score-list"></div>
-            <p class="clinical-note">Research use only. Scores reflect configured questionnaire evidence and are not a diagnosis.</p>
-          </aside>
+          <aside class="score-panel panel"><h2>Current category support</h2><p>These are rule-based screening scores, not diagnoses.</p><div id="score-list"></div><div id="answered-count" class="completion"></div></aside>
         </div>
       </section>
-
       <section id="configuration-view" class="view">
-        <div class="configuration-header">
-          <div>
-            <p class="eyebrow">Questionnaire builder</p>
-            <h2>Questions, answers, and weights</h2>
-            <p>The workbook configuration is the starting point. Create a custom questionnaire, assign any answer to one or more classes, then apply it or save the complete setup as JSON.</p>
-          </div>
-          <div class="configuration-actions">
-            <button id="add-question" class="button secondary">Add question</button>
-            <button id="add-category" class="button secondary">Add class</button>
-            <button id="import-configuration" class="button secondary">Import JSON</button>
-            <input id="configuration-file" type="file" accept="application/json,.json" hidden />
-            <button id="restore-defaults" class="button secondary">Restore defaults</button>
-            <button id="export-configuration" class="button secondary">Export JSON</button>
-            <button id="update-model" class="button primary">Apply configuration</button>
-          </div>
+        <header class="view-header">
+          <div><h1>Model Configuration</h1><p>Edit exactly how each answer adds or subtracts category evidence</p></div>
+          <div class="header-actions"><button id="restore-defaults">Restore workbook defaults</button><button id="save-apply" class="primary">Save and apply</button></div>
+        </header>
+        <div class="configuration-grid">
+          <aside class="rule-editor panel">
+            <h2>Rule editor</h2>
+            <div class="form-grid">
+              <label for="rule-category">Category</label><select id="rule-category"></select>
+              <label for="rule-question">Question</label><select id="rule-question"></select>
+              <label for="rule-answer">Answer</label><input id="rule-answer" list="answer-suggestions" /><datalist id="answer-suggestions"></datalist>
+              <label for="rule-weight">Weight</label><input id="rule-weight" type="number" min="-1000" max="1000" step="0.001" value="10" />
+            </div>
+            <p class="hint">Positive weights support a category. Negative weights count against it. Unmatched answers do nothing.</p>
+            <div class="editor-actions"><button id="add-update-rule" class="primary">Add rule</button><button id="clear-editor">Clear editor</button></div>
+            <h2 class="example-title">Example</h2><p class="hint">BPPV + position-triggered Yes = positive evidence.<br />BPPV + position-triggered No = negative evidence.</p>
+          </aside>
+          <section class="rule-table-panel panel">
+            <div class="table-toolbar"><label for="category-filter">Show category</label><select id="category-filter"></select><input id="rule-search" type="search" placeholder="Search question or answer" aria-label="Search question or answer" /><button id="delete-rule" class="danger">Delete selected</button></div>
+            <div class="table-scroll"><table><thead><tr><th>Category</th><th>Question ID</th><th>Question</th><th>Answer</th><th>Weight</th></tr></thead><tbody id="rule-table-body"></tbody></table></div>
+            <p class="table-help">Double-click a rule to edit it.</p>
+          </section>
         </div>
-
-        <div class="configuration-summary" id="configuration-summary"></div>
-        <div class="filter-row">
-          <label>
-            Class filter
-            <select id="category-filter"></select>
-          </label>
-          <label class="search-label">
-            Find a question or answer
-            <input id="rule-search" type="search" placeholder="Search configuration" />
-          </label>
-        </div>
-        <div id="configuration-list" class="configuration-list"></div>
       </section>
-        </main>
-      </div>
-    </div>
-
-    <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="questionnaire-data.js"></script>
-    <script src="app.js"></script>
-  </body>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="questionnaire-data.js"></script><script src="app.js"></script>
+</body>
 </html>

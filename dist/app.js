@@ -3,138 +3,144 @@
   const defaults = window.NEBULA_DATA;
   if (!defaults) throw new Error("Questionnaire data did not load.");
   const ACCESS_HASH = "0f7a4f8120712df5464758e375faf9829818369c774fcedb64ed7bd3b62f5ea1";
-  const STORAGE_KEY = "nebula-complete-configuration-v2";
-  const byId = (id) => document.getElementById(id);
-  const clone = (value) => structuredClone(value);
-  const defaultConfiguration = () => ({ version: 2, name: "Nebula workbook defaults", sourceWorkbook: defaults.sourceWorkbook, categories: clone(defaults.categories), questions: clone(defaults.questions), rules: clone(defaults.rules) });
+  const RULES_KEY = "nebula-desktop-compatible-rules-v1";
+  const $ = (id) => document.getElementById(id);
+  const clone = (value) => JSON.parse(JSON.stringify(value));
+  const clean = (value) => String(value ?? "").trim().replace(/\s+/g, " ");
+  const normalized = (value) => clean(value).toLocaleLowerCase().replace(/[.’]/g, " ").replace(/[^a-z0-9]+/g, " ").trim();
+  const questions = clone(defaults.questions);
+  const defaultRules = clone(defaults.rules).map(normalizeRule).filter(Boolean);
 
-  const accessGate = byId("access-gate"), accessForm = byId("access-form"), accessCode = byId("access-code"), accessError = byId("access-error");
+  function normalizeRule(rule) {
+    const category = clean(rule.category), questionId = clean(rule.questionId || rule.question_id), answer = clean(rule.answer), weight = Number(rule.weight);
+    return category && questionId && answer && Number.isFinite(weight) ? { category, questionId, answer, weight, source: rule.source || "Workbook default" } : null;
+  }
+  function loadRules() {
+    try { const value = JSON.parse(localStorage.getItem(RULES_KEY)); return Array.isArray(value?.rules) ? value.rules.map(normalizeRule).filter(Boolean) : clone(defaultRules); }
+    catch { return clone(defaultRules); }
+  }
+  const state = { current: 0, answers: {}, rules: loadRules(), draftRules: [], selectedRule: null, editingRule: null };
+  state.draftRules = clone(state.rules);
+
+  const gate = $("access-gate"), accessForm = $("access-form"), accessCode = $("access-code"), accessError = $("access-error");
   async function sha256(value) { const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value)); return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join(""); }
-  function unlockApplication() { sessionStorage.setItem("nebula-access", "granted"); document.body.classList.remove("auth-locked"); accessGate.hidden = true; }
-  if (sessionStorage.getItem("nebula-access") === "granted") unlockApplication();
-  accessForm.addEventListener("submit", async (event) => { event.preventDefault(); accessError.textContent = ""; if (await sha256(accessCode.value) === ACCESS_HASH) { accessCode.value = ""; unlockApplication(); } else { accessError.textContent = "Incorrect access code."; accessCode.select(); } });
+  function unlock() { sessionStorage.setItem("nebula-access", "granted"); document.body.classList.remove("auth-locked"); gate.hidden = true; }
+  if (sessionStorage.getItem("nebula-access") === "granted") unlock();
+  accessForm.addEventListener("submit", async (event) => { event.preventDefault(); accessError.textContent = ""; if (await sha256(accessCode.value) === ACCESS_HASH) unlock(); else { accessError.textContent = "Incorrect access code."; accessCode.select(); } });
 
-  function normalizeConfiguration(value) {
-    if (!value || !Array.isArray(value.questions) || !Array.isArray(value.categories) || !Array.isArray(value.rules)) throw new Error("JSON must contain questions, categories, and rules arrays.");
-    const categories = [...new Set(value.categories.map((item) => String(item).trim()).filter(Boolean))];
-    if (!categories.length) throw new Error("At least one class is required.");
-    const ids = new Set();
-    const questions = value.questions.map((question, index) => {
-      const id = String(question.id || `q-${index + 1}`).trim();
-      if (!id || ids.has(id)) throw new Error("Every question must have a unique ID.");
-      ids.add(id);
-      const prompt = String(question.prompt || "").trim();
-      const options = [...new Set((question.options || []).map((item) => String(item).trim()).filter(Boolean))];
-      if (!prompt || !options.length) throw new Error(`Question ${index + 1} needs a prompt and at least one answer.`);
-      return { id, prompt, kind: question.kind === "multi" ? "multi" : "single", options };
-    });
-    if (!questions.length) throw new Error("At least one question is required.");
-    const questionMap = new Map(questions.map((q) => [q.id, q]));
-    const rules = value.rules.map((rule) => ({ category: String(rule.category || "").trim(), questionId: String(rule.questionId || "").trim(), answer: String(rule.answer || "").trim(), weight: Number(rule.weight), editable: true }))
-      .filter((rule) => categories.includes(rule.category) && questionMap.has(rule.questionId) && questionMap.get(rule.questionId).options.includes(rule.answer) && Number.isFinite(rule.weight) && rule.weight >= 0 && rule.weight <= 100);
-    return { version: 2, name: String(value.name || "Custom configuration"), sourceWorkbook: value.sourceWorkbook || null, categories, questions, rules };
-  }
-  function loadSavedConfiguration() { try { const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)); return saved ? normalizeConfiguration(saved.configuration || saved) : defaultConfiguration(); } catch { return defaultConfiguration(); } }
-
-  const saved = loadSavedConfiguration();
-  const state = { currentQuestion: 0, answers: {}, active: clone(saved), draft: clone(saved), categoryFilter: "All classes", ruleSearch: "" };
   const els = {
-    questionList: byId("question-list"), questionCount: byId("question-count"), questionMeta: byId("question-meta"), questionPrompt: byId("question-prompt"), answerOptions: byId("answer-options"), previous: byId("previous-question"), next: byId("next-question"), clear: byId("clear-answers"), newQuestionnaire: byId("new-questionnaire"), patientId: byId("patient-id"), visitDate: byId("visit-date"), birthYear: byId("birth-year"), visitNotes: byId("visit-notes"), scores: byId("score-list"), answeredCount: byId("answered-count"), configSummary: byId("configuration-summary"), categoryFilter: byId("category-filter"), ruleSearch: byId("rule-search"), configList: byId("configuration-list"), restore: byId("restore-defaults"), export: byId("export-configuration"), update: byId("update-model"), addQuestion: byId("add-question"), addCategory: byId("add-category"), import: byId("import-configuration"), file: byId("configuration-file"), toast: byId("toast")
+    list: $("question-list"), meta: $("question-meta"), answerState: $("answer-state"), prompt: $("question-prompt"), options: $("answer-options"), previous: $("previous-question"), next: $("next-question"), clearAnswer: $("clear-answer"), scores: $("score-list"), completion: $("answered-count"), patientId: $("patient-id"), visitDate: $("visit-date"), birthYear: $("birth-year"), notes: $("visit-notes"), sessionFile: $("session-file"), category: $("rule-category"), question: $("rule-question"), answer: $("rule-answer"), answerSuggestions: $("answer-suggestions"), weight: $("rule-weight"), categoryFilter: $("category-filter"), search: $("rule-search"), tableBody: $("rule-table-body"), addUpdate: $("add-update-rule"), deleteRule: $("delete-rule"), toast: $("toast")
   };
-  function escapeHtml(value) { return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;"); }
-  function shortPrompt(prompt) { return prompt.length > 68 ? `${prompt.slice(0, 65)}…` : prompt; }
-  function isAnswered(question) { const value = state.answers[question.id]; return Array.isArray(value) ? value.length > 0 : Boolean(value); }
-  function findRule(category, questionId, answer) { return state.draft.rules.find((rule) => rule.category === category && rule.questionId === questionId && rule.answer === answer); }
-  function getWeight(category, questionId, answer) { return Number(findRule(category, questionId, answer)?.weight || 0); }
+  const escapeHtml = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+  const isAnswered = (question) => { const value = state.answers[question.id]; return Array.isArray(value) ? value.length > 0 : value !== undefined && value !== null && value !== ""; };
+  const categories = (rules = state.draftRules) => [...new Set(rules.map((rule) => rule.category))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+  const answerValues = (value) => Array.isArray(value) ? value.map(clean).filter(Boolean) : clean(value) ? [clean(value)] : [];
 
-  function renderQuestionNavigation() {
-    const questions = state.active.questions;
-    els.questionCount.textContent = `${questions.length} questions`;
-    els.questionList.innerHTML = questions.map((question, index) => `<button class="question-link ${index === state.currentQuestion ? "active" : ""} ${isAnswered(question) ? "answered" : ""}" data-question-index="${index}"><span class="question-number">${index + 1}</span><span class="question-title">${escapeHtml(shortPrompt(question.prompt))}</span></button>`).join("");
+  function renderQuestionList() {
+    els.list.innerHTML = questions.map((question, index) => `<button class="question-link ${index === state.current ? "active" : ""} ${isAnswered(question) ? "answered" : ""}" data-index="${index}"><span>${isAnswered(question) ? "✓" : "○"}</span><b>${String(index + 1).padStart(2, "0")}</b><em>${escapeHtml(question.prompt)}</em></button>`).join("");
+    els.list.querySelector(".active")?.scrollIntoView({ block: "nearest" });
   }
-  function renderCurrentQuestion() {
-    const questions = state.active.questions;
-    state.currentQuestion = Math.min(state.currentQuestion, questions.length - 1);
-    const question = questions[state.currentQuestion], inputType = question.kind === "multi" ? "checkbox" : "radio", current = state.answers[question.id];
-    els.questionMeta.textContent = `Question ${state.currentQuestion + 1} of ${questions.length} · ${question.kind === "multi" ? "Select all that apply" : "Select one answer"}`;
-    els.questionPrompt.textContent = question.prompt;
-    els.answerOptions.innerHTML = question.options.map((option) => { const checked = question.kind === "multi" ? (current || []).includes(option) : current === option; return `<label class="answer-option"><input type="${inputType}" name="question-${escapeHtml(question.id)}" value="${escapeHtml(option)}" ${checked ? "checked" : ""} /><span>${escapeHtml(option)}</span></label>`; }).join("");
-    els.previous.disabled = state.currentQuestion === 0; els.next.disabled = state.currentQuestion === questions.length - 1; renderQuestionNavigation(); renderScores();
+  function inputMarkup(question, value) {
+    if (question.kind === "single" || question.kind === "multi") {
+      const type = question.kind === "multi" ? "checkbox" : "radio";
+      return question.options.map((option) => { const checked = question.kind === "multi" ? (value || []).includes(option) : value === option; return `<label class="choice"><input type="${type}" name="answer-${escapeHtml(question.id)}" value="${escapeHtml(option)}" ${checked ? "checked" : ""}><span>${escapeHtml(option)}</span></label>`; }).join("");
+    }
+    if (question.kind === "date") return `<input class="free-answer" type="date" value="${escapeHtml(value || "")}">`;
+    if (question.kind === "numeric") return `<input class="free-answer" type="number" min="0" value="${escapeHtml(value ?? "")}" placeholder="Not answered">`;
+    return `<textarea class="free-answer" placeholder="Type the patient's answer here">${escapeHtml(value || "")}</textarea>`;
+  }
+  function renderQuestion() {
+    const question = questions[state.current], answered = isAnswered(question);
+    els.meta.textContent = `Question ${state.current + 1} of ${questions.length}  |  ID ${question.id}`;
+    els.answerState.textContent = answered ? "Answered" : "Not answered";
+    els.prompt.textContent = question.prompt;
+    els.options.innerHTML = inputMarkup(question, state.answers[question.id]);
+    els.previous.disabled = state.current === 0; els.next.disabled = state.current === questions.length - 1;
+    renderQuestionList(); renderScores();
   }
   function scoreAnswers() {
-    const totals = Object.fromEntries(state.active.categories.map((category) => [category, { points: 0, available: 0 }]));
-    state.active.rules.forEach((rule) => { if (!totals[rule.category]) return; totals[rule.category].available += Number(rule.weight); const answer = state.answers[rule.questionId]; if (Array.isArray(answer) ? answer.includes(rule.answer) : answer === rule.answer) totals[rule.category].points += Number(rule.weight); });
-    return state.active.categories.map((category) => { const item = totals[category]; return { category, percent: item.available ? Math.max(0, Math.min(100, item.points / item.available * 100)) : 0 }; }).sort((a, b) => b.percent - a.percent || a.category.localeCompare(b.category));
+    const result = Object.fromEntries(categories(state.rules).map((category) => [category, { points: 0, available: 0, percent: 0 }]));
+    state.rules.forEach((rule) => {
+      if (!result[rule.category]) return;
+      if (rule.weight > 0) result[rule.category].available += rule.weight;
+      const selected = new Set(answerValues(state.answers[rule.questionId]).map(normalized));
+      if (selected.has(normalized(rule.answer))) result[rule.category].points += rule.weight;
+    });
+    Object.values(result).forEach((item) => { item.points = Math.round(item.points * 100) / 100; item.available = Math.round(item.available * 100) / 100; item.percent = Math.round(Math.max(0, Math.min(100, item.points / Math.max(item.available, 1) * 100)) * 10) / 10; });
+    return result;
   }
   function renderScores() {
-    const questions = state.active.questions; els.answeredCount.textContent = `${questions.filter(isAnswered).length}/${questions.length} answered`;
-    els.scores.innerHTML = scoreAnswers().map((score) => `<div class="score-row"><div class="score-label"><span>${escapeHtml(score.category)}</span><strong>${score.percent.toFixed(1)}%</strong></div><div class="score-track" aria-label="${escapeHtml(score.category)} ${score.percent.toFixed(1)} percent"><div class="score-fill" style="width:${score.percent}%"></div></div></div>`).join("");
+    const scores = scoreAnswers();
+    els.scores.innerHTML = Object.entries(scores).map(([category, score]) => `<div class="score-row"><div class="score-label"><span>${escapeHtml(category)}</span><span><b>${score.percent.toFixed(1)}%</b><small>${score.points >= 0 ? "+" : ""}${score.points.toFixed(1)} pts</small></span></div><div class="score-track"><i class="${score.points < 0 ? "negative" : ""}" style="width:${score.percent}%"></i></div></div>`).join("");
+    els.completion.textContent = `${questions.filter(isAnswered).length} of ${questions.length} answered`;
   }
-  function renderCategoryFilter() {
-    const available = ["All classes", ...state.draft.categories]; if (!available.includes(state.categoryFilter)) state.categoryFilter = "All classes";
-    els.categoryFilter.innerHTML = available.map((category) => `<option ${category === state.categoryFilter ? "selected" : ""}>${escapeHtml(category)}</option>`).join("");
+  function setAnswerFromControl(target) {
+    const question = questions[state.current];
+    if (question.kind === "multi") state.answers[question.id] = [...els.options.querySelectorAll("input:checked")].map((input) => input.value);
+    else state.answers[question.id] = target.value;
+    if (!isAnswered(question)) delete state.answers[question.id];
+    renderQuestion();
   }
-  function renderConfiguration() {
-    const weighted = state.draft.rules.filter((rule) => Number(rule.weight) > 0).length;
-    els.configSummary.innerHTML = [[state.draft.categories.length, "Classes"], [state.draft.questions.length, "Questions"], [weighted, "Weighted answer-class pairs"]].map(([value, label]) => `<div class="summary-card"><strong>${value}</strong><span>${label}</span></div>`).join("");
-    renderCategoryFilter();
-    const query = state.ruleSearch.trim().toLowerCase();
-    const categoryChips = state.draft.categories.map((category) => `<span class="category-chip">${escapeHtml(category)}<button type="button" data-action="remove-category" data-category="${escapeHtml(category)}" aria-label="Remove ${escapeHtml(category)}">×</button></span>`).join("");
-    const cards = state.draft.questions.map((question, index) => {
-      if (query && !`${question.prompt} ${question.options.join(" ")}`.toLowerCase().includes(query)) return "";
-      const categories = state.categoryFilter === "All classes" ? state.draft.categories : [state.categoryFilter];
-      return `<section class="question-editor" data-question-id="${escapeHtml(question.id)}"><div class="editor-heading"><span class="editor-number">${index + 1}</span><input class="prompt-input" data-field="prompt" value="${escapeHtml(question.prompt)}" aria-label="Question prompt" /><select data-field="kind" aria-label="Answer selection type"><option value="single" ${question.kind === "single" ? "selected" : ""}>Pick one</option><option value="multi" ${question.kind === "multi" ? "selected" : ""}>Check all</option></select><button class="icon-button" data-action="move-up" title="Move up" ${index === 0 ? "disabled" : ""}>↑</button><button class="icon-button" data-action="move-down" title="Move down" ${index === state.draft.questions.length - 1 ? "disabled" : ""}>↓</button><button class="icon-button danger" data-action="remove-question" title="Remove question">×</button></div><div class="answer-editor-list">${question.options.map((answer, answerIndex) => `<div class="answer-editor" data-answer-index="${answerIndex}"><input class="answer-text-input" data-field="answer" value="${escapeHtml(answer)}" aria-label="Answer text" /><div class="weight-grid">${categories.map((category) => `<label><span>${escapeHtml(category)}</span><input type="number" min="0" max="100" step="0.1" value="${getWeight(category, question.id, answer)}" data-field="weight" data-category="${escapeHtml(category)}" aria-label="${escapeHtml(category)} weight" /></label>`).join("")}</div><button class="icon-button danger" data-action="remove-answer" title="Remove answer">×</button></div>`).join("")}</div><button class="button secondary compact" data-action="add-answer">Add answer</button></section>`;
-    }).join("");
-    els.configList.innerHTML = `<div class="category-manager"><strong>Diagnostic classes</strong><div class="category-chips">${categoryChips}</div></div>${cards || `<div class="empty-state">No questions match this search.</div>`}`;
+  function resetQuestionnaire() { state.answers = {}; state.current = 0; els.patientId.value = ""; els.birthYear.value = ""; els.notes.value = ""; els.visitDate.value = new Date().toISOString().slice(0, 10); renderQuestion(); }
+  function downloadJson(value, filename) { const url = URL.createObjectURL(new Blob([JSON.stringify(value, null, 2)], { type: "application/json" })); const anchor = document.createElement("a"); anchor.href = url; anchor.download = filename; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 0); }
+  function saveSession() {
+    const patientId = clean(els.patientId.value); if (!patientId) return showToast("Enter an anonymous patient ID before saving.", true);
+    const now = new Date(), stamp = now.toISOString().replace(/[-:]/g, "").slice(0, 15), safeId = patientId.replace(/[^a-z0-9_-]/gi, "_");
+    downloadJson({ patient: { anonymous_id: patientId, visit_date: els.visitDate.value, birth_year: els.birthYear.value ? Number(els.birthYear.value) : "", notes: clean(els.notes.value) }, answers: clone(state.answers), scores: scoreAnswers(), saved_at: now.toISOString().slice(0, 19) }, `${safeId}_${stamp}.json`);
+    showToast("Session saved.");
   }
-  function setWeight(category, questionId, answer, value) {
-    const numeric = Number(value); if (!Number.isFinite(numeric) || numeric < 0 || numeric > 100) return false;
-    const existing = findRule(category, questionId, answer); if (existing) existing.weight = Math.round(numeric * 1000) / 1000; else state.draft.rules.push({ category, questionId, answer, weight: Math.round(numeric * 1000) / 1000, editable: true }); return true;
+  async function loadSession(file) {
+    try { const payload = JSON.parse(await file.text()); resetQuestionnaire(); const patient = payload.patient || {}; els.patientId.value = patient.anonymous_id || ""; els.visitDate.value = patient.visit_date || els.visitDate.value; els.birthYear.value = patient.birth_year || ""; els.notes.value = patient.notes || ""; state.answers = payload.answers && typeof payload.answers === "object" ? payload.answers : {}; renderQuestion(); showToast("Session loaded."); }
+    catch { showToast("Could not load this session file.", true); }
+    els.sessionFile.value = "";
   }
-  function updateScoringModel() {
-    try { state.draft = normalizeConfiguration(state.draft); } catch (error) { showToast(error.message); return; }
-    state.active = clone(state.draft); state.answers = {}; state.currentQuestion = 0; localStorage.setItem(STORAGE_KEY, JSON.stringify({ savedAt: new Date().toISOString(), configuration: state.active })); renderCurrentQuestion(); renderConfiguration(); showToast("Configuration applied and saved in this browser.");
-  }
-  function restoreDefaults() { state.draft = defaultConfiguration(); state.categoryFilter = "All classes"; renderConfiguration(); showToast("Workbook defaults restored in the editor. Apply to activate them."); }
-  function exportConfiguration() {
-    const payload = { ...clone(state.draft), exportedAt: new Date().toISOString() }, url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" })), anchor = document.createElement("a");
-    anchor.href = url; anchor.download = "nebula-questionnaire-configuration.json"; anchor.click(); URL.revokeObjectURL(url); showToast("Complete configuration exported.");
-  }
-  async function importConfiguration(file) {
-    try { state.draft = normalizeConfiguration(JSON.parse(await file.text())); state.categoryFilter = "All classes"; state.ruleSearch = ""; els.ruleSearch.value = ""; renderConfiguration(); showToast("Configuration imported. Review it, then apply when ready."); } catch (error) { showToast(`Import failed: ${error.message}`); } els.file.value = "";
-  }
-  function addQuestion() { const id = `custom-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`; state.draft.questions.push({ id, prompt: "New question", kind: "single", options: ["New answer"] }); renderConfiguration(); els.configList.querySelector(`[data-question-id="${id}"]`)?.scrollIntoView({ behavior: "smooth", block: "center" }); }
-  let toastTimer;
-  function showToast(message) { clearTimeout(toastTimer); els.toast.textContent = message; els.toast.classList.add("show"); toastTimer = setTimeout(() => els.toast.classList.remove("show"), 3000); }
 
-  document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => { document.querySelectorAll(".tab").forEach((item) => { const active = item === tab; item.classList.toggle("active", active); item.setAttribute("aria-selected", String(active)); }); document.querySelectorAll(".view").forEach((view) => view.classList.remove("active")); byId(`${tab.dataset.view}-view`).classList.add("active"); if (tab.dataset.view === "configuration") renderConfiguration(); }));
-  els.questionList.addEventListener("click", (event) => { const button = event.target.closest("[data-question-index]"); if (button) { state.currentQuestion = Number(button.dataset.questionIndex); renderCurrentQuestion(); } });
-  els.answerOptions.addEventListener("change", (event) => { const question = state.active.questions[state.currentQuestion]; state.answers[question.id] = question.kind === "multi" ? [...els.answerOptions.querySelectorAll("input:checked")].map((input) => input.value) : event.target.value; renderQuestionNavigation(); renderScores(); });
-  els.previous.addEventListener("click", () => { state.currentQuestion--; renderCurrentQuestion(); }); els.next.addEventListener("click", () => { state.currentQuestion++; renderCurrentQuestion(); }); els.clear.addEventListener("click", () => { state.answers = {}; renderCurrentQuestion(); showToast("Questionnaire answers cleared."); });
-  els.newQuestionnaire.addEventListener("click", () => { state.answers = {}; state.currentQuestion = 0; els.patientId.value = ""; els.birthYear.value = ""; els.visitNotes.value = ""; els.visitDate.valueAsDate = new Date(); renderCurrentQuestion(); showToast("New questionnaire started."); });
-  els.categoryFilter.addEventListener("change", (event) => { state.categoryFilter = event.target.value; renderConfiguration(); }); els.ruleSearch.addEventListener("input", (event) => { state.ruleSearch = event.target.value; renderConfiguration(); els.ruleSearch.focus(); });
-  els.configList.addEventListener("change", (event) => {
-    const card = event.target.closest("[data-question-id]"); if (!card) return; const question = state.draft.questions.find((item) => item.id === card.dataset.questionId); if (!question) return;
-    if (event.target.dataset.field === "kind") question.kind = event.target.value;
-    if (event.target.dataset.field === "prompt") question.prompt = event.target.value.trim() || "Untitled question";
-    if (event.target.dataset.field === "answer") { const row = event.target.closest("[data-answer-index]"), index = Number(row.dataset.answerIndex), oldAnswer = question.options[index], newAnswer = event.target.value.trim() || "Untitled answer"; question.options[index] = newAnswer; state.draft.rules.filter((rule) => rule.questionId === question.id && rule.answer === oldAnswer).forEach((rule) => { rule.answer = newAnswer; }); }
-    if (event.target.dataset.field === "weight" && !setWeight(event.target.dataset.category, question.id, question.options[Number(event.target.closest("[data-answer-index]").dataset.answerIndex)], event.target.value)) showToast("Weights must be between 0 and 100.");
-    renderConfiguration();
-  });
-  els.configList.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-action]"); if (!button) return; const action = button.dataset.action;
-    if (action === "remove-category") { if (state.draft.categories.length === 1) return showToast("At least one class is required."); const category = button.dataset.category; state.draft.categories = state.draft.categories.filter((item) => item !== category); state.draft.rules = state.draft.rules.filter((rule) => rule.category !== category); }
-    else { const card = button.closest("[data-question-id]"); if (!card) return; const index = state.draft.questions.findIndex((item) => item.id === card.dataset.questionId), question = state.draft.questions[index];
-      if (action === "move-up" && index > 0) [state.draft.questions[index - 1], state.draft.questions[index]] = [state.draft.questions[index], state.draft.questions[index - 1]];
-      if (action === "move-down" && index < state.draft.questions.length - 1) [state.draft.questions[index + 1], state.draft.questions[index]] = [state.draft.questions[index], state.draft.questions[index + 1]];
-      if (action === "remove-question") { if (state.draft.questions.length === 1) return showToast("At least one question is required."); state.draft.questions.splice(index, 1); state.draft.rules = state.draft.rules.filter((rule) => rule.questionId !== question.id); }
-      if (action === "add-answer") question.options.push("New answer");
-      if (action === "remove-answer") { if (question.options.length === 1) return showToast("A question needs at least one answer."); const answerIndex = Number(button.closest("[data-answer-index]").dataset.answerIndex), answer = question.options.splice(answerIndex, 1)[0]; state.draft.rules = state.draft.rules.filter((rule) => !(rule.questionId === question.id && rule.answer === answer)); }
-    } renderConfiguration();
-  });
-  els.addQuestion.addEventListener("click", addQuestion);
-  els.addCategory.addEventListener("click", () => { const name = prompt("Name the new diagnostic class:")?.trim(); if (!name) return; if (state.draft.categories.includes(name)) return showToast("That class already exists."); state.draft.categories.push(name); renderConfiguration(); });
-  els.import.addEventListener("click", () => els.file.click()); els.file.addEventListener("change", () => { if (els.file.files[0]) importConfiguration(els.file.files[0]); }); els.restore.addEventListener("click", restoreDefaults); els.export.addEventListener("click", exportConfiguration); els.update.addEventListener("click", updateScoringModel);
-  if (!els.visitDate.value) els.visitDate.valueAsDate = new Date();
-  renderCurrentQuestion(); renderConfiguration();
+  function refreshCategoryControls(preferred) {
+    const values = categories(), chosen = values.includes(preferred) ? preferred : values[0] || "";
+    els.category.innerHTML = values.map((value) => `<option ${value === chosen ? "selected" : ""}>${escapeHtml(value)}</option>`).join("");
+    els.categoryFilter.innerHTML = values.map((value) => `<option ${value === chosen ? "selected" : ""}>${escapeHtml(value)}</option>`).join("");
+  }
+  function populateQuestionSelect() { els.question.innerHTML = questions.map((question) => `<option value="${escapeHtml(question.id)}">${escapeHtml(question.id)} | ${escapeHtml(question.prompt)}</option>`).join(""); populateAnswers(); }
+  function populateAnswers(preferred = "") { const question = questions.find((item) => item.id === els.question.value); const values = question?.options || []; els.answerSuggestions.innerHTML = values.map((answer) => `<option value="${escapeHtml(answer)}"></option>`).join(""); els.answer.value = preferred || values[0] || ""; }
+  function filteredRules() {
+    const category = els.categoryFilter.value, query = clean(els.search.value).toLocaleLowerCase();
+    return state.draftRules.map((rule, index) => ({ rule, index })).filter(({ rule }) => rule.category === category && (!query || `${rule.category} ${rule.questionId} ${questions.find((q) => q.id === rule.questionId)?.prompt || "Unknown question"} ${rule.answer}`.toLocaleLowerCase().includes(query)));
+  }
+  function renderRuleTable() {
+    const rows = filteredRules();
+    if (!rows.some(({ index }) => index === state.selectedRule)) state.selectedRule = null;
+    els.tableBody.innerHTML = rows.map(({ rule, index }) => `<tr data-index="${index}" class="${index === state.selectedRule ? "selected" : ""}"><td>${escapeHtml(rule.category)}</td><td>${escapeHtml(rule.questionId)}</td><td>${escapeHtml(questions.find((q) => q.id === rule.questionId)?.prompt || "Unknown question")}</td><td>${escapeHtml(rule.answer)}</td><td class="weight ${rule.weight < 0 ? "negative" : "positive"}">${rule.weight >= 0 ? "+" : ""}${Number(rule.weight).toFixed(3)}</td></tr>`).join("");
+    els.deleteRule.disabled = state.selectedRule === null;
+  }
+  function syncCategory(category) { if ([...els.category.options].some((option) => option.value === category)) els.category.value = category; if ([...els.categoryFilter.options].some((option) => option.value === category)) els.categoryFilter.value = category; renderRuleTable(); }
+  function clearEditor() { state.editingRule = null; els.addUpdate.textContent = "Add rule"; els.weight.value = "10"; }
+  function editRule(index) { const rule = state.draftRules[index]; if (!rule) return; state.editingRule = index; syncCategory(rule.category); els.question.value = rule.questionId; populateAnswers(rule.answer); els.weight.value = rule.weight; els.addUpdate.textContent = "Update rule"; }
+  function addOrUpdateRule() {
+    const rule = normalizeRule({ category: els.category.value, questionId: els.question.value, answer: els.answer.value, weight: els.weight.value, source: "Custom" });
+    if (!rule || rule.weight < -1000 || rule.weight > 1000) return showToast("Choose a category, question, answer, and weight from -1000 to 1000.", true);
+    if (state.editingRule === null) state.draftRules.push(rule); else state.draftRules[state.editingRule] = rule;
+    refreshCategoryControls(rule.category); clearEditor(); renderRuleTable();
+  }
+  function saveAndApply() { state.rules = clone(state.draftRules); localStorage.setItem(RULES_KEY, JSON.stringify({ version: 1, rules: state.rules })); renderScores(); showToast("The new scoring rules are active in the questionnaire tab."); }
+  function restoreDefaults() { if (!confirm("Replace the current draft with the diagnosis-sheet defaults?")) return; state.rules = clone(defaultRules); state.draftRules = clone(defaultRules); localStorage.setItem(RULES_KEY, JSON.stringify({ version: 1, rules: state.rules })); refreshCategoryControls(); clearEditor(); renderRuleTable(); renderScores(); showToast("Workbook defaults restored."); }
+
+  let toastTimer;
+  function showToast(message, error = false) { clearTimeout(toastTimer); els.toast.textContent = message; els.toast.classList.toggle("error", error); els.toast.classList.add("show"); toastTimer = setTimeout(() => els.toast.classList.remove("show"), 3200); }
+
+  document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => { document.querySelectorAll(".tab").forEach((item) => { const active = item === tab; item.classList.toggle("active", active); item.setAttribute("aria-selected", active); }); document.querySelectorAll(".view").forEach((view) => view.classList.remove("active")); $(`${tab.dataset.view}-view`).classList.add("active"); }));
+  els.list.addEventListener("click", (event) => { const button = event.target.closest("[data-index]"); if (button) { state.current = Number(button.dataset.index); renderQuestion(); } });
+  els.options.addEventListener("change", (event) => setAnswerFromControl(event.target));
+  els.options.addEventListener("input", (event) => { if (event.target.matches(".free-answer")) setAnswerFromControl(event.target); });
+  els.previous.addEventListener("click", () => { state.current = Math.max(0, state.current - 1); renderQuestion(); });
+  els.next.addEventListener("click", () => { state.current = Math.min(questions.length - 1, state.current + 1); renderQuestion(); });
+  els.clearAnswer.addEventListener("click", () => { delete state.answers[questions[state.current].id]; renderQuestion(); });
+  $("new-questionnaire").addEventListener("click", resetQuestionnaire); $("save-session").addEventListener("click", saveSession); $("load-session").addEventListener("click", () => els.sessionFile.click()); els.sessionFile.addEventListener("change", () => els.sessionFile.files[0] && loadSession(els.sessionFile.files[0]));
+  els.category.addEventListener("change", () => syncCategory(els.category.value)); els.categoryFilter.addEventListener("change", () => { syncCategory(els.categoryFilter.value); clearEditor(); }); els.question.addEventListener("change", () => populateAnswers()); els.search.addEventListener("input", renderRuleTable);
+  els.addUpdate.addEventListener("click", addOrUpdateRule); $("clear-editor").addEventListener("click", clearEditor);
+  els.tableBody.addEventListener("click", (event) => { const row = event.target.closest("tr[data-index]"); if (!row) return; state.selectedRule = Number(row.dataset.index); els.tableBody.querySelectorAll("tr").forEach((item) => item.classList.toggle("selected", item === row)); els.deleteRule.disabled = false; });
+  els.tableBody.addEventListener("dblclick", (event) => { const row = event.target.closest("tr[data-index]"); if (row) editRule(Number(row.dataset.index)); });
+  els.deleteRule.addEventListener("click", () => { if (state.selectedRule === null) return; state.draftRules.splice(state.selectedRule, 1); state.selectedRule = null; refreshCategoryControls(els.categoryFilter.value); clearEditor(); renderRuleTable(); });
+  $("save-apply").addEventListener("click", saveAndApply); $("restore-defaults").addEventListener("click", restoreDefaults);
+
+  els.visitDate.value = new Date().toISOString().slice(0, 10); refreshCategoryControls(); populateQuestionSelect(); renderRuleTable(); renderQuestion();
 })();
