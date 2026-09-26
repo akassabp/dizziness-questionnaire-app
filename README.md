@@ -2,7 +2,7 @@
 
 Static web version of the configurable Nebula dizziness questionnaire.
 
-The public site opens directly into the questionnaire, matching the desktop application workflow.
+Public site access uses an access-code screen. Entering the code and pressing Enter opens the desktop-style questionnaire.
 
 ## Included behavior
 

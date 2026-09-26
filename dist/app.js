@@ -2,6 +2,7 @@
   "use strict";
   const defaults = window.NEBULA_DATA;
   if (!defaults) throw new Error("Questionnaire data did not load.");
+  const ACCESS_HASH = "0f7a4f8120712df5464758e375faf9829818369c774fcedb64ed7bd3b62f5ea1";
   const RULES_KEY = "nebula-desktop-compatible-rules-v1";
   const $ = (id) => document.getElementById(id);
   const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -20,6 +21,12 @@
   }
   const state = { current: 0, answers: {}, rules: loadRules(), draftRules: [], selectedRule: null, editingRule: null };
   state.draftRules = clone(state.rules);
+
+  const gate = $("access-gate"), accessForm = $("access-form"), accessCode = $("access-code"), accessError = $("access-error");
+  async function sha256(value) { const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value)); return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join(""); }
+  function unlock() { sessionStorage.setItem("nebula-access", "granted"); document.body.classList.remove("auth-locked"); gate.hidden = true; }
+  if (sessionStorage.getItem("nebula-access") === "granted") unlock();
+  accessForm.addEventListener("submit", async (event) => { event.preventDefault(); accessError.textContent = ""; if (await sha256(accessCode.value) === ACCESS_HASH) { accessCode.value = ""; unlock(); } else { accessError.textContent = "Incorrect access code."; accessCode.select(); } });
 
   const els = {
     list: $("question-list"), meta: $("question-meta"), answerState: $("answer-state"), prompt: $("question-prompt"), options: $("answer-options"), previous: $("previous-question"), next: $("next-question"), clearAnswer: $("clear-answer"), scores: $("score-list"), completion: $("answered-count"), patientId: $("patient-id"), visitDate: $("visit-date"), birthYear: $("birth-year"), notes: $("visit-notes"), sessionFile: $("session-file"), category: $("rule-category"), question: $("rule-question"), answer: $("rule-answer"), answerSuggestions: $("answer-suggestions"), weight: $("rule-weight"), categoryFilter: $("category-filter"), search: $("rule-search"), tableBody: $("rule-table-body"), addUpdate: $("add-update-rule"), deleteRule: $("delete-rule"), toast: $("toast")

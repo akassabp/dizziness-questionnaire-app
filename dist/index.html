@@ -5,9 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Nebula dizziness questionnaire scoring platform." />
   <title>Nebula Questionnaire Scoring Platform</title>
-  <link rel="stylesheet" href="styles.css?v=desktop-2" />
+  <link rel="stylesheet" href="styles.css?v=desktop-3" />
 </head>
-<body>
+<body class="auth-locked">
+  <section id="access-gate" class="access-gate" aria-labelledby="access-title">
+    <form id="access-form" class="access-card">
+      <p class="eyebrow">Dizziness classification project</p>
+      <h1 id="access-title">Nebula Questionnaire</h1>
+      <p>Enter the project access code and press Enter.</p>
+      <label for="access-code">Access code</label>
+      <input id="access-code" type="password" autocomplete="current-password" required autofocus />
+      <p id="access-error" class="access-error" role="alert"></p>
+    </form>
+  </section>
   <div class="window-shell">
     <nav class="tabs" aria-label="Application views">
       <button class="tab active" data-view="questionnaire" aria-selected="true">Questionnaire</button>
@@ -63,6 +73,6 @@
     </main>
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="questionnaire-data.js?v=desktop-2"></script><script src="app.js?v=desktop-2"></script>
+  <script src="questionnaire-data.js?v=desktop-3"></script><script src="app.js?v=desktop-3"></script>
 </body>
 </html>
