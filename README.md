@@ -2,7 +2,7 @@
 
 Static web version of the configurable Nebula dizziness questionnaire.
 
-Public site access uses a lightweight browser-side access-code screen. This is a convenience gate and is not equivalent to server-side authentication.
+The public site opens directly into the questionnaire, matching the desktop application workflow.
 
 ## Included behavior
 
