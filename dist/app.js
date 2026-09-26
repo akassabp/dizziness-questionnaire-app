@@ -127,7 +127,7 @@
   let toastTimer;
   function showToast(message, error = false) { clearTimeout(toastTimer); els.toast.textContent = message; els.toast.classList.toggle("error", error); els.toast.classList.add("show"); toastTimer = setTimeout(() => els.toast.classList.remove("show"), 3200); }
 
-  document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => { document.querySelectorAll(".tab").forEach((item) => { const active = item === tab; item.classList.toggle("active", active); item.setAttribute("aria-selected", active); }); document.querySelectorAll(".view").forEach((view) => view.classList.remove("active")); $(`${tab.dataset.view}-view`).classList.add("active"); }));
+  document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => { const target = tab.dataset.view; document.querySelectorAll(".tab").forEach((item) => { const active = item.dataset.view === target; item.classList.toggle("active", active); item.setAttribute("aria-selected", active); }); document.querySelectorAll(".view").forEach((view) => view.classList.remove("active")); $(`${target}-view`).classList.add("active"); }));
   els.list.addEventListener("click", (event) => { const button = event.target.closest("[data-index]"); if (button) { state.current = Number(button.dataset.index); renderQuestion(); } });
   els.options.addEventListener("change", (event) => setAnswerFromControl(event.target));
   els.options.addEventListener("input", (event) => { if (event.target.matches(".free-answer")) setAnswerFromControl(event.target); });

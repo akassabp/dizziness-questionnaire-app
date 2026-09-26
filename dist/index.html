@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Nebula dizziness questionnaire scoring platform." />
   <title>Nebula Questionnaire Scoring Platform</title>
-  <link rel="stylesheet" href="styles.css?v=desktop-4" />
+  <link rel="stylesheet" href="styles.css?v=desktop-5" />
 </head>
 <body class="auth-locked">
   <section id="access-gate" class="access-gate" aria-labelledby="access-title">
@@ -19,14 +19,14 @@
     </form>
   </section>
   <div class="window-shell">
-    <nav class="tabs" aria-label="Application views">
-      <button class="tab active" data-view="questionnaire" aria-selected="true">Questionnaire</button>
-      <button class="tab" data-view="configuration" aria-selected="false">Model Configuration</button>
-    </nav>
     <main>
       <section id="questionnaire-view" class="view active">
         <header class="view-header">
           <div><h1>Nebula Questionnaire</h1></div>
+          <nav class="tabs" aria-label="Application views">
+            <button class="tab active" data-view="questionnaire" aria-selected="true">Questionnaire</button>
+            <button class="tab" data-view="configuration" aria-selected="false">Model Configuration</button>
+          </nav>
           <div class="header-actions"><button id="new-questionnaire">New questionnaire</button><button id="load-session">Load session</button><input id="session-file" type="file" accept="application/json,.json" hidden /><button id="save-session" class="primary">Save session</button></div>
         </header>
         <div class="patient-strip panel">
@@ -48,6 +48,10 @@
       <section id="configuration-view" class="view">
         <header class="view-header">
           <div><h1>Model Configuration</h1><p>Edit exactly how each answer adds or subtracts category evidence</p></div>
+          <nav class="tabs" aria-label="Application views">
+            <button class="tab" data-view="questionnaire" aria-selected="false">Questionnaire</button>
+            <button class="tab active" data-view="configuration" aria-selected="true">Model Configuration</button>
+          </nav>
           <div class="header-actions"><button id="restore-defaults">Restore workbook defaults</button><button id="save-apply" class="primary">Save and apply</button></div>
         </header>
         <div class="configuration-grid">
@@ -73,6 +77,6 @@
     </main>
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="questionnaire-data.js?v=desktop-4"></script><script src="app.js?v=desktop-4"></script>
+  <script src="questionnaire-data.js?v=desktop-5"></script><script src="app.js?v=desktop-5"></script>
 </body>
 </html>
