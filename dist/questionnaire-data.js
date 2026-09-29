@@ -1,6 +1,6 @@
 window.NEBULA_DATA = {
-  "version": 1,
-  "sourceWorkbook": "OTO Dizziness Questionnaire -Nebula cloud 5-9-241.xlsx",
+  "version": 2,
+  "sourceWorkbook": "OTO Dizziness Questionnaire -Nebula cloud 5-9-241_KM2.xlsx",
   "questions": [
     {
       "id": "259356",
@@ -12,6 +12,44 @@ window.NEBULA_DATA = {
         "dizziness and imbalance",
         "none of the above"
       ]
+    },
+    {
+      "id": "259357",
+      "prompt": "Please check any of the symptoms that you have experienced with your current problem:",
+      "kind": "multi",
+      "options": [
+        "light-headed",
+        "heavy-headed",
+        "foggy or cloudy",
+        "sensation of the room spinning",
+        "sensation of being pulled or pushed down",
+        "sensation of rocking or swaying",
+        "sensation of tilting",
+        "dizziness upon standing"
+      ]
+    },
+    {
+      "id": "259358",
+      "prompt": "Briefly state the problem you are seeking help for:",
+      "kind": "text",
+      "options": []
+    },
+    {
+      "id": "259359",
+      "prompt": "How many other health care providers have you seen for your problem of dizziness and/or imbalance?",
+      "kind": "single",
+      "options": [
+        "0",
+        "1-2",
+        "3-4",
+        "5 or more"
+      ]
+    },
+    {
+      "id": "259360",
+      "prompt": "When did your symptoms begin? Please provide the best estimate of the date your symptoms happened for the VERY FIRST TIME.",
+      "kind": "date",
+      "options": []
     },
     {
       "id": "259361",
@@ -50,11 +88,41 @@ window.NEBULA_DATA = {
       ]
     },
     {
+      "id": "259365",
+      "prompt": "Do your current symptoms come on suddenly or gradually?",
+      "kind": "single",
+      "options": [
+        "Suddenly",
+        "Gradually or slowly"
+      ]
+    },
+    {
+      "id": "259366",
+      "prompt": "How would you rate your symptoms?",
+      "kind": "single",
+      "options": [
+        "mild",
+        "moderate",
+        "severe"
+      ]
+    },
+    {
       "id": "259367",
       "prompt": "How many episodes have you had in your entire lifetime?",
       "kind": "single",
       "options": [
         "Only 1 episode",
+        "2-4 episodes",
+        "5-9 episodes",
+        "10 or more episodes"
+      ]
+    },
+    {
+      "id": "259368",
+      "prompt": "How many episodes have you had in the last 6 months?",
+      "kind": "single",
+      "options": [
+        "0-1 episodes",
         "2-4 episodes",
         "5-9 episodes",
         "10 or more episodes"
@@ -132,6 +200,12 @@ window.NEBULA_DATA = {
       ]
     },
     {
+      "id": "259373",
+      "prompt": "Is there anything else you know of that will trigger your symptoms or make your symptoms worse?",
+      "kind": "text",
+      "options": []
+    },
+    {
       "id": "259374",
       "prompt": "How would you describe your balance? Please check all that apply.",
       "kind": "multi",
@@ -146,6 +220,21 @@ window.NEBULA_DATA = {
     {
       "id": "259375",
       "prompt": "Have you ever fallen? A fall is defined as a fall to the ground or onto a piece of furniture or other object.",
+      "kind": "single",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "id": "259376",
+      "prompt": "If you have fallen, how many falls have you had in the past year?",
+      "kind": "numeric",
+      "options": []
+    },
+    {
+      "id": "259377",
+      "prompt": "If you have fallen, were you injured?",
       "kind": "single",
       "options": [
         "Yes",
@@ -240,11 +329,8 @@ window.NEBULA_DATA = {
     {
       "id": "259388",
       "prompt": "If you have experienced headaches in your lifetime, how would you describe them?",
-      "kind": "single",
-      "options": [
-        "Yes",
-        "No"
-      ]
+      "kind": "text",
+      "options": []
     },
     {
       "id": "259389",
@@ -258,6 +344,26 @@ window.NEBULA_DATA = {
         "certain foods or beverages increase the chance of getting a headache",
         "headaches where the pain throbs or pulses",
         "none of the above"
+      ]
+    },
+    {
+      "id": "259400",
+      "prompt": "Do you have trouble hearing?",
+      "kind": "single",
+      "options": [
+        "Yes",
+        "no"
+      ]
+    },
+    {
+      "id": "259415",
+      "prompt": "Have you ever had a hearing test that showed that you had a hearing loss?",
+      "kind": "single",
+      "options": [
+        "No",
+        "Yes, hearing loss in both ears",
+        "Yes, hearing loss in the right ear only",
+        "Yes, hearing loss in the left ear only"
       ]
     },
     {
@@ -300,6 +406,46 @@ window.NEBULA_DATA = {
       ]
     },
     {
+      "id": "259422",
+      "prompt": "Have you ever had surgery on your ears as an adult?",
+      "kind": "single",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "id": "259423",
+      "prompt": "If yes, please explain/specify the type of ear surgery that was performed and the date:",
+      "kind": "text",
+      "options": []
+    },
+    {
+      "id": "259424",
+      "prompt": "Have you undergone Magnetic Resonance Imaging (MRI) or CT scan of your head that was abnormal?",
+      "kind": "single",
+      "options": [
+        "No",
+        "Yes",
+        "I don't know"
+      ]
+    },
+    {
+      "id": "259425",
+      "prompt": "Have you ever had vestibular testing performed? Some types of testing are VNG with air or water in your ears, Rotary Chair, VEMP, ECoG, or vHIT.",
+      "kind": "single",
+      "options": [
+        "No",
+        "Yes"
+      ]
+    },
+    {
+      "id": "259426",
+      "prompt": "If yes, where and when (approximately):",
+      "kind": "text",
+      "options": []
+    },
+    {
       "id": "260448",
       "prompt": "I lost all or some of my hearing after a spinning attack of dizziness",
       "kind": "single",
@@ -336,6 +482,36 @@ window.NEBULA_DATA = {
         "Yes",
         "No"
       ]
+    },
+    {
+      "id": "260605",
+      "prompt": "If yes, please explain/specify the type of weather",
+      "kind": "text",
+      "options": [],
+      "showWhen": {
+        "questionId": "260450",
+        "answer": "changes in the weather"
+      }
+    },
+    {
+      "id": "260606",
+      "prompt": "If yes, please explain/specify the type of food(s)",
+      "kind": "text",
+      "options": [],
+      "showWhen": {
+        "questionId": "260450",
+        "answer": "certain foods"
+      }
+    },
+    {
+      "id": "260607",
+      "prompt": "If yes, please explain/specify the type of beverage(s)",
+      "kind": "text",
+      "options": [],
+      "showWhen": {
+        "questionId": "260450",
+        "answer": "certain beverages"
+      }
     }
   ],
   "rules": [
@@ -343,89 +519,97 @@ window.NEBULA_DATA = {
       "category": "BPPV",
       "questionId": "259364",
       "answer": "Yes",
-      "weight": 25.0,
+      "weight": 20.0,
       "editable": true,
-      "source": "Workbook sheet: BPPV"
+      "source": "Workbook default"
     },
     {
       "category": "BPPV",
       "questionId": "259369",
       "answer": "Seconds",
-      "weight": 12.5,
+      "weight": 10.0,
       "editable": true,
-      "source": "Workbook sheet: BPPV"
+      "source": "Workbook default"
     },
     {
       "category": "BPPV",
       "questionId": "259369",
       "answer": "Minutes",
-      "weight": 12.5,
+      "weight": 10.0,
       "editable": true,
-      "source": "Workbook sheet: BPPV"
+      "source": "Workbook default"
     },
     {
       "category": "BPPV",
       "questionId": "259370",
       "answer": "once a day",
-      "weight": 12.5,
+      "weight": 10.0,
       "editable": true,
-      "source": "Workbook sheet: BPPV"
+      "source": "Workbook default"
     },
     {
       "category": "BPPV",
       "questionId": "259370",
       "answer": "several times a day",
-      "weight": 12.5,
+      "weight": 10.0,
       "editable": true,
-      "source": "Workbook sheet: BPPV"
+      "source": "Workbook default"
     },
     {
       "category": "BPPV",
       "questionId": "259371",
       "answer": "looking up",
-      "weight": 4.167,
-      "editable": false,
-      "source": "Workbook sheet: BPPV"
+      "weight": 3.333,
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "BPPV",
       "questionId": "259371",
       "answer": "lying down",
-      "weight": 4.167,
-      "editable": false,
-      "source": "Workbook sheet: BPPV"
+      "weight": 3.333,
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "BPPV",
       "questionId": "259371",
       "answer": "rolling over",
-      "weight": 4.167,
-      "editable": false,
-      "source": "Workbook sheet: BPPV"
+      "weight": 3.333,
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "BPPV",
       "questionId": "259371",
       "answer": "getting into or out of bed",
-      "weight": 4.167,
-      "editable": false,
-      "source": "Workbook sheet: BPPV"
+      "weight": 3.333,
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "BPPV",
       "questionId": "259371",
       "answer": "sitting up",
-      "weight": 4.167,
-      "editable": false,
-      "source": "Workbook sheet: BPPV"
+      "weight": 3.333,
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "BPPV",
       "questionId": "259371",
       "answer": "reaching or bending",
-      "weight": 4.167,
-      "editable": false,
-      "source": "Workbook sheet: BPPV"
+      "weight": 3.333,
+      "editable": true,
+      "source": "Workbook default"
+    },
+    {
+      "category": "BPPV",
+      "questionId": "259362",
+      "answer": "No",
+      "weight": 20.0,
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neuritis",
@@ -433,7 +617,7 @@ window.NEBULA_DATA = {
       "answer": "Sudden",
       "weight": 16.667,
       "editable": true,
-      "source": "Workbook sheet: Neuritis"
+      "source": "Workbook default"
     },
     {
       "category": "Neuritis",
@@ -441,7 +625,7 @@ window.NEBULA_DATA = {
       "answer": "Yes",
       "weight": 16.667,
       "editable": true,
-      "source": "Workbook sheet: Neuritis"
+      "source": "Workbook default"
     },
     {
       "category": "Neuritis",
@@ -449,23 +633,23 @@ window.NEBULA_DATA = {
       "answer": "Only 1 episode",
       "weight": 16.667,
       "editable": true,
-      "source": "Workbook sheet: Neuritis"
+      "source": "Workbook default"
     },
     {
       "category": "Neuritis",
       "questionId": "259371",
       "answer": "walking in the dark",
       "weight": 8.333,
-      "editable": false,
-      "source": "Workbook sheet: Neuritis"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neuritis",
       "questionId": "259371",
       "answer": "any kind of head movement",
       "weight": 8.333,
-      "editable": false,
-      "source": "Workbook sheet: Neuritis"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neuritis",
@@ -473,7 +657,7 @@ window.NEBULA_DATA = {
       "answer": "Yes",
       "weight": 16.667,
       "editable": true,
-      "source": "Workbook sheet: Neuritis"
+      "source": "Workbook default"
     },
     {
       "category": "Neuritis",
@@ -481,119 +665,183 @@ window.NEBULA_DATA = {
       "answer": "Yes",
       "weight": 16.667,
       "editable": true,
-      "source": "Workbook sheet: Neuritis"
+      "source": "Workbook default"
+    },
+    {
+      "category": "Neuritis",
+      "questionId": "260451",
+      "answer": "No",
+      "weight": -16.667,
+      "editable": true,
+      "source": "KM2 negative evidence (standard)"
     },
     {
       "category": "Meniere's",
       "questionId": "259369",
       "answer": "Hours",
-      "weight": 4.762,
+      "weight": 4.167,
       "editable": true,
-      "source": "Workbook sheet: Meniere's"
+      "source": "Workbook default"
     },
     {
       "category": "Meniere's",
       "questionId": "259369",
       "answer": "Days",
-      "weight": 4.762,
+      "weight": 4.167,
       "editable": true,
-      "source": "Workbook sheet: Meniere's"
+      "source": "Workbook default"
     },
     {
       "category": "Meniere's",
       "questionId": "259369",
       "answer": "Days and can last continuously for weeks",
-      "weight": 4.762,
+      "weight": 4.167,
       "editable": true,
-      "source": "Workbook sheet: Meniere's"
+      "source": "Workbook default"
     },
     {
       "category": "Meniere's",
       "questionId": "259381",
       "answer": "Nausea or vomiting",
-      "weight": 14.286,
-      "editable": false,
-      "source": "Workbook sheet: Meniere's"
+      "weight": 12.5,
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Meniere's",
       "questionId": "259417",
       "answer": "Yes, right ear only",
-      "weight": 7.143,
+      "weight": 6.25,
       "editable": true,
-      "source": "Workbook sheet: Meniere's"
+      "source": "Workbook default"
     },
     {
       "category": "Meniere's",
       "questionId": "259417",
       "answer": "Yes, left ear only",
-      "weight": 7.143,
+      "weight": 6.25,
       "editable": true,
-      "source": "Workbook sheet: Meniere's"
+      "source": "Workbook default"
     },
     {
       "category": "Meniere's",
       "questionId": "259418",
       "answer": "Yes, right ear only",
-      "weight": 7.143,
+      "weight": 6.25,
       "editable": true,
-      "source": "Workbook sheet: Meniere's"
+      "source": "Workbook default"
     },
     {
       "category": "Meniere's",
       "questionId": "259418",
       "answer": "Yes, left ear only",
-      "weight": 7.143,
+      "weight": 6.25,
       "editable": true,
-      "source": "Workbook sheet: Meniere's"
+      "source": "Workbook default"
     },
     {
       "category": "Meniere's",
       "questionId": "259416",
       "answer": "Yes, right ear only",
-      "weight": 7.143,
+      "weight": 6.25,
       "editable": true,
-      "source": "Workbook sheet: Meniere's"
+      "source": "Workbook default"
     },
     {
       "category": "Meniere's",
       "questionId": "259416",
       "answer": "Yes, left ear only",
-      "weight": 7.143,
+      "weight": 6.25,
       "editable": true,
-      "source": "Workbook sheet: Meniere's"
+      "source": "Workbook default"
     },
     {
       "category": "Meniere's",
       "questionId": "260448",
       "answer": "Yes",
-      "weight": 14.286,
+      "weight": 12.5,
       "editable": true,
-      "source": "Workbook sheet: Meniere's"
+      "source": "Workbook default"
     },
     {
       "category": "Meniere's",
       "questionId": "260450",
       "answer": "changes in the weather",
-      "weight": 4.762,
-      "editable": false,
-      "source": "Workbook sheet: Meniere's"
+      "weight": 4.167,
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Meniere's",
       "questionId": "260450",
       "answer": "certain foods",
-      "weight": 4.762,
-      "editable": false,
-      "source": "Workbook sheet: Meniere's"
+      "weight": 4.167,
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Meniere's",
       "questionId": "260450",
       "answer": "certain beverages",
-      "weight": 4.762,
-      "editable": false,
-      "source": "Workbook sheet: Meniere's"
+      "weight": 4.167,
+      "editable": true,
+      "source": "Workbook default"
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259363",
+      "answer": "No",
+      "weight": 12.5,
+      "editable": true,
+      "source": "Workbook default"
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259400",
+      "answer": "no",
+      "weight": -6.25,
+      "editable": true,
+      "source": "KM2 negative evidence (low)"
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259416",
+      "answer": "No",
+      "weight": -12.5,
+      "editable": true,
+      "source": "KM2 negative evidence (standard)"
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259417",
+      "answer": "No",
+      "weight": -25.0,
+      "editable": true,
+      "source": "KM2 negative evidence (strong)"
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259418",
+      "answer": "No",
+      "weight": -12.5,
+      "editable": true,
+      "source": "KM2 negative evidence (standard)"
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "260448",
+      "answer": "No",
+      "weight": -6.25,
+      "editable": true,
+      "source": "KM2 negative evidence (low)"
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "260450",
+      "answer": "none of the above",
+      "weight": -6.25,
+      "editable": true,
+      "source": "KM2 negative evidence (low)"
     },
     {
       "category": "Third Window",
@@ -601,39 +849,39 @@ window.NEBULA_DATA = {
       "answer": "Seconds",
       "weight": 33.333,
       "editable": true,
-      "source": "Workbook sheet: Third Window"
+      "source": "Workbook default"
     },
     {
       "category": "Third Window",
       "questionId": "259372",
       "answer": "blowing your nose",
       "weight": 8.333,
-      "editable": false,
-      "source": "Workbook sheet: Third Window"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Third Window",
       "questionId": "259372",
       "answer": "loud sounds",
       "weight": 8.333,
-      "editable": false,
-      "source": "Workbook sheet: Third Window"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Third Window",
       "questionId": "259372",
       "answer": "lifting or straining",
       "weight": 8.333,
-      "editable": false,
-      "source": "Workbook sheet: Third Window"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Third Window",
       "questionId": "259372",
       "answer": "coughing",
       "weight": 8.333,
-      "editable": false,
-      "source": "Workbook sheet: Third Window"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Third Window",
@@ -641,7 +889,15 @@ window.NEBULA_DATA = {
       "answer": "Yes",
       "weight": 33.333,
       "editable": true,
-      "source": "Workbook sheet: Third Window"
+      "source": "Workbook default"
+    },
+    {
+      "category": "Third Window",
+      "questionId": "259421",
+      "answer": "No",
+      "weight": -33.333,
+      "editable": true,
+      "source": "KM2 negative evidence (standard)"
     },
     {
       "category": "Migraine",
@@ -649,7 +905,7 @@ window.NEBULA_DATA = {
       "answer": "Hours",
       "weight": 3.333,
       "editable": true,
-      "source": "Workbook sheet: Migraine"
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
@@ -657,7 +913,7 @@ window.NEBULA_DATA = {
       "answer": "Days",
       "weight": 3.333,
       "editable": true,
-      "source": "Workbook sheet: Migraine"
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
@@ -665,31 +921,31 @@ window.NEBULA_DATA = {
       "answer": "Days and can last continuously for weeks",
       "weight": 3.333,
       "editable": true,
-      "source": "Workbook sheet: Migraine"
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
       "questionId": "259372",
       "answer": "hot bath or shower",
       "weight": 3.333,
-      "editable": false,
-      "source": "Workbook sheet: Migraine"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
       "questionId": "259372",
       "answer": "menstrual cycle",
       "weight": 3.333,
-      "editable": false,
-      "source": "Workbook sheet: Migraine"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
       "questionId": "259372",
       "answer": "exercise",
       "weight": 3.333,
-      "editable": false,
-      "source": "Workbook sheet: Migraine"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
@@ -697,7 +953,7 @@ window.NEBULA_DATA = {
       "answer": "Yes",
       "weight": 10.0,
       "editable": true,
-      "source": "Workbook sheet: Migraine"
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
@@ -705,7 +961,7 @@ window.NEBULA_DATA = {
       "answer": "Yes",
       "weight": 10.0,
       "editable": true,
-      "source": "Workbook sheet: Migraine"
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
@@ -713,7 +969,7 @@ window.NEBULA_DATA = {
       "answer": "Yes",
       "weight": 10.0,
       "editable": true,
-      "source": "Workbook sheet: Migraine"
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
@@ -721,7 +977,7 @@ window.NEBULA_DATA = {
       "answer": "Yes",
       "weight": 10.0,
       "editable": true,
-      "source": "Workbook sheet: Migraine"
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
@@ -729,87 +985,119 @@ window.NEBULA_DATA = {
       "answer": "Yes",
       "weight": 10.0,
       "editable": true,
-      "source": "Workbook sheet: Migraine"
-    },
-    {
-      "category": "Migraine",
-      "questionId": "259388",
-      "answer": "Yes",
-      "weight": 10.0,
-      "editable": true,
-      "source": "Workbook sheet: Migraine"
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
       "questionId": "259389",
       "answer": "increased sensitivity to light during a headache",
       "weight": 1.667,
-      "editable": false,
-      "source": "Workbook sheet: Migraine"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
       "questionId": "259389",
       "answer": "increased sensitivity to sound during a headache",
       "weight": 1.667,
-      "editable": false,
-      "source": "Workbook sheet: Migraine"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
       "questionId": "259389",
       "answer": "increased sensitivity to smell during a headache",
       "weight": 1.667,
-      "editable": false,
-      "source": "Workbook sheet: Migraine"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
       "questionId": "259389",
       "answer": "headaches that happen when you are feeling dizzy or off balance",
       "weight": 1.667,
-      "editable": false,
-      "source": "Workbook sheet: Migraine"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
       "questionId": "259389",
       "answer": "certain foods or beverages increase the chance of getting a headache",
       "weight": 1.667,
-      "editable": false,
-      "source": "Workbook sheet: Migraine"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
       "questionId": "259389",
       "answer": "headaches where the pain throbs or pulses",
       "weight": 1.667,
-      "editable": false,
-      "source": "Workbook sheet: Migraine"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
       "questionId": "260450",
       "answer": "changes in the weather",
       "weight": 3.333,
-      "editable": false,
-      "source": "Workbook sheet: Migraine"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
       "questionId": "260450",
       "answer": "certain foods",
       "weight": 3.333,
-      "editable": false,
-      "source": "Workbook sheet: Migraine"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Migraine",
       "questionId": "260450",
       "answer": "certain beverages",
       "weight": 3.333,
-      "editable": false,
-      "source": "Workbook sheet: Migraine"
+      "editable": true,
+      "source": "Workbook default"
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259363",
+      "answer": "No",
+      "weight": 10.0,
+      "editable": true,
+      "source": "Workbook default"
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259383",
+      "answer": "No",
+      "weight": -10.0,
+      "editable": true,
+      "source": "KM2 negative evidence (standard)"
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259384",
+      "answer": "No",
+      "weight": -10.0,
+      "editable": true,
+      "source": "KM2 negative evidence (standard)"
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259386",
+      "answer": "No",
+      "weight": -5.0,
+      "editable": true,
+      "source": "KM2 negative evidence (low)"
+    },
+    {
+      "category": "Migraine",
+      "questionId": "260450",
+      "answer": "none of the above",
+      "weight": -5.0,
+      "editable": true,
+      "source": "KM2 negative evidence (low)"
     },
     {
       "category": "PPPD",
@@ -817,7 +1105,7 @@ window.NEBULA_DATA = {
       "answer": "Gradual",
       "weight": 20.0,
       "editable": true,
-      "source": "Workbook sheet: PPPD"
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
@@ -825,183 +1113,191 @@ window.NEBULA_DATA = {
       "answer": "Yes",
       "weight": 20.0,
       "editable": true,
-      "source": "Workbook sheet: PPPD"
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
       "questionId": "259372",
       "answer": "car rides",
       "weight": 1.429,
-      "editable": false,
-      "source": "Workbook sheet: PPPD"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
       "questionId": "259372",
       "answer": "reading",
       "weight": 1.429,
-      "editable": false,
-      "source": "Workbook sheet: PPPD"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
       "questionId": "259372",
       "answer": "stress, nerves, or anxiety",
       "weight": 1.429,
-      "editable": false,
-      "source": "Workbook sheet: PPPD"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
       "questionId": "259372",
       "answer": "windshield wipers",
       "weight": 1.429,
-      "editable": false,
-      "source": "Workbook sheet: PPPD"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
       "questionId": "259372",
       "answer": "supermarket aisles, malls, or tunnels",
       "weight": 1.429,
-      "editable": false,
-      "source": "Workbook sheet: PPPD"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
       "questionId": "259372",
       "answer": "restaurants or movie theaters",
       "weight": 1.429,
-      "editable": false,
-      "source": "Workbook sheet: PPPD"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
       "questionId": "259372",
       "answer": "turning your head while walking",
       "weight": 1.429,
-      "editable": false,
-      "source": "Workbook sheet: PPPD"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
       "questionId": "259372",
       "answer": "large crowds/social gatherings",
       "weight": 1.429,
-      "editable": false,
-      "source": "Workbook sheet: PPPD"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
       "questionId": "259372",
       "answer": "watching TV",
       "weight": 1.429,
-      "editable": false,
-      "source": "Workbook sheet: PPPD"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
       "questionId": "259372",
       "answer": "walking on carpeting with a complex pattern",
       "weight": 1.429,
-      "editable": false,
-      "source": "Workbook sheet: PPPD"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
       "questionId": "259372",
       "answer": "working on the computer",
       "weight": 1.429,
-      "editable": false,
-      "source": "Workbook sheet: PPPD"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
       "questionId": "259372",
       "answer": "traffic",
       "weight": 1.429,
-      "editable": false,
-      "source": "Workbook sheet: PPPD"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
       "questionId": "259372",
       "answer": "movement of things around you",
       "weight": 1.429,
-      "editable": false,
-      "source": "Workbook sheet: PPPD"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
       "questionId": "259372",
       "answer": "your own movement",
       "weight": 1.429,
-      "editable": false,
-      "source": "Workbook sheet: PPPD"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
       "questionId": "259374",
       "answer": "unsteady when standing",
       "weight": 10.0,
-      "editable": false,
-      "source": "Workbook sheet: PPPD"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
       "questionId": "259374",
       "answer": "unsteady when walking",
       "weight": 10.0,
-      "editable": false,
-      "source": "Workbook sheet: PPPD"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
       "questionId": "259381",
       "answer": "heart racing",
       "weight": 10.0,
-      "editable": false,
-      "source": "Workbook sheet: PPPD"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "PPPD",
       "questionId": "259381",
       "answer": "panic feeling or sudden need to leave a place",
       "weight": 10.0,
-      "editable": false,
-      "source": "Workbook sheet: PPPD"
+      "editable": true,
+      "source": "Workbook default"
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259363",
+      "answer": "No",
+      "weight": -100.0,
+      "editable": true,
+      "source": "KM2 negative evidence (rule out)"
     },
     {
       "category": "Neurological Other",
       "questionId": "259374",
       "answer": "unsteady when sitting",
       "weight": 6.25,
-      "editable": false,
-      "source": "Workbook sheet: Neurological  Other"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neurological Other",
       "questionId": "259374",
       "answer": "unsteady when standing",
       "weight": 6.25,
-      "editable": false,
-      "source": "Workbook sheet: Neurological  Other"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neurological Other",
       "questionId": "259374",
       "answer": "unsteady when walking",
       "weight": 6.25,
-      "editable": false,
-      "source": "Workbook sheet: Neurological  Other"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neurological Other",
       "questionId": "259374",
       "answer": "stumbling or falling when walking",
       "weight": 6.25,
-      "editable": false,
-      "source": "Workbook sheet: Neurological  Other"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neurological Other",
@@ -1009,151 +1305,159 @@ window.NEBULA_DATA = {
       "answer": "Yes",
       "weight": 25.0,
       "editable": true,
-      "source": "Workbook sheet: Neurological  Other"
+      "source": "Workbook default"
     },
     {
       "category": "Neurological Other",
       "questionId": "259380",
       "answer": "tripped",
       "weight": 6.25,
-      "editable": false,
-      "source": "Workbook sheet: Neurological  Other"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neurological Other",
       "questionId": "259380",
       "answer": "slipped",
       "weight": 6.25,
-      "editable": false,
-      "source": "Workbook sheet: Neurological  Other"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neurological Other",
       "questionId": "259380",
       "answer": "fainted or light-headed",
       "weight": 6.25,
-      "editable": false,
-      "source": "Workbook sheet: Neurological  Other"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neurological Other",
       "questionId": "259380",
       "answer": "I'm not sure why I fell",
       "weight": 6.25,
-      "editable": false,
-      "source": "Workbook sheet: Neurological  Other"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neurological Other",
       "questionId": "259382",
       "answer": "Stroke",
       "weight": 2.778,
-      "editable": false,
-      "source": "Workbook sheet: Neurological  Other"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neurological Other",
       "questionId": "259382",
       "answer": "anxiety or depression",
       "weight": 2.778,
-      "editable": false,
-      "source": "Workbook sheet: Neurological  Other"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neurological Other",
       "questionId": "259382",
       "answer": "cancer",
       "weight": 2.778,
-      "editable": false,
-      "source": "Workbook sheet: Neurological  Other"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neurological Other",
       "questionId": "259382",
       "answer": "ongoing numbness or tingling",
       "weight": 2.778,
-      "editable": false,
-      "source": "Workbook sheet: Neurological  Other"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neurological Other",
       "questionId": "259382",
       "answer": "motion sickness",
       "weight": 2.778,
-      "editable": false,
-      "source": "Workbook sheet: Neurological  Other"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neurological Other",
       "questionId": "259382",
       "answer": "history of COVID infection",
       "weight": 2.778,
-      "editable": false,
-      "source": "Workbook sheet: Neurological  Other"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neurological Other",
       "questionId": "259382",
       "answer": "Diabetes",
       "weight": 2.778,
-      "editable": false,
-      "source": "Workbook sheet: Neurological  Other"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neurological Other",
       "questionId": "259382",
       "answer": "High blood pressure",
       "weight": 2.778,
-      "editable": false,
-      "source": "Workbook sheet: Neurological  Other"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Neurological Other",
       "questionId": "259382",
       "answer": "seizures",
       "weight": 2.778,
-      "editable": false,
-      "source": "Workbook sheet: Neurological  Other"
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Bilateral",
       "questionId": "259356",
       "answer": "dizziness",
-      "weight": 11.111,
+      "weight": 8.333,
       "editable": true,
-      "source": "Workbook sheet: Bilateral"
+      "source": "Workbook default"
     },
     {
       "category": "Bilateral",
       "questionId": "259356",
       "answer": "imbalance",
-      "weight": 11.111,
+      "weight": 8.333,
       "editable": true,
-      "source": "Workbook sheet: Bilateral"
+      "source": "Workbook default"
     },
     {
       "category": "Bilateral",
       "questionId": "259356",
       "answer": "dizziness and imbalance",
-      "weight": 11.111,
+      "weight": 8.333,
       "editable": true,
-      "source": "Workbook sheet: Bilateral"
+      "source": "Workbook default"
     },
     {
       "category": "Bilateral",
       "questionId": "259371",
       "answer": "any kind of head movement",
-      "weight": 33.333,
-      "editable": false,
-      "source": "Workbook sheet: Bilateral"
+      "weight": 25.0,
+      "editable": true,
+      "source": "Workbook default"
+    },
+    {
+      "category": "Bilateral",
+      "questionId": "259362",
+      "answer": "No",
+      "weight": 25.0,
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Bilateral",
       "questionId": "259381",
       "answer": "Vision \"jumping\" or \"bouncing\" when walking or riding",
-      "weight": 33.333,
-      "editable": false,
-      "source": "Workbook sheet: Bilateral"
+      "weight": 25.0,
+      "editable": true,
+      "source": "Workbook default"
     },
     {
       "category": "Concussion",
@@ -1161,7 +1465,15 @@ window.NEBULA_DATA = {
       "answer": "Yes",
       "weight": 100.0,
       "editable": true,
-      "source": "Workbook sheet: Concussion"
+      "source": "Workbook default"
+    },
+    {
+      "category": "Concussion",
+      "questionId": "260452",
+      "answer": "No",
+      "weight": -100.0,
+      "editable": true,
+      "source": "KM2 negative evidence (strong)"
     }
   ],
   "categories": [
@@ -1178,7 +1490,13 @@ window.NEBULA_DATA = {
   "policy": {
     "defaultWeightsOnly": true,
     "machineLearningWeightsIncluded": false,
-    "noAnswerWeightsExcluded": true,
-    "multiSelectWeightsEditable": false
+    "includesAllActiveQuestions": true,
+    "negativeEvidenceCalibration": {
+      "low": "0.5 positive evidence units",
+      "standard": "1 positive evidence unit",
+      "strong": "2 positive evidence units, capped at 100 points",
+      "ruleOut": "-100 points"
+    },
+    "multiSelectWeightsEditable": true
   }
 };

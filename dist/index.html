@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Nebula dizziness questionnaire scoring platform." />
   <title>Nebula Questionnaire Scoring Platform</title>
-  <link rel="stylesheet" href="styles.css?v=desktop-6" />
+  <link rel="stylesheet" href="styles.css?v=km2-1" />
 </head>
 <body class="auth-locked">
   <section id="access-gate" class="access-gate" aria-labelledby="access-title">
@@ -65,7 +65,7 @@
             </div>
             <p class="hint">Positive weights support a category. Negative weights count against it. Unmatched answers do nothing.</p>
             <div class="editor-actions"><button id="add-update-rule" class="primary">Add rule</button><button id="clear-editor">Clear editor</button></div>
-            <h2 class="example-title">Example</h2><p class="hint">BPPV + position-triggered Yes = positive evidence.<br />BPPV + position-triggered No = negative evidence.</p>
+            <h2 class="example-title">KM2 calibration</h2><p class="hint">Low negative = half a category evidence unit.<br />Standard = one unit; strong = two units (capped at 100).<br />An explicit rule-out is −100 points.</p>
           </aside>
           <section class="rule-table-panel panel">
             <div class="table-toolbar"><label for="category-filter">Show category</label><select id="category-filter"></select><input id="rule-search" type="search" placeholder="Search question or answer" aria-label="Search question or answer" /><button id="delete-rule" class="danger">Delete selected</button></div>
@@ -77,6 +77,6 @@
     </main>
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="questionnaire-data.js?v=desktop-6"></script><script src="app.js?v=desktop-6"></script>
+  <script src="questionnaire-data.js?v=km2-1"></script><script src="app.js?v=km2-1"></script>
 </body>
 </html>

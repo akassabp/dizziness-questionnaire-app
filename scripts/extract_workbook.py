@@ -9,87 +9,63 @@ APP_DIR = Path(__file__).resolve().parents[1]
 PROJECT_DIR = APP_DIR.parent
 sys.path.insert(0, str(PROJECT_DIR))
 
-from scoring_core import (  # noqa: E402
-    CATEGORY_NAMES,
-    DIAGNOSIS_SHEETS,
-    _matching_options,
-    clean,
-    load_questions,
-    normalized,
-)
-from openpyxl import load_workbook  # noqa: E402
+from scoring_core import build_default_rules, load_questions, normalized  # noqa: E402
 
 
-WORKBOOK_PATH = PROJECT_DIR / "data" / "OTO Dizziness Questionnaire -Nebula cloud 5-9-241.xlsx"
+WORKBOOK_PATH = PROJECT_DIR / "OTO Dizziness Questionnaire -Nebula cloud 5-9-241_KM2.xlsx"
 OUTPUT_PATH = APP_DIR / "dist" / "questionnaire-data.js"
+
+BRANCHING_QUESTIONS = {
+    "260605": {"questionId": "260450", "answer": "changes in the weather"},
+    "260606": {"questionId": "260450", "answer": "certain foods"},
+    "260607": {"questionId": "260450", "answer": "certain beverages"},
+}
 
 
 def main() -> None:
     questions = load_questions(WORKBOOK_PATH)
-    questions_by_id = {question.question_id: question for question in questions}
-    workbook = load_workbook(WORKBOOK_PATH, read_only=True, data_only=True)
-
-    rules: list[dict[str, object]] = []
-    referenced_ids: set[str] = set()
-
-    for sheet_name in DIAGNOSIS_SHEETS:
-        category = CATEGORY_NAMES.get(sheet_name, sheet_name.strip())
-        eligible_rows: list[tuple[object, list[str]]] = []
-
-        for row in workbook[sheet_name].iter_rows(values_only=True):
-            question_id = clean(row[0] if row else "")
-            question = questions_by_id.get(question_id)
-            if not question:
-                continue
-
-            answers = [
-                answer
-                for answer in _matching_options(row[2] if len(row) > 2 else "", question)
-                if normalized(answer) != "no"
-            ]
-            if answers:
-                eligible_rows.append((question, answers))
-
-        row_weight = 100.0 / max(len(eligible_rows), 1)
-        for question, answers in eligible_rows:
-            answer_weight = row_weight / len(answers)
-            referenced_ids.add(question.question_id)
-            for answer in answers:
-                rules.append(
-                    {
-                        "category": category,
-                        "questionId": question.question_id,
-                        "answer": answer,
-                        "weight": round(answer_weight, 3),
-                        "editable": question.kind == "single",
-                        "source": f"Workbook sheet: {sheet_name.strip()}",
-                    }
-                )
-
-    workbook.close()
-
-    limited_questions = [
+    workbook_rules = build_default_rules(WORKBOOK_PATH, questions)
+    rules = [
         {
+            "category": rule.category,
+            "questionId": rule.question_id,
+            "answer": rule.answer,
+            "weight": rule.weight,
+            "editable": True,
+            "source": rule.source,
+        }
+        for rule in workbook_rules
+    ]
+
+    all_questions = []
+    for question in questions:
+        item = {
             "id": question.question_id,
             "prompt": question.prompt,
             "kind": question.kind,
             "options": question.options,
         }
-        for question in questions
-        if question.question_id in referenced_ids
-    ]
+        if question.question_id in BRANCHING_QUESTIONS:
+            item["showWhen"] = BRANCHING_QUESTIONS[question.question_id]
+        all_questions.append(item)
 
     payload = {
-        "version": 1,
+        "version": 2,
         "sourceWorkbook": WORKBOOK_PATH.name,
-        "questions": limited_questions,
+        "questions": all_questions,
         "rules": rules,
         "categories": sorted({rule["category"] for rule in rules}, key=str.casefold),
         "policy": {
             "defaultWeightsOnly": True,
             "machineLearningWeightsIncluded": False,
-            "noAnswerWeightsExcluded": True,
-            "multiSelectWeightsEditable": False,
+            "includesAllActiveQuestions": True,
+            "negativeEvidenceCalibration": {
+                "low": "0.5 positive evidence units",
+                "standard": "1 positive evidence unit",
+                "strong": "2 positive evidence units, capped at 100 points",
+                "ruleOut": "-100 points",
+            },
+            "multiSelectWeightsEditable": True,
         },
     }
 
@@ -101,7 +77,7 @@ def main() -> None:
     print(
         json.dumps(
             {
-                "questions": len(limited_questions),
+                "questions": len(all_questions),
                 "rules": len(rules),
                 "editableRules": sum(bool(rule["editable"]) for rule in rules),
                 "fixedRules": sum(not bool(rule["editable"]) for rule in rules),

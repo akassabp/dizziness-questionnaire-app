@@ -3,7 +3,7 @@
   const defaults = window.NEBULA_DATA;
   if (!defaults) throw new Error("Questionnaire data did not load.");
   const ACCESS_HASH = "0f7a4f8120712df5464758e375faf9829818369c774fcedb64ed7bd3b62f5ea1";
-  const RULES_KEY = "nebula-desktop-compatible-rules-v1";
+  const RULES_KEY = "nebula-desktop-compatible-rules-v2-km2";
   const $ = (id) => document.getElementById(id);
   const clone = (value) => JSON.parse(JSON.stringify(value));
   const clean = (value) => String(value ?? "").trim().replace(/\s+/g, " ");
@@ -35,9 +35,12 @@
   const isAnswered = (question) => { const value = state.answers[question.id]; return Array.isArray(value) ? value.length > 0 : value !== undefined && value !== null && value !== ""; };
   const categories = (rules = state.draftRules) => [...new Set(rules.map((rule) => rule.category))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
   const answerValues = (value) => Array.isArray(value) ? value.map(clean).filter(Boolean) : clean(value) ? [clean(value)] : [];
+  const conditionMet = (question) => !question.showWhen || answerValues(state.answers[question.showWhen.questionId]).map(normalized).includes(normalized(question.showWhen.answer));
+  const visibleQuestions = () => questions.filter(conditionMet);
+  const currentQuestion = () => { const visible = visibleQuestions(); state.current = Math.max(0, Math.min(state.current, visible.length - 1)); return visible[state.current]; };
 
   function renderQuestionList() {
-    els.list.innerHTML = questions.map((question, index) => `<button class="question-link ${index === state.current ? "active" : ""} ${isAnswered(question) ? "answered" : ""}" data-index="${index}"><span>${isAnswered(question) ? "✓" : "○"}</span><b>${String(index + 1).padStart(2, "0")}</b><em>${escapeHtml(question.prompt)}</em></button>`).join("");
+    els.list.innerHTML = visibleQuestions().map((question, index) => `<button class="question-link ${index === state.current ? "active" : ""} ${isAnswered(question) ? "answered" : ""}" data-index="${index}"><span>${isAnswered(question) ? "✓" : "○"}</span><b>${String(index + 1).padStart(2, "0")}</b><em>${escapeHtml(question.prompt)}</em></button>`).join("");
     els.list.querySelector(".active")?.scrollIntoView({ block: "nearest" });
   }
   function inputMarkup(question, value) {
@@ -50,12 +53,12 @@
     return `<textarea class="free-answer" placeholder="Type the patient's answer here">${escapeHtml(value || "")}</textarea>`;
   }
   function renderQuestion() {
-    const question = questions[state.current], answered = isAnswered(question);
-    els.meta.textContent = `Question ${state.current + 1} of ${questions.length}  |  ID ${question.id}`;
+    const visible = visibleQuestions(), question = currentQuestion(), answered = isAnswered(question);
+    els.meta.textContent = `Question ${state.current + 1} of ${visible.length}  |  ID ${question.id}`;
     els.answerState.textContent = answered ? "Answered" : "Not answered";
     els.prompt.textContent = question.prompt;
     els.options.innerHTML = inputMarkup(question, state.answers[question.id]);
-    els.previous.disabled = state.current === 0; els.next.disabled = state.current === questions.length - 1;
+    els.previous.disabled = state.current === 0; els.next.disabled = state.current === visible.length - 1;
     renderQuestionList(); renderScores();
   }
   function scoreAnswers() {
@@ -72,13 +75,20 @@
   function renderScores() {
     const scores = scoreAnswers();
     els.scores.innerHTML = Object.entries(scores).map(([category, score]) => `<div class="score-row"><div class="score-label"><span>${escapeHtml(category)}</span><span><b>${score.percent.toFixed(1)}%</b><small>${score.points >= 0 ? "+" : ""}${score.points.toFixed(1)} pts</small></span></div><div class="score-track"><i class="${score.points < 0 ? "negative" : ""}" style="width:${score.percent}%"></i></div></div>`).join("");
-    els.completion.textContent = `${questions.filter(isAnswered).length} of ${questions.length} answered`;
+    const visible = visibleQuestions();
+    els.completion.textContent = `${visible.filter(isAnswered).length} of ${visible.length} answered`;
   }
   function setAnswerFromControl(target) {
-    const question = questions[state.current];
-    if (question.kind === "multi") state.answers[question.id] = [...els.options.querySelectorAll("input:checked")].map((input) => input.value);
+    const question = currentQuestion();
+    if (question.kind === "multi") {
+      const inputs = [...els.options.querySelectorAll('input[type="checkbox"]')];
+      if (normalized(target.value) === "none of the above" && target.checked) inputs.forEach((input) => { if (input !== target) input.checked = false; });
+      else if (target.checked) inputs.forEach((input) => { if (normalized(input.value) === "none of the above") input.checked = false; });
+      state.answers[question.id] = inputs.filter((input) => input.checked).map((input) => input.value);
+    }
     else state.answers[question.id] = target.value;
     if (!isAnswered(question)) delete state.answers[question.id];
+    questions.filter((item) => item.showWhen && !conditionMet(item)).forEach((item) => delete state.answers[item.id]);
     renderQuestion();
   }
   function resetQuestionnaire() { state.answers = {}; state.current = 0; els.patientId.value = ""; els.birthYear.value = ""; els.notes.value = ""; els.visitDate.value = new Date().toISOString().slice(0, 10); renderQuestion(); }
@@ -132,8 +142,8 @@
   els.options.addEventListener("change", (event) => setAnswerFromControl(event.target));
   els.options.addEventListener("input", (event) => { if (event.target.matches(".free-answer")) setAnswerFromControl(event.target); });
   els.previous.addEventListener("click", () => { state.current = Math.max(0, state.current - 1); renderQuestion(); });
-  els.next.addEventListener("click", () => { state.current = Math.min(questions.length - 1, state.current + 1); renderQuestion(); });
-  els.clearAnswer.addEventListener("click", () => { delete state.answers[questions[state.current].id]; renderQuestion(); });
+  els.next.addEventListener("click", () => { state.current = Math.min(visibleQuestions().length - 1, state.current + 1); renderQuestion(); });
+  els.clearAnswer.addEventListener("click", () => { delete state.answers[currentQuestion().id]; questions.filter((item) => item.showWhen && !conditionMet(item)).forEach((item) => delete state.answers[item.id]); renderQuestion(); });
   $("new-questionnaire").addEventListener("click", resetQuestionnaire); $("save-session").addEventListener("click", saveSession); $("load-session").addEventListener("click", () => els.sessionFile.click()); els.sessionFile.addEventListener("change", () => els.sessionFile.files[0] && loadSession(els.sessionFile.files[0]));
   els.category.addEventListener("change", () => syncCategory(els.category.value)); els.categoryFilter.addEventListener("change", () => { syncCategory(els.categoryFilter.value); clearEditor(); }); els.question.addEventListener("change", () => populateAnswers()); els.search.addEventListener("input", renderRuleTable);
   els.addUpdate.addEventListener("click", addOrUpdateRule); $("clear-editor").addEventListener("click", clearEditor);
