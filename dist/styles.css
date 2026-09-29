@@ -79,9 +79,9 @@ main { height:100%; padding:12px 18px 14px; overflow:hidden; }
 .hint { color:var(--muted); line-height:1.5; }
 .editor-actions { display:flex; gap:8px; }
 .example-title { margin-top:26px!important; }
-.rule-table-panel { display:flex; min-width:0; flex-direction:column; padding:14px; }
+.rule-table-panel { display:flex; min-width:0; min-height:0; flex-direction:column; padding:14px; overflow:hidden; }
 .table-toolbar { display:grid; grid-template-columns:auto 150px minmax(180px,1fr) auto; gap:9px; align-items:center; margin-bottom:12px; }
-.table-scroll { flex:1; overflow:auto; border:1px solid #d5dde1; }
+.table-scroll { min-height:0; flex:1 1 auto; overflow-x:auto; overflow-y:scroll; scrollbar-gutter:stable; border:1px solid #d5dde1; }
 table { width:100%; border-collapse:collapse; background:#fff; font-size:12px; }
 th { position:sticky; top:0; z-index:1; padding:9px 8px; border-right:1px solid #d4dde1; background:#e9eef0; text-align:left; white-space:nowrap; }
 td { padding:8px; border-right:1px solid #e0e6e9; border-bottom:1px solid #e0e6e9; vertical-align:top; }
