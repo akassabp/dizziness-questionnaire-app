@@ -50,12 +50,13 @@
     }
     if (question.kind === "date") return `<input class="free-answer" type="date" value="${escapeHtml(value || "")}">`;
     if (question.kind === "numeric") return `<input class="free-answer" type="number" min="0" value="${escapeHtml(value ?? "")}" placeholder="Not answered">`;
-    return `<textarea class="free-answer" placeholder="Type the patient's answer here">${escapeHtml(value || "")}</textarea>`;
+    return `<p class="text-unavailable-note">(Note from Ali: Current model cannot process text, so I removed this box.)</p>`;
   }
   function renderQuestion() {
     const visible = visibleQuestions(), question = currentQuestion(), answered = isAnswered(question);
     els.meta.textContent = `Question ${state.current + 1} of ${visible.length}  |  ID ${question.id}`;
-    els.answerState.textContent = answered ? "Answered" : "Not answered";
+    els.answerState.textContent = question.kind === "text" ? "No response required" : answered ? "Answered" : "Not answered";
+    els.clearAnswer.disabled = question.kind === "text";
     els.prompt.textContent = question.prompt;
     els.options.innerHTML = inputMarkup(question, state.answers[question.id]);
     els.previous.disabled = state.current === 0; els.next.disabled = state.current === visible.length - 1;
@@ -75,7 +76,7 @@
   function renderScores() {
     const scores = scoreAnswers();
     els.scores.innerHTML = Object.entries(scores).map(([category, score]) => `<div class="score-row"><div class="score-label"><span>${escapeHtml(category)}</span><span><b>${score.percent.toFixed(1)}%</b><small>${score.points >= 0 ? "+" : ""}${score.points.toFixed(1)} pts</small></span></div><div class="score-track"><i class="${score.points < 0 ? "negative" : ""}" style="width:${score.percent}%"></i></div></div>`).join("");
-    const visible = visibleQuestions();
+    const visible = visibleQuestions().filter((question) => question.kind !== "text");
     els.completion.textContent = `${visible.filter(isAnswered).length} of ${visible.length} answered`;
   }
   function setAnswerFromControl(target) {
