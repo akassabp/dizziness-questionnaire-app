@@ -60,7 +60,7 @@
             <div class="form-grid">
               <label for="rule-category">Category</label><select id="rule-category"></select>
               <label for="rule-question">Question</label><select id="rule-question"></select>
-              <label for="rule-answer">Answer</label><input id="rule-answer" list="answer-suggestions" /><datalist id="answer-suggestions"></datalist>
+              <label for="rule-answer">Answer</label><select id="rule-answer"></select>
               <label for="rule-weight">Weight</label><input id="rule-weight" type="number" min="-1000" max="1000" step="0.001" value="10" />
             </div>
             <p class="hint">Positive weights support a category. Negative weights count against it. Unmatched answers do nothing.</p>
@@ -77,6 +77,6 @@
     </main>
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="questionnaire-data.js?v=km2-2"></script><script src="app.js?v=km2-2"></script>
+  <script src="questionnaire-data.js?v=km2-2"></script><script src="app.js?v=km2-4"></script>
 </body>
 </html>

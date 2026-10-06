@@ -29,7 +29,7 @@
   accessForm.addEventListener("submit", async (event) => { event.preventDefault(); accessError.textContent = ""; if (await sha256(accessCode.value) === ACCESS_HASH) { accessCode.value = ""; unlock(); } else { accessError.textContent = "Incorrect access code."; accessCode.select(); } });
 
   const els = {
-    list: $("question-list"), meta: $("question-meta"), answerState: $("answer-state"), prompt: $("question-prompt"), options: $("answer-options"), previous: $("previous-question"), next: $("next-question"), clearAnswer: $("clear-answer"), scores: $("score-list"), completion: $("answered-count"), patientId: $("patient-id"), visitDate: $("visit-date"), birthYear: $("birth-year"), notes: $("visit-notes"), sessionFile: $("session-file"), category: $("rule-category"), question: $("rule-question"), answer: $("rule-answer"), answerSuggestions: $("answer-suggestions"), weight: $("rule-weight"), categoryFilter: $("category-filter"), search: $("rule-search"), tableBody: $("rule-table-body"), addUpdate: $("add-update-rule"), deleteRule: $("delete-rule"), toast: $("toast")
+    list: $("question-list"), meta: $("question-meta"), answerState: $("answer-state"), prompt: $("question-prompt"), options: $("answer-options"), previous: $("previous-question"), next: $("next-question"), clearAnswer: $("clear-answer"), scores: $("score-list"), completion: $("answered-count"), patientId: $("patient-id"), visitDate: $("visit-date"), birthYear: $("birth-year"), notes: $("visit-notes"), sessionFile: $("session-file"), category: $("rule-category"), question: $("rule-question"), answer: $("rule-answer"), weight: $("rule-weight"), categoryFilter: $("category-filter"), search: $("rule-search"), tableBody: $("rule-table-body"), addUpdate: $("add-update-rule"), deleteRule: $("delete-rule"), toast: $("toast")
   };
   const escapeHtml = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
   const isAnswered = (question) => { const value = state.answers[question.id]; return Array.isArray(value) ? value.length > 0 : value !== undefined && value !== null && value !== ""; };
@@ -75,7 +75,10 @@
   }
   function renderScores() {
     const scores = scoreAnswers();
-    els.scores.innerHTML = Object.entries(scores).map(([category, score]) => `<div class="score-row"><div class="score-label"><span>${escapeHtml(category)}</span><span><b>${score.percent.toFixed(1)}%</b><small>${score.points >= 0 ? "+" : ""}${score.points.toFixed(1)} pts</small></span></div><div class="score-track"><i class="${score.points < 0 ? "negative" : ""}" style="width:${score.percent}%"></i></div></div>`).join("");
+    const rankedScores = Object.entries(scores).sort(([categoryA, scoreA], [categoryB, scoreB]) =>
+      scoreB.percent - scoreA.percent || scoreB.points - scoreA.points || categoryA.localeCompare(categoryB, undefined, { sensitivity: "base" })
+    );
+    els.scores.innerHTML = rankedScores.map(([category, score]) => `<div class="score-row"><div class="score-label"><span>${escapeHtml(category)}</span><span><b>${score.percent.toFixed(1)}%</b><small>${score.points >= 0 ? "+" : ""}${score.points.toFixed(1)} pts</small></span></div><div class="score-track"><i class="${score.points < 0 ? "negative" : ""}" style="width:${score.percent}%"></i></div></div>`).join("");
     const visible = visibleQuestions().filter((question) => question.kind !== "text");
     els.completion.textContent = `${visible.filter(isAnswered).length} of ${visible.length} answered`;
   }
@@ -112,7 +115,17 @@
     els.categoryFilter.innerHTML = values.map((value) => `<option ${value === chosen ? "selected" : ""}>${escapeHtml(value)}</option>`).join("");
   }
   function populateQuestionSelect() { els.question.innerHTML = questions.map((question) => `<option value="${escapeHtml(question.id)}">${escapeHtml(question.id)} | ${escapeHtml(question.prompt)}</option>`).join(""); populateAnswers(); }
-  function populateAnswers(preferred = "") { const question = questions.find((item) => item.id === els.question.value); const values = question?.options || []; els.answerSuggestions.innerHTML = values.map((answer) => `<option value="${escapeHtml(answer)}"></option>`).join(""); els.answer.value = preferred || values[0] || ""; }
+  function populateAnswers(preferred = "") {
+    const question = questions.find((item) => item.id === els.question.value), values = question?.options || [];
+    if (!values.length) {
+      els.answer.innerHTML = '<option value="">No configurable answers</option>';
+      els.answer.disabled = true;
+      return;
+    }
+    const selected = values.includes(preferred) ? preferred : "";
+    els.answer.disabled = false;
+    els.answer.innerHTML = `<option value="" ${selected ? "" : "selected"} disabled>Select an answer</option>${values.map((answer) => `<option value="${escapeHtml(answer)}" ${answer === selected ? "selected" : ""}>${escapeHtml(answer)}</option>`).join("")}`;
+  }
   function filteredRules() {
     const category = els.categoryFilter.value, query = clean(els.search.value).toLocaleLowerCase();
     return state.draftRules.map((rule, index) => ({ rule, index })).filter(({ rule }) => rule.category === category && (!query || `${rule.category} ${rule.questionId} ${questions.find((q) => q.id === rule.questionId)?.prompt || "Unknown question"} ${rule.answer}`.toLocaleLowerCase().includes(query)));
@@ -124,7 +137,7 @@
     els.deleteRule.disabled = state.selectedRule === null;
   }
   function syncCategory(category) { if ([...els.category.options].some((option) => option.value === category)) els.category.value = category; if ([...els.categoryFilter.options].some((option) => option.value === category)) els.categoryFilter.value = category; renderRuleTable(); }
-  function clearEditor() { state.editingRule = null; els.addUpdate.textContent = "Add rule"; els.weight.value = "10"; }
+  function clearEditor() { state.editingRule = null; els.addUpdate.textContent = "Add rule"; els.weight.value = "10"; populateAnswers(); }
   function editRule(index) { const rule = state.draftRules[index]; if (!rule) return; state.editingRule = index; syncCategory(rule.category); els.question.value = rule.questionId; populateAnswers(rule.answer); els.weight.value = rule.weight; els.addUpdate.textContent = "Update rule"; }
   function addOrUpdateRule() {
     const rule = normalizeRule({ category: els.category.value, questionId: els.question.value, answer: els.answer.value, weight: els.weight.value, source: "Custom" });
