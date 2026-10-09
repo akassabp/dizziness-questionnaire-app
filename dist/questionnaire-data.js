@@ -165,6 +165,7 @@ window.NEBULA_DATA = {
         "rolling over",
         "getting into or out of bed",
         "sitting up",
+        "standing up",
         "reaching or bending",
         "walking in the dark",
         "any kind of head movement",
