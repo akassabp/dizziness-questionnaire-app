@@ -39,9 +39,22 @@ assert.equal(exported.format,'nebula-patient-case');assert.equal(exported.versio
 assert.deepEqual(exported.patient.recorded_labels,[]);assert.equal(exported.patient.age,42);assert.equal(exported.patient.sex,'Female');assert.equal(exported.scores,undefined);
 assert.equal(Object.keys(exported.answers).length,1);
 await page.click('#new-questionnaire');await page.setInputFiles('#session-file',{name:'roundtrip.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(exported))});
-await page.waitForFunction(()=>document.querySelector('#patient-id').value==='NEW-TEST');
+await page.waitForFunction(()=>document.querySelector('#patient-id').value==='NEW-TEST-modified');
 assert.equal(await page.inputValue('#patient-age'),'42');assert.equal(await page.inputValue('#patient-sex'),'Female');assert.equal(await page.locator('.recorded-badge').count(),0);
 assert.ok(await page.locator('#answer-options input').first().isChecked());
+await page.locator('#answer-options input').nth(1).check();
+assert.equal(await page.inputValue('#patient-id'),'NEW-TEST-modified');
+await page.click('#clear-answer');assert.equal(await page.inputValue('#patient-id'),'NEW-TEST-modified');
+const comparisonFixture=await page.evaluate(()=>{const r=window.NEBULA_DATA.rules.find(r=>r.category==='BPPV'&&r.weight>0),q=window.NEBULA_DATA.questions.find(q=>q.id===r.questionId);return {patient:{anonymous_id:'COMPARE'},answers:{[q.id]:q.options.find(o=>o!==r.answer)}};});
+await page.setInputFiles('#session-file',{name:'comparison.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(comparisonFixture))});
+await page.waitForFunction(()=>document.querySelector('#patient-id').value==='COMPARE');
+await page.locator('#score-list [data-category="BPPV"]').click();await page.locator('#score-dialog summary').click();
+assert.ok((await page.locator('.actual-reply').allTextContents()).includes(Object.values(comparisonFixture.answers)[0]));
+assert.equal(await page.locator('.actual-reply').first().evaluate(el=>getComputedStyle(el).color),'rgb(180, 35, 35)');
+assert.ok(await page.locator('.answer-comparison th').count()>0);
+await page.locator('#close-score-dialog').click();
+await page.locator('#answer-options input').first().check();assert.equal(await page.inputValue('#patient-id'),'COMPARE-modified');
+await page.click('#new-questionnaire');assert.equal(await page.inputValue('#patient-id'),'');
 assert.deepEqual(dialogs,[]);
 for(const width of [1440,1280,390]){await page.setViewportSize({width,height:900});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
 await browser.close();console.log('PASS: single page, renamed panels, both explanations, drag/drop, case loading, privacy and responsive layout.');

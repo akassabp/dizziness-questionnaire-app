@@ -46,6 +46,12 @@ main { height:100%; padding:12px 18px 14px; overflow:hidden; }
 .contribution strong { white-space:nowrap; font-size:12px; padding:3px 6px; border-radius:4px; }
 .support { background:#e7f7f5; color:#07646c; }.penalty { background:#fdeaea; color:#a52626; }
 .question-total { border-top:1px dashed var(--line); }
+.answer-comparison { width:100%; table-layout:fixed; border-collapse:collapse; font-size:13px; }
+.answer-comparison th { position:static; white-space:normal; }
+.answer-comparison td:nth-child(n) { white-space:normal; overflow-wrap:anywhere; cursor:default; }
+.answer-comparison small { display:block; margin-top:4px; color:var(--muted); }
+.answer-comparison .actual-reply { color:#b42323; font-weight:600; }
+.answer-comparison .no-reply { color:var(--muted); }
 summary { cursor:pointer; padding:10px 0; font-weight:600; }
 .model-scroll { overflow:auto; min-height:0; display:flex; flex-direction:column; gap:14px; padding:2px 2px 16px; }
 .model-scroll > .panel { flex:none; padding:18px; }
