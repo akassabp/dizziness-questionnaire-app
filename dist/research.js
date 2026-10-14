@@ -26,7 +26,8 @@
         const hidden=q?.showWhen&&!M.values(s.answers[q.showWhen.questionId]).includes(M.norm(q.showWhen.answer));
         const raw=s.answers[id],actual=(Array.isArray(raw)?raw:raw==null||raw===''?[]:[raw]);
         const expected=new Map();remaining.forEach(r=>expected.set(r.answer,(expected.get(r.answer)||0)+r.weight));
-        const comparison=`<table class="answer-comparison"><thead><tr><th>Expected answer (rule)</th><th>Patient’s actual reply</th></tr></thead><tbody>${[...expected].map(([answer,weight],index)=>`<tr><td>${esc(answer)}<small>${pts(weight)}</small></td>${index===0?`<td rowspan="${expected.size}" class="${actual.length?'actual-reply':'no-reply'}">${actual.length?actual.map(esc).join('<br>'):'Not answered'}</td>`:''}</tr>`).join('')}</tbody></table>`;
+        const expectedRows=[...expected];
+        const comparison=`<table class="answer-comparison"><thead><tr><th>Expected answer (rule)</th><th>Patient’s actual reply</th></tr></thead><tbody>${Array.from({length:Math.max(expectedRows.length,actual.length)},(_,index)=>{const rule=expectedRows[index];return `<tr><td>${rule?`${esc(rule[0])}<small>${pts(rule[1])}</small>`:''}</td><td class="${index<actual.length?'actual-reply':'no-reply'}">${index<actual.length?esc(actual[index]):''}</td></tr>`;}).join('')}</tbody></table>`;
         inactive.push(`<article class="explanation-question">${header}<p class="hint">${hidden?'Conditional question not currently shown':actual.length?'Other options / rules not contributing':'Unanswered question'} — potential rule points only; not included in the current score.</p>${comparison}</article>`);
       }
     }

@@ -52,8 +52,15 @@ await page.locator('#score-list [data-category="BPPV"]').click();await page.loca
 assert.ok((await page.locator('.actual-reply').allTextContents()).includes(Object.values(comparisonFixture.answers)[0]));
 assert.equal(await page.locator('.actual-reply').first().evaluate(el=>getComputedStyle(el).color),'rgb(180, 35, 35)');
 assert.ok(await page.locator('.answer-comparison th').count()>0);
+assert.ok(await page.locator('.answer-comparison').evaluateAll(tables=>tables.every(t=>{const rows=[...t.tBodies[0].rows];return rows.every(r=>r.cells.length===2&&[...r.cells].every(c=>c.rowSpan===1))&&rows.length===Math.max(...[0,1].map(i=>rows.filter(r=>r.cells[i].textContent.trim()).length));})));
 await page.locator('#close-score-dialog').click();
-await page.locator('#answer-options input').first().check();assert.equal(await page.inputValue('#patient-id'),'COMPARE-modified');
+const multi=await page.evaluate(()=>{const q=window.NEBULA_DATA.questions.find(q=>q.id==='259371');const options=window.NEBULA_DATA.rules.filter(r=>r.category==='BPPV'&&r.questionId===q.id).map(r=>r.answer);return {patient:{anonymous_id:'MULTI'},answers:{[q.id]:options.slice(0,-1)}};});
+await page.setInputFiles('#session-file',{name:'multi.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(multi))});
+await page.waitForFunction(()=>document.querySelector('#patient-id').value==='MULTI');
+await page.locator('#score-list [data-category="BPPV"]').click();await page.locator('#score-dialog summary').click();
+assert.ok(await page.locator('.answer-comparison').evaluateAll(tables=>tables.some(t=>{const rows=[...t.tBodies[0].rows],left=rows.filter(r=>r.cells[0].textContent.trim()).length,right=rows.filter(r=>r.cells[1].textContent.trim()).length;return right>left&&rows.length===right&&rows.every(r=>r.cells.length===2);})));
+await page.locator('#close-score-dialog').click();
+await page.locator('#answer-options input').first().check();assert.equal(await page.inputValue('#patient-id'),'MULTI-modified');
 await page.click('#new-questionnaire');assert.equal(await page.inputValue('#patient-id'),'');
 assert.deepEqual(dialogs,[]);
 for(const width of [1440,1280,390]){await page.setViewportSize({width,height:900});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
