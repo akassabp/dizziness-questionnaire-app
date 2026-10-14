@@ -58,6 +58,8 @@ main { height:100%; padding:12px 18px 14px; overflow:hidden; }
 .answer-comparison .effect-missing,.effect-missing { color:#68777e; }
 .answer-comparison td:nth-child(2),.answer-comparison td:nth-child(3) { font-weight:600; }
 .answer-comparison td small { color:inherit; font-weight:400; }
+.answer-comparison .rule-potential.effect-positive { color:#18703b; }
+.answer-comparison .rule-potential.effect-negative { color:#b42323; }
 .answer-comparison th:nth-child(3) { width:24%; }
 .effect-legend { font-size:12px; line-height:1.6; }
 summary { cursor:pointer; padding:10px 0; font-weight:600; }

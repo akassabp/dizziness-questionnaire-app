@@ -53,6 +53,8 @@ assert.equal(await page.locator('#score-dialog details').count(),0);
 assert.ok((await page.locator('td.effect-neutral').allTextContents()).some(t=>t.includes(Object.values(comparisonFixture.answers)[0])));
 assert.equal(await page.locator('td.effect-neutral').first().evaluate(el=>getComputedStyle(el).color),'rgb(119, 53, 165)');
 assert.ok(await page.locator('td.effect-missing').count()>0);
+assert.ok(await page.locator('.answer-comparison tbody tr').evaluateAll(rows=>rows.every(r=>!r.cells[0].textContent.trim()||r.cells[0].querySelector('.rule-potential'))));
+assert.ok(await page.locator('.answer-comparison tbody tr').evaluateAll(rows=>rows.some(r=>r.cells[1].classList.contains('effect-neutral')&&r.cells[0].querySelector('.rule-potential')?.textContent.startsWith('+')&&r.cells[2].textContent==='')));
 assert.ok(await page.locator('.answer-comparison th').count()>0);
 assert.ok(await page.locator('.answer-comparison').evaluateAll(tables=>tables.every(t=>[...t.tBodies[0].rows].every(r=>r.cells.length===3&&[...r.cells].every(c=>c.rowSpan===1)))));
 assert.ok(await page.locator('td.effect-neutral:nth-child(3),td.effect-missing:nth-child(3)').evaluateAll(cells=>cells.every(c=>c.textContent==='')));
@@ -72,6 +74,7 @@ await page.waitForFunction(()=>document.querySelector('#patient-id').value==='PE
 await page.locator('#score-list [data-category]').filter({hasText:penalty.category}).first().click();
 assert.equal(await page.locator('td.effect-negative').first().evaluate(el=>getComputedStyle(el).color),'rgb(180, 35, 35)');
 assert.match(await page.locator('td.effect-negative:nth-child(3)').first().innerText(),/^-/);
+assert.match(await page.locator('.rule-potential.effect-negative').first().innerText(),/^-/);
 await page.locator('#close-score-dialog').click();
 assert.deepEqual(dialogs,[]);
 for(const width of [1440,1280,390]){await page.setViewportSize({width,height:900});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}

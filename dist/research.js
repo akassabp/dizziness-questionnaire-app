@@ -15,18 +15,18 @@
       const rows=[],used=new Set(),remaining=[];
       for(const[key,rule]of expected){
         const index=actual.findIndex((a,i)=>!used.has(i)&&M.norm(a)===key);
-        if(index>=0){used.add(index);rows.push({expected:rule.answer,actual:actual[index],weight:rule.weight});}
+        if(index>=0){used.add(index);rows.push({expected:rule.answer,actual:actual[index],weight:rule.weight,ruleWeight:rule.weight});}
         else remaining.push(rule);
       }
       const unmatched=actual.filter((_,i)=>!used.has(i));
-      for(let i=0;i<Math.max(remaining.length,unmatched.length);i++)rows.push({expected:remaining[i]?.answer||'',actual:unmatched[i]??'',weight:0});
+      for(let i=0;i<Math.max(remaining.length,unmatched.length);i++)rows.push({expected:remaining[i]?.answer||'',actual:unmatched[i]??'',weight:0,ruleWeight:remaining[i]?.weight});
       if(!actual.length&&rows.length)rows[0].missing=true;
       const total=rows.reduce((sum,r)=>sum+r.weight,0),applied=rows.some(r=>r.weight!==0);
       const hidden=q?.showWhen&&!M.values(s.answers[q.showWhen.questionId]).includes(M.norm(q.showWhen.answer));
       const table=rows.map(r=>{
         const status=r.weight>0?'effect-positive':r.weight<0?'effect-negative':r.actual!==''?'effect-neutral':'effect-missing';
         const label=r.weight>0?'Adds support':r.weight<0?'Subtracts support':r.actual!==''?'No effect':'';
-        return `<tr><td>${esc(r.expected)}</td><td class="${status}">${r.missing?'Not answered':esc(r.actual)}${label?`<small>${label}</small>`:''}</td><td class="${status}">${r.weight!==0?pts(r.weight):''}</td></tr>`;
+        return `<tr><td>${esc(r.expected)}${r.ruleWeight!==undefined?`<small class="rule-potential ${r.ruleWeight>0?'effect-positive':r.ruleWeight<0?'effect-negative':'effect-missing'}">${pts(r.ruleWeight)}</small>`:''}</td><td class="${status}">${r.missing?'Not answered':esc(r.actual)}${label?`<small>${label}</small>`:''}</td><td class="${status}">${r.weight!==0?pts(r.weight):''}</td></tr>`;
       }).join('');
       cards.push(`<article class="explanation-question" data-question-id="${esc(id)}"><p class="eyebrow">Question ${esc(id)}</p><h3>${esc(q?.prompt||'Unknown question')}</h3>${hidden?'<p class="hint">Conditional question not currently shown.</p>':''}<table class="answer-comparison"><thead><tr><th>Expected answer (rule)</th><th>Patient’s answer</th><th>Points applied</th></tr></thead><tbody>${table}</tbody></table>${applied?`<div class="question-total"><b>Question total</b><b>${pts(total)}</b></div>`:''}</article>`);
     }
