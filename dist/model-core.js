@@ -54,8 +54,30 @@
     return weights;
   }
   function metrics(rules, records) {
-    const predictions = records.map(r => prediction(score(rules, r.answers)));
-    return evaluate(records.map(r => r.label), predictions);
+    return multiMetrics(records, records.map(r => score(rules, r.answers)));
+  }
+  function multiMetrics(records, scores) {
+    const categories=[...new Set(records.flatMap(r=>r.labels))].sort(), byClass={};
+    for(const c of categories) {
+      const pos=[],neg=[];
+      records.forEach((r,i)=>(r.labels.includes(c)?pos:neg).push(scores[i][c].percent/100));
+      const mean=a=>a.length?a.reduce((s,v)=>s+v,0)/a.length:null;
+      byClass[c]={positiveCount:pos.length,assumedNegativeCount:neg.length,positiveSupport:mean(pos),otherSupport:mean(neg),balancedSquaredError:(mean(pos.map(v=>(1-v)**2))+mean(neg.map(v=>v*v)))/2};
+    }
+    const avg=key=>categories.reduce((s,c)=>s+byClass[c][key],0)/categories.length;
+    return {n:records.length,byClass,positiveSupport:avg('positiveSupport'),otherSupport:avg('otherSupport'),balancedSquaredError:avg('balancedSquaredError')};
+  }
+  function mergeRecords(records, questions) {
+    const groups=new Map();
+    for(const r of records) {
+      if(!r.sourceAnswerFingerprint) throw new Error('Re-extract the workbook: full-source answer fingerprint is required.');
+      if(!groups.has(r.sourceAnswerFingerprint))groups.set(r.sourceAnswerFingerprint,[]);
+      groups.get(r.sourceAnswerFingerprint).push(r);
+    }
+    return [...groups.values()].map((rs,i)=>{
+      const ages=[...new Set(rs.map(r=>r.age).filter(v=>v!=null))], sexes=[...new Set(rs.map(r=>r.sex).filter(Boolean))];
+      return {id:`PATIENT-${String(i+1).padStart(3,'0')}`,labels:[...new Set(rs.map(r=>r.label))].sort(),answers:sanitize(rs[0].answers,questions),age:ages.length===1?ages[0]:null,sex:sexes.length===1?sexes[0]:null,ageConflict:ages.length>1,sourceCaseIds:rs.map(r=>r.id),sourceAnswerFingerprint:rs[0].sourceAnswerFingerprint,issues:rs[0].issues};
+    });
   }
   function evaluate(labels, predictions) {
     const byClass = {}, confusion = {};
@@ -73,9 +95,9 @@
     const cats = [...new Set(rules.map(r=>r.category))];
     const catIndex = rules.map(r=>cats.indexOf(r.category));
     const hits = records.map(p => rules.map(r=>matched(r,p.answers)?1:0));
-    const counts = {}; records.forEach(r => counts[r.label] = (counts[r.label]||0)+1);
-    const labels = records.map(r => cats.indexOf(r.label));
-    if (labels.some(x=>x<0) || !records.length) throw new Error('Training requires known category labels.');
+    const counts = {}; records.forEach(r => r.labels.forEach(c=>counts[c]=(counts[c]||0)+1));
+    if (!records.length || records.some(r=>!r.labels.length || r.labels.some(c=>!cats.includes(c)))) throw new Error('Training requires known category labels.');
+    const evaluated=cats.filter(c=>counts[c]>0 && counts[c]<records.length);
     const observed = rules.map((r,i)=>hits.some(row=>row[i]) && counts[r.category] > 0 && r.weight !== -100 && r.weight !== 0);
     const radius = baseline.map(w => Math.max(1, Math.round(Math.abs(w)*0.25)));
     const lower = baseline.map((w,i) => w > 0 ? Math.max(1,w-radius[i]) : w < 0 ? w-radius[i] : 0);
@@ -84,18 +106,22 @@
     for(let i=0;i<rules.length;i++) for(let j=i+1;j<rules.length;j++)
       if(observed[i] && observed[j] && catIndex[i]===catIndex[j] && Math.sign(weights[i])===Math.sign(weights[j])) pairs.push([i,j]);
     const available = cats.map((c)=>rules.reduce((s,r,i)=>s+(r.category===c && weights[i]>0?weights[i]:0),0));
+    let referenceSupport=null;
     function objective() {
-      let loss=0, error=0;
+      let loss=0, positiveMean=0, otherMean=0;
       records.forEach((p,n) => {
         const points=cats.map(()=>0); weights.forEach((w,i)=>points[catIndex[i]]+=w*hits[n][i]);
-        const logits=points.map((v,c)=>Math.max(0,Math.min(100,v/Math.max(available[c],1)*100))/20);
-        const max=Math.max(...logits), logZ=max+Math.log(logits.reduce((s,v)=>s+Math.exp(v-max),0));
-        loss+=(logZ-logits[labels[n]])/counts[p.label]/Object.keys(counts).length;
-        const displayed=points.map((v,c)=>Math.round(Math.max(0,Math.min(100,v/Math.max(available[c],1)*100))*10)/10);
-        const top=Math.max(...displayed);
-        if(top<=0 || displayed[labels[n]]!==top || displayed.filter(v=>v===top).length!==1) error+=1/counts[p.label]/Object.keys(counts).length;
+        for(const c of evaluated) {
+          const support=Math.max(0,Math.min(1,points[cats.indexOf(c)]/Math.max(available[cats.indexOf(c)],1)));
+          const positive=p.labels.includes(c);
+          loss+=(support-(positive?1:0))**2 / (positive?counts[c]:records.length-counts[c]) / 2 / evaluated.length;
+          if(positive)positiveMean+=support/counts[c]/evaluated.length;
+          else otherMean+=support/(records.length-counts[c])/evaluated.length;
+        }
       });
-      return error+0.02*loss+0.002*weights.reduce((s,w,i)=>s+((w-baseline[i])/radius[i])**2,0)/weights.length;
+      if(referenceSupport && (positiveMean<referenceSupport.positiveMean-1e-10 || otherMean>referenceSupport.otherMean+1e-10))return Infinity;
+      if(!referenceSupport)referenceSupport={positiveMean,otherMean};
+      return loss+0.002*weights.reduce((s,w,i)=>s+((w-baseline[i])/radius[i])**2,0)/weights.length;
     }
     let best=objective(), sweeps=0, moves=0;
     for(;sweeps<30;sweeps++) {
@@ -111,5 +137,5 @@
     }
     return {rules:rules.map((r,i)=>({...r,weight:weights[i],source:'Experimental integer calibration'})), objective:best, sweeps, moves, baseline, lower, upper};
   }
-  return {norm, values, matched, score, prediction, sanitize, integerBaseline, metrics, evaluate, fit};
+  return {norm, values, matched, score, prediction, sanitize, integerBaseline, metrics, multiMetrics, mergeRecords, evaluate, fit};
 });

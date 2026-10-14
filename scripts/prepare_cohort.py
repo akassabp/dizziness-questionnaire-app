@@ -80,6 +80,7 @@ def extract(source, definitions):
                 else:
                     answers[qid] = mapped
             records.append({"id": f"CASE-{len(records)+1:03d}", "label": label,
+                            "sourceAnswerFingerprint": hashlib.sha256(json.dumps([(r[0], r[1]) for _, r in block], default=str, ensure_ascii=False).encode()).hexdigest(),
                             "age": age, "sex": sex, "answers": answers,
                             "issues": dict(issues), "sourceSheet": sheet.title,
                             "sourceRows": [block[0][0], block[-1][0]]})

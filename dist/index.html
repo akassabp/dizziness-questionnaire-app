@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Nebula dizziness questionnaire scoring platform." />
   <title>Nebula Questionnaire Scoring Platform</title>
-  <link rel="stylesheet" href="styles.css?v=research-1" />
+  <link rel="stylesheet" href="styles.css?v=multilabel-2" />
 </head>
 <body class="auth-locked">
   <section id="access-gate" class="access-gate" aria-labelledby="access-title">
@@ -46,7 +46,7 @@
             <h2 id="question-prompt"></h2><div id="answer-options" class="answer-options"></div>
             <div class="question-controls"><button id="previous-question">Previous</button><button id="clear-answer">Clear answer</button><span></span><button id="next-question" class="primary">Next</button></div>
           </section>
-          <aside class="score-panel panel"><h2>Current category support</h2><label for="score-model">Scoring model</label><select id="score-model"><option value="current">Current configuration</option><option value="default">Original workbook defaults</option><option value="trained">Trained integer model (experimental)</option></select><p>Screening support, not probabilities or diagnoses. Click a class to explain its score. ✓ Recorded = source worksheet label; unmarked does not mean ruled out.</p><div id="score-list"></div><div id="answered-count" class="completion"></div></aside>
+          <aside class="score-comparison"><section class="score-panel panel"><h2>Default support</h2><p>Original workbook points. Click a class for its explanation.</p><div id="score-list"></div><div id="answered-count" class="completion"></div></section><section class="score-panel panel"><h2>Trained support</h2><p>Experimental multi-label points. Independently sorted.</p><div id="trained-score-list"></div></section><p class="score-disclaimer">Support scores, not calibrated probabilities. ✓ Recorded = source diagnosis; unmarked does not mean ruled out. Multiple diagnoses can be supported together.</p></aside>
         </div>
       </section>
       <section id="configuration-view" class="view">
@@ -82,7 +82,7 @@
         <header class="view-header"><h1>Model &amp; Predictions</h1><nav class="tabs" aria-label="Application views"><button class="tab" data-view="questionnaire">Questionnaire</button><button class="tab" data-view="configuration">Model Configuration</button><button class="tab active" data-view="model">Model &amp; Predictions</button></nav></header>
         <div class="model-scroll">
           <section class="panel"><h2>Current answers: model comparison</h2><p id="model-case-label"></p><div id="model-predictions"></div><div class="comparison-scroll"><table><thead><tr><th>Category</th><th>Workbook default</th><th>Current configuration</th><th>Trained integer model</th></tr></thead><tbody id="model-case-scores"></tbody></table></div></section>
-          <section class="panel"><h2>Training and exploratory evaluation</h2><p>Research only. Scores are not diagnosis probabilities. The final model was fitted to all 55 source case blocks. No independent test set exists. Three-fold results are exploratory and do not establish clinical validity.</p><div id="model-metrics"></div><details><summary>Per-class results and confusion matrix</summary><div id="model-class-metrics"></div></details><details><summary>Constraints, data limitations and method</summary><div id="model-method"></div></details><button id="export-model">Download weights and aggregate report</button></section>
+          <section class="panel"><h2>Multi-label training and exploratory evaluation</h2><p>50 assumed patients, merged from 55 source blocks; five have multiple recorded diagnoses. Other diagnoses are assumed negative for tuning, not confirmed absent. No independent test set exists. These support percentages are not calibrated probabilities.</p><div id="model-metrics"></div><details><summary>Per-diagnosis support comparison</summary><div id="model-class-metrics"></div></details><details><summary>Constraints, data limitations and method</summary><div id="model-method"></div></details><button id="export-model">Download weights and aggregate report</button></section>
           <section class="panel"><h2>Point budgets</h2><p>Positive and negative totals are preserved at the nearest whole point for each category. Original fractional defaults remain unchanged.</p><div class="comparison-scroll"><table><thead><tr><th>Category</th><th>Default positive / negative</th><th>Trained positive / negative</th></tr></thead><tbody id="model-budgets"></tbody></table></div></section>
           <section class="panel"><h2>Default and trained weights</h2><label>Filter category <select id="model-category"></select></label> <label><input type="checkbox" id="changed-only"> Changed weights only</label><div class="comparison-scroll"><table><thead><tr><th>Category</th><th>Question / answer</th><th>Default points</th><th>Trained points</th><th>Change</th></tr></thead><tbody id="model-weights"></tbody></table></div></section>
         </div>
@@ -91,8 +91,8 @@
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <dialog id="score-dialog" aria-labelledby="score-dialog-title"><header><div><p class="eyebrow">Score breakdown</p><h2 id="score-dialog-title"></h2></div><button id="close-score-dialog">Close ×</button></header><div id="score-dialog-body"></div><p class="hint">A transparent review of the selected scorecard—not a diagnosis or advice to change answers.</p></dialog>
-  <script src="questionnaire-data.js?v=km2-3"></script><script src="model-core.js?v=research-1"></script><script src="trained-model.js?v=research-1"></script>
+  <script src="questionnaire-data.js?v=km2-3"></script><script src="model-core.js?v=multilabel-2"></script><script src="trained-model.js?v=multilabel-2"></script>
   <script>document.querySelectorAll('.tabs').forEach(nav => { if (!nav.querySelector('[data-view="model"]')) { const button = document.createElement('button'); button.className = 'tab'; button.dataset.view = 'model'; button.textContent = 'Model & Predictions'; nav.append(button); } });</script>
-  <script src="app.js?v=research-1"></script><script src="research.js?v=research-1"></script>
+  <script src="app.js?v=multilabel-2"></script><script src="research.js?v=multilabel-2"></script>
 </body>
 </html>

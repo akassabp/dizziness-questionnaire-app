@@ -21,6 +21,11 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
  assert.match(await page.locator('.question-total').innerText(),new RegExp(String(Number(total.toFixed(3))).replace('.','\\.')));
  if(process.env.NEBULA_SCREENSHOT_DIR) await page.screenshot({path:process.env.NEBULA_SCREENSHOT_DIR+'/nebula-breakdown.png'});
  await page.locator('#close-score-dialog').click();
+ await page.locator('#trained-score-list [data-category]').filter({hasText:fixture.category}).first().click();
+ assert.match(await page.locator('#score-dialog-body').innerText(),/Trained multi-label model/);
+ assert.ok(!/[+-]\d+\.\d+ pts/.test(await page.locator('#score-dialog-body').innerText()));
+ await page.locator('#close-score-dialog').click();
+ assert.equal(await page.locator('#score-model').count(),0);
  await page.locator('#questionnaire-view [data-view="model"]').click();
  if(process.env.NEBULA_SCREENSHOT_DIR) await page.screenshot({path:process.env.NEBULA_SCREENSHOT_DIR+'/nebula-model.png'});
  for(const width of [1280,390]) {

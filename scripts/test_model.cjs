@@ -20,9 +20,14 @@ const fixture=[{category:'A',questionId:'1',answer:'x',weight:10},{category:'A',
 assert.deepEqual(M.score(fixture,{'1':['x','y']}),{A:{points:8,available:10,percent:80}});
 if(process.argv[2]) {
   const fs=require('node:fs');const cohort=JSON.parse(fs.readFileSync(process.argv[2]));
-  const records=cohort.records.map(r=>({...r,answers:M.sanitize(r.answers,D.questions)}));
+  const records=M.mergeRecords(cohort.records,D.questions);
+  assert.equal(records.length,50);
+  assert.equal(records.filter(r=>r.labels.length>1).length,5);
+  assert.equal(records.filter(r=>r.ageConflict&&r.age===null).length,3);
   assert.deepEqual(M.metrics(T.rules,records),T.metrics.trained);
   assert.deepEqual(M.metrics(D.rules,records),T.metrics.default);
   assert.deepEqual(M.fit(D.rules,records).rules,T.rules);
+  assert.ok(T.metrics.trained.positiveSupport>=T.metrics.integerBaseline.positiveSupport);
+  assert.ok(T.metrics.trained.otherSupport<=T.metrics.integerBaseline.otherSupport+0.0005);
 }
 console.log('PASS: integer weights, unchanged rule identities/signs, bounds, frozen rule-outs, fixed budgets, scoring, ties, reproducible fit/metrics.');

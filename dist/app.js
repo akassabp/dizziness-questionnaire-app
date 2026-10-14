@@ -63,15 +63,17 @@
     renderQuestionList(); renderScores();
   }
   function scoreAnswers() {
-    return window.NebulaModel.score(activeRules(), state.answers);
+    return window.NebulaModel.score(state.rules, state.answers);
   }
-  function activeRules() { return $("score-model").value === "trained" ? window.NEBULA_TRAINED.rules : $("score-model").value === "default" ? defaultRules : state.rules; }
+  function activeRules(model='default') { return model === 'trained' ? window.NEBULA_TRAINED.rules : defaultRules; }
   function renderScores() {
-    const scores = scoreAnswers();
+    for(const model of ['default','trained']) {
+    const scores = window.NebulaModel.score(activeRules(model),state.answers);
     const rankedScores = Object.entries(scores).sort(([categoryA, scoreA], [categoryB, scoreB]) =>
       scoreB.percent - scoreA.percent || scoreB.points - scoreA.points || categoryA.localeCompare(categoryB, undefined, { sensitivity: "base" })
     );
-    els.scores.innerHTML = rankedScores.map(([category, score]) => `<button type="button" class="score-row score-button" data-category="${escapeHtml(category)}" aria-label="Explain ${escapeHtml(category)} score"><div class="score-label"><span>${escapeHtml(category)}</span><span>${state.casePatient?.recorded_label === category ? '<em class="recorded-badge" title="Recorded label from source worksheet, not independently confirmed">✓ Recorded</em>' : ''}<b>${score.percent.toFixed(1)}%</b><small>${score.points >= 0 ? "+" : ""}${Number(score.points.toFixed(3))} pts</small></span></div><div class="score-track"><i class="${score.points < 0 ? "negative" : ""}" style="width:${score.percent}%"></i></div></button>`).join("");
+    $(model==='default'?'score-list':'trained-score-list').innerHTML = rankedScores.map(([category, score]) => `<button type="button" class="score-row score-button" data-model="${model}" data-category="${escapeHtml(category)}" aria-label="Explain ${escapeHtml(category)} ${model} score"><div class="score-label"><span>${escapeHtml(category)}</span><span>${state.casePatient?.recorded_labels?.includes(category) ? '<em class="recorded-badge" title="Recorded source diagnosis">✓ Recorded</em>' : ''}<b>${score.percent.toFixed(1)}%</b><small>${score.points >= 0 ? "+" : ""}${Number(score.points.toFixed(3))} pts</small></span></div><div class="score-track"><i class="${score.points < 0 ? "negative" : ""}" style="width:${score.percent}%"></i></div></button>`).join("");
+    }
     const visible = visibleQuestions().filter((question) => question.kind !== "text");
     els.completion.textContent = `${visible.filter(isAnswered).length} of ${visible.length} answered`;
     document.dispatchEvent(new CustomEvent('nebula:change'));
@@ -120,13 +122,14 @@
       resetQuestionnaire();
       const patient = payload.patient && typeof payload.patient === "object" ? payload.patient : {};
       const field = (key) => typeof patient[key] === "string" ? patient[key].slice(0, 200) : "";
-      state.casePatient = { age: Number.isInteger(patient.age) && patient.age >= 0 && patient.age <= 120 ? patient.age : null, sex: field("sex"), recorded_label: field("recorded_label") };
+      const labels=Array.isArray(patient.recorded_labels)?patient.recorded_labels:[field('recorded_label')];
+      state.casePatient = { age: Number.isInteger(patient.age) && patient.age >= 0 && patient.age <= 120 ? patient.age : null, sex: field("sex"), recorded_labels:[...new Set(labels.filter(v=>typeof v==='string'&&defaults.rules.some(r=>r.category===v)))],age_conflict:patient.age_conflict===true };
       state.caseWarnings = payload.import_warnings && typeof payload.import_warnings === "object" ? Object.fromEntries(Object.entries(payload.import_warnings).filter(([k,v]) => /^[a-z_]+$/.test(k) && Number.isInteger(v) && v >= 0)) : {};
       els.patientId.value = field("anonymous_id"); els.visitDate.value = field("visit_date"); els.birthYear.value = Number.isInteger(patient.birth_year) ? patient.birth_year : ""; els.notes.value = field("notes");
       state.answers = answers;
       questions.filter((q) => !conditionMet(q)).forEach((q) => { if (Object.hasOwn(state.answers, q.id)) { delete state.answers[q.id]; skipped++; } });
       const omissions = Object.values(state.caseWarnings).reduce((a,b) => a+b, 0) + skipped;
-      $("case-summary").textContent = `${els.patientId.value || "Local session"} · Age: ${state.casePatient.age ?? "unknown"} · Sex: ${state.casePatient.sex || "unknown"} · Recorded label: ${state.casePatient.recorded_label || "not supplied"}. Other diagnoses are not recorded. ${omissions ? `${omissions} source/import entries omitted or flagged; scores may reflect incomplete answers.` : ""} Choose the scoring model on the right.`;
+      $("case-summary").textContent = `${els.patientId.value || "Local session"} · Age: ${state.casePatient.age_conflict?'conflicting source ages':state.casePatient.age ?? "unknown"} · Sex: ${state.casePatient.sex || "unknown"} · Recorded diagnoses: ${state.casePatient.recorded_labels.join(', ') || "not supplied"}. Other diagnoses are unrecorded, not confirmed absent. ${omissions ? `${omissions} source/import entries omitted or flagged; scores may reflect incomplete answers.` : ""}`;
       renderQuestion(); showToast("Local file loaded. Nothing was uploaded.");
     }
     catch (error) { showToast(error instanceof SyntaxError ? "Invalid JSON. Choose a patient or session JSON file." : error.message, true); }
@@ -169,8 +172,8 @@
     if (state.editingRule === null) state.draftRules.push(rule); else state.draftRules[state.editingRule] = rule;
     refreshCategoryControls(rule.category); clearEditor(); renderRuleTable();
   }
-  function saveAndApply() { state.rules = clone(state.draftRules); $("score-model").value = "current"; localStorage.setItem(RULES_KEY, JSON.stringify({ version: 1, rules: state.rules })); renderScores(); showToast("The new scoring rules are active in the questionnaire tab."); }
-  function restoreDefaults() { if (!confirm("Replace the current draft with the diagnosis-sheet defaults?")) return; state.rules = clone(defaultRules); state.draftRules = clone(defaultRules); $("score-model").value = "current"; localStorage.setItem(RULES_KEY, JSON.stringify({ version: 1, rules: state.rules })); refreshCategoryControls(); clearEditor(); renderRuleTable(); renderScores(); showToast("Workbook defaults restored."); }
+  function saveAndApply() { state.rules = clone(state.draftRules); localStorage.setItem(RULES_KEY, JSON.stringify({ version: 1, rules: state.rules })); renderScores(); showToast("Custom rules updated in Model & Predictions. Default and trained panels remain fixed for comparison."); }
+  function restoreDefaults() { if (!confirm("Replace the current draft with the diagnosis-sheet defaults?")) return; state.rules = clone(defaultRules); state.draftRules = clone(defaultRules); localStorage.setItem(RULES_KEY, JSON.stringify({ version: 1, rules: state.rules })); refreshCategoryControls(); clearEditor(); renderRuleTable(); renderScores(); showToast("Workbook defaults restored."); }
 
   let toastTimer;
   function showToast(message, error = false) { clearTimeout(toastTimer); els.toast.textContent = message; els.toast.classList.toggle("error", error); els.toast.classList.add("show"); toastTimer = setTimeout(() => els.toast.classList.remove("show"), 3200); }
@@ -197,13 +200,12 @@
   $("save-apply").addEventListener("click", saveAndApply); $("restore-defaults").addEventListener("click", restoreDefaults);
 
   window.NebulaApp = {
-    snapshot: () => clone({ answers:state.answers, rules:activeRules(), configuredRules:state.rules, patient:state.casePatient, model:$("score-model").selectedOptions[0].textContent }), downloadJson,
+    snapshot: (model='default') => clone({ answers:state.answers, rules:activeRules(model), configuredRules:state.rules, patient:state.casePatient, model:model==='trained'?'Trained multi-label model':'Original workbook defaults' }), downloadJson,
     stageTrained: () => {
       if (!confirm('Replace the configuration draft with experimental trained weights? Your active rules stay unchanged until Save and apply.')) return;
       state.draftRules=clone(window.NEBULA_TRAINED.rules); refreshCategoryControls(); clearEditor(); renderRuleTable();
       document.querySelector('.tab[data-view="configuration"]').click(); showToast('Trained weights copied to draft. Review before Save and apply.');
     }
   };
-  $("score-model").addEventListener('change', renderScores);
   els.visitDate.value = new Date().toISOString().slice(0, 10); refreshCategoryControls(); populateQuestionSelect(); renderRuleTable(); renderQuestion();
 })();
