@@ -99,7 +99,7 @@
     state.modified=true;
     if(clean(els.patientId.value))els.patientId.value=modifiedId(clean(els.patientId.value));
   }
-  function resetQuestionnaire() { state.answers = {}; state.modified=false; state.casePatient = null; state.caseWarnings = null; state.current = 0; els.patientId.value = ""; $("patient-age").value = ""; $("patient-age").title = ""; $("patient-sex").value = ""; renderQuestion(); }
+  function resetQuestionnaire() { state.answers = {}; state.modified=false; state.casePatient = null; state.caseWarnings = null; state.current = 0; els.patientId.value = ""; $("patient-age").value = ""; $("patient-age").title = ""; $("patient-sex").value = ""; renderQuestion(); document.dispatchEvent(new Event('nebula:case-reset')); }
   function downloadJson(value, filename) { const url = URL.createObjectURL(new Blob([JSON.stringify(value, null, 2)], { type: "application/json" })); const anchor = document.createElement("a"); anchor.href = url; anchor.download = filename; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 0); }
   function exportCase() {
     const ageInput=$("patient-age"), age=ageInput.value===''?null:Number(ageInput.value);

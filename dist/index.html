@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Nebula dizziness questionnaire scoring platform." />
   <title>Nebula Questionnaire Scoring Platform</title>
-  <link rel="stylesheet" href="styles.css?v=rule-points-10" />
+  <link rel="stylesheet" href="styles.css?v=viewer-11" />
 </head>
 <body class="auth-locked">
   <section id="access-gate" class="access-gate" aria-labelledby="access-title">
@@ -23,6 +23,7 @@
       <section id="questionnaire-view" class="view active">
         <header class="view-header">
           <div><h1>Nebula Questionnaire</h1></div>
+          <nav class="viewer-switch" aria-label="Questionnaire viewers"><button id="show-scoring" aria-pressed="true" aria-controls="scoring-view">Scoring view</button><button id="show-review" aria-pressed="false" aria-controls="question-review">Question viewer</button></nav>
           <div class="header-actions"><button id="new-questionnaire">New questionnaire</button><input id="session-file" type="file" accept="application/json,.json" hidden /><button id="export-json" class="primary">Export JSON</button></div>
         </header>
         <div id="patient-drop" class="patient-drop" tabindex="0" role="button" aria-label="Load a local patient JSON file">
@@ -33,7 +34,7 @@
           <label class="case-detail" for="patient-age"><span>Age</span><input id="patient-age" type="number" min="0" max="120" step="1" /></label>
           <label class="case-detail" for="patient-sex"><span>Sex</span><select id="patient-sex"><option value=""></option><option>Female</option><option>Male</option><option>Other</option><option>Unknown</option></select></label>
         </div>
-        <div class="questionnaire-grid">
+        <div id="scoring-view" class="questionnaire-grid">
           <aside class="question-list-panel panel"><div id="question-list" class="question-list"></div></aside>
           <section class="question-panel panel">
             <div class="question-status"><strong id="question-meta"></strong><span id="answer-state">Not answered</span></div>
@@ -42,12 +43,16 @@
           </section>
           <aside class="score-comparison"><section class="score-panel panel"><h2>Initially Defined Weights</h2><p>Original workbook points. Click a class for its explanation.</p><div id="score-list"></div><div id="answered-count" class="completion"></div></section><section class="score-panel panel"><h2>Trained AI Model</h2><p>Experimental multi-label points. Independently sorted.</p><div id="trained-score-list"></div></section><p class="score-disclaimer">Support scores, not calibrated probabilities. ✓ Recorded = source diagnosis; unmarked does not mean ruled out. Multiple diagnoses can be supported together.</p></aside>
         </div>
+        <section id="question-review" class="question-review" hidden aria-label="Question viewer">
+          <div id="review-cards" class="review-cards"></div>
+          <footer class="review-navigation"><button id="review-previous">Previous 12 questions</button><span id="review-page" role="status" aria-live="polite"></span><button id="review-next">Next 12 questions</button></footer>
+        </section>
       </section>
     </main>
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <dialog id="score-dialog" aria-labelledby="score-dialog-title"><header><div><p class="eyebrow">Score breakdown</p><h2 id="score-dialog-title"></h2></div><button id="close-score-dialog">Close ×</button></header><div id="score-dialog-body"></div><p class="hint">A transparent review of the selected scorecard—not a diagnosis or advice to change answers.</p></dialog>
-  <script src="questionnaire-data.js?v=km2-3"></script><script src="model-core.js?v=rule-points-10"></script><script src="trained-model.js?v=rule-points-10"></script>
-  <script src="app.js?v=rule-points-10"></script><script src="research.js?v=rule-points-10"></script>
+  <script src="questionnaire-data.js?v=km2-3"></script><script src="model-core.js?v=viewer-11"></script><script src="trained-model.js?v=viewer-11"></script>
+  <script src="app.js?v=viewer-11"></script><script src="research.js?v=viewer-11"></script><script src="question-viewer.js?v=viewer-11"></script>
 </body>
 </html>
