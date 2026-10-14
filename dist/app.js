@@ -95,17 +95,47 @@
     questions.filter((item) => item.showWhen && !conditionMet(item)).forEach((item) => delete state.answers[item.id]);
     renderQuestion();
   }
-  function resetQuestionnaire() { state.answers = {}; state.current = 0; els.patientId.value = ""; els.birthYear.value = ""; els.notes.value = ""; els.visitDate.value = new Date().toISOString().slice(0, 10); renderQuestion(); }
+  function resetQuestionnaire() { state.answers = {}; state.casePatient = null; state.caseWarnings = null; $("case-summary").textContent = ""; state.current = 0; els.patientId.value = ""; els.birthYear.value = ""; els.notes.value = ""; els.visitDate.value = new Date().toISOString().slice(0, 10); renderQuestion(); }
   function downloadJson(value, filename) { const url = URL.createObjectURL(new Blob([JSON.stringify(value, null, 2)], { type: "application/json" })); const anchor = document.createElement("a"); anchor.href = url; anchor.download = filename; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 0); }
   function saveSession() {
     const patientId = clean(els.patientId.value); if (!patientId) return showToast("Enter an anonymous patient ID before saving.", true);
     const now = new Date(), stamp = now.toISOString().replace(/[-:]/g, "").slice(0, 15), safeId = patientId.replace(/[^a-z0-9_-]/gi, "_");
-    downloadJson({ patient: { anonymous_id: patientId, visit_date: els.visitDate.value, birth_year: els.birthYear.value ? Number(els.birthYear.value) : "", notes: clean(els.notes.value) }, answers: clone(state.answers), scores: scoreAnswers(), saved_at: now.toISOString().slice(0, 19) }, `${safeId}_${stamp}.json`);
+    downloadJson({ patient: { ...state.casePatient, anonymous_id: patientId, visit_date: els.visitDate.value, birth_year: els.birthYear.value ? Number(els.birthYear.value) : "", notes: clean(els.notes.value) }, import_warnings: state.caseWarnings || {}, answers: clone(state.answers), scores: scoreAnswers(), saved_at: now.toISOString().slice(0, 19) }, `${safeId}_${stamp}.json`);
     showToast("Session saved.");
   }
   async function loadSession(file) {
-    try { const payload = JSON.parse(await file.text()); resetQuestionnaire(); const patient = payload.patient || {}; els.patientId.value = patient.anonymous_id || ""; els.visitDate.value = patient.visit_date || els.visitDate.value; els.birthYear.value = patient.birth_year || ""; els.notes.value = patient.notes || ""; state.answers = payload.answers && typeof payload.answers === "object" ? payload.answers : {}; renderQuestion(); showToast("Session loaded."); }
-    catch { showToast("Could not load this session file.", true); }
+    try {
+      if (file.size > 2 * 1024 * 1024) throw new Error("File is too large (maximum 2 MB).");
+      const payload = JSON.parse(await file.text());
+      if (!payload || !payload.answers || typeof payload.answers !== "object" || Array.isArray(payload.answers)) throw new Error("Choose a patient or session JSON file containing answers.");
+      if (payload.format && (payload.format !== "nebula-patient-case" || payload.version !== 1)) throw new Error("Unsupported patient file format.");
+      const answers = {}; let skipped = 0;
+      for (const [id, value] of Object.entries(payload.answers)) {
+        const q = questions.find((item) => item.id === id);
+        if (!q || q.kind === "text") { skipped++; continue; }
+        if (q.kind === "single" || q.kind === "multi") {
+          const values = Array.isArray(value) ? value : [value];
+          if (values.some((v) => typeof v !== "string" || !q.options.includes(v)) || (q.kind === "single" && values.length !== 1) || (values.length > 1 && values.some((v) => normalized(v) === "none of the above"))) { skipped++; continue; }
+          answers[id] = q.kind === "multi" ? [...new Set(values)] : values[0];
+        } else if (q.kind === "numeric" && value !== "" && ["number", "string"].includes(typeof value) && Number.isFinite(Number(value)) && Number(value) >= 0) answers[id] = value;
+        else if (q.kind === "date" && typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) answers[id] = value;
+        else skipped++;
+      }
+      if (!Object.keys(answers).length && Object.keys(payload.answers).length) throw new Error("No answers match the current questionnaire.");
+      if (Object.keys(state.answers).length && !confirm("Replace the current questionnaire with this local file?")) return;
+      resetQuestionnaire();
+      const patient = payload.patient && typeof payload.patient === "object" ? payload.patient : {};
+      const field = (key) => typeof patient[key] === "string" ? patient[key].slice(0, 200) : "";
+      state.casePatient = { age: Number.isInteger(patient.age) && patient.age >= 0 && patient.age <= 120 ? patient.age : null, sex: field("sex"), recorded_label: field("recorded_label") };
+      state.caseWarnings = payload.import_warnings && typeof payload.import_warnings === "object" ? Object.fromEntries(Object.entries(payload.import_warnings).filter(([k,v]) => /^[a-z_]+$/.test(k) && Number.isInteger(v) && v >= 0)) : {};
+      els.patientId.value = field("anonymous_id"); els.visitDate.value = field("visit_date"); els.birthYear.value = Number.isInteger(patient.birth_year) ? patient.birth_year : ""; els.notes.value = field("notes");
+      state.answers = answers;
+      questions.filter((q) => !conditionMet(q)).forEach((q) => { if (Object.hasOwn(state.answers, q.id)) { delete state.answers[q.id]; skipped++; } });
+      const omissions = Object.values(state.caseWarnings).reduce((a,b) => a+b, 0) + skipped;
+      $("case-summary").textContent = `${els.patientId.value || "Local session"} · Age: ${state.casePatient.age ?? "unknown"} · Sex: ${state.casePatient.sex || "unknown"} · Recorded label: ${state.casePatient.recorded_label || "not supplied"}. Other diagnoses are not recorded. ${omissions ? `${omissions} source/import entries omitted or flagged; scores may reflect incomplete answers.` : ""} Scores use your currently applied configuration.`;
+      renderQuestion(); showToast("Local file loaded. Nothing was uploaded.");
+    }
+    catch (error) { showToast(error instanceof SyntaxError ? "Invalid JSON. Choose a patient or session JSON file." : error.message, true); }
     els.sessionFile.value = "";
   }
 
@@ -159,6 +189,12 @@
   els.next.addEventListener("click", () => { state.current = Math.min(visibleQuestions().length - 1, state.current + 1); renderQuestion(); });
   els.clearAnswer.addEventListener("click", () => { delete state.answers[currentQuestion().id]; questions.filter((item) => item.showWhen && !conditionMet(item)).forEach((item) => delete state.answers[item.id]); renderQuestion(); });
   $("new-questionnaire").addEventListener("click", resetQuestionnaire); $("save-session").addEventListener("click", saveSession); $("load-session").addEventListener("click", () => els.sessionFile.click()); els.sessionFile.addEventListener("change", () => els.sessionFile.files[0] && loadSession(els.sessionFile.files[0]));
+  const drop = $("patient-drop");
+  drop.addEventListener("click", () => els.sessionFile.click());
+  drop.addEventListener("keydown", (event) => { if (["Enter", " "].includes(event.key)) { event.preventDefault(); els.sessionFile.click(); } });
+  document.addEventListener("dragover", (event) => { if (event.dataTransfer.types.includes("Files")) { event.preventDefault(); if (!gate.hidden) return; drop.classList.add("dragging"); } });
+  document.addEventListener("dragleave", (event) => { if (!event.relatedTarget) drop.classList.remove("dragging"); });
+  document.addEventListener("drop", (event) => { event.preventDefault(); drop.classList.remove("dragging"); if (!gate.hidden) return; const files = event.dataTransfer.files; if (files.length !== 1) return showToast("Drop one patient JSON file at a time.", true); document.querySelector('.tab[data-view="questionnaire"]').click(); loadSession(files[0]); });
   els.category.addEventListener("change", () => syncCategory(els.category.value)); els.categoryFilter.addEventListener("change", () => { syncCategory(els.categoryFilter.value); clearEditor(); }); els.question.addEventListener("change", () => populateAnswers()); els.search.addEventListener("input", renderRuleTable);
   els.addUpdate.addEventListener("click", addOrUpdateRule); $("clear-editor").addEventListener("click", clearEditor);
   els.tableBody.addEventListener("click", (event) => { const row = event.target.closest("tr[data-index]"); if (!row) return; state.selectedRule = Number(row.dataset.index); els.tableBody.querySelectorAll("tr").forEach((item) => item.classList.toggle("selected", item === row)); els.deleteRule.disabled = false; });
