@@ -34,28 +34,5 @@
   $('close-score-dialog').addEventListener('click',()=>{openCategory=null;dialog.close();});
   dialog.addEventListener('cancel',()=>{openCategory=null;});
   dialog.addEventListener('close',()=>{openCategory=null;});
-  function renderCase() {
-    const s=A.snapshot(), models=[D.rules,s.configuredRules,T.rules], scores=models.map(r=>M.score(r,s.answers));
-    $('model-case-label').textContent=`Recorded diagnoses: ${s.patient?.recorded_labels?.join(', ')||'not supplied'}. Multiple labels are retained. Other diagnoses are not confirmed absent. Comparisons use the same current answers, including manual edits.`;
-    $('model-predictions').textContent='Independent support for every diagnosis. No exclusive winning class is selected.';
-    $('model-case-scores').innerHTML=categories.map(c=>`<tr><td>${esc(c)} ${s.patient?.recorded_labels?.includes(c)?'<span class="recorded-badge">✓ Recorded</span>':''}</td>${scores.map(model=>{const score=model[c]||{percent:0,points:0};return `<td><b>${score.percent.toFixed(1)}%</b> · ${pts(score.points)}<div class="comparison-bar"><i style="width:${score.percent}%"></i></div></td>`;}).join('')}</tr>`).join('');
-    if(openCategory && dialog.open)explain(openCategory);
-  }
-  function renderWeights() {
-    const category=$('model-category').value, changed=$('changed-only').checked;
-    $('model-weights').innerHTML=D.rules.map((r,i)=>({r,t:T.rules[i]})).filter(({r,t})=>(!category||r.category===category)&&(!changed||r.weight!==t.weight)).map(({r,t})=>`<tr><td>${esc(r.category)}</td><td><small>${esc(r.questionId)} · ${esc(D.questions.find(q=>q.id===r.questionId)?.prompt)}</small><br>${esc(r.answer)}</td><td>${pts(r.weight)}</td><td><b>${pts(t.weight)}</b></td><td>${pts(t.weight-r.weight)}</td></tr>`).join('');
-  }
-  const names={default:'Original workbook defaults',integerBaseline:'Rounded integer baseline (before learning)',trained:'Trained on all cases — training performance',crossValidation:'Exploratory grouped 3-fold — held-out predictions'};
-  $('model-metrics').innerHTML='<p>Macro averages across the seven diagnoses with positive cases. Recorded support: higher is better. Other support and balanced squared error: lower is better. Error is not a probability-calibration measure.</p>'+Object.entries(T.metrics).map(([key,m])=>`<div class="metric-line"><span>${names[key]}</span><b>Recorded ${pct(m.positiveSupport)}</b><span>Other ${pct(m.otherSupport)} · Error ${m.balancedSquaredError.toFixed(4)}</span></div>`).join('');
-  $('model-class-metrics').innerHTML=`<p>Each cell shows mean support for recorded / other diagnoses. A global constraint does not guarantee improvement for every diagnosis or patient.</p><div class="comparison-scroll"><table><thead><tr><th>Diagnosis</th><th>Recorded / other cases</th><th>Default</th><th>Trained</th><th>3-fold</th></tr></thead><tbody>${categories.map(c=>{const a=T.metrics.default.byClass[c];return `<tr><td>${esc(c)}</td><td>${a?`${a.positiveCount} / ${a.assumedNegativeCount}`:'No positive cases'}</td>${['default','trained','crossValidation'].map(k=>{const v=T.metrics[k].byClass[c];return `<td>${v?`${pct(v.positiveSupport)} / ${pct(v.otherSupport)}`:'Not evaluated'}</td>`;}).join('')}</tr>`;}).join('')}</tbody></table></div>`;
-  $('model-method').innerHTML=`<p><b>${esc(T.method)}</b>: independently encourage each recorded diagnosis toward 100% support and other diagnoses toward 0%, balancing positive and assumed-negative cases equally within each diagnosis. Minimize mean balanced squared error + 0.002 × normalized squared weight displacement. No softmax, exclusive class, or top-1 accuracy objective.</p><p>Training-set macro recorded support cannot decrease and macro other support cannot increase relative to the integer baseline (unrounded scores). Existing rules only, unchanged signs, integer weights within ±max(1, round(25% of baseline)). Positive and negative category point budgets stay fixed. Explicit −100 rule-outs and unobserved rules are frozen after rounding. Deterministic pairwise local search, at most 30 sweeps; not a global optimum guarantee.</p><p>${T.training.sourceEntries} blocks merged into ${T.training.mergedPatients} assumed patients, ${T.training.multiLabelPatients} with multiple labels; ${T.training.ageConflicts} conflicting ages left unknown. Fold sizes ${T.training.foldSizes.join(', ')}. The final model uses all merged patients; each validation fold refits on its training subset.</p><ul>${T.limitations.map(l=>`<li>${esc(l)}</li>`).join('')}</ul><p>See <a href="methodology.html" target="_blank" rel="noopener">methodology and publication requirements</a>.</p>`;
-  const budgets=rules=>Object.fromEntries(categories.map(c=>[c,[rules.filter(r=>r.category===c&&r.weight>0).reduce((s,r)=>s+r.weight,0),rules.filter(r=>r.category===c&&r.weight<0).reduce((s,r)=>s+r.weight,0)]]));
-  const base=budgets(D.rules), trained=budgets(T.rules);
-  $('model-budgets').innerHTML=categories.map(c=>`<tr><td>${esc(c)}</td><td>${base[c].map(pts).join(' / ')}</td><td>${trained[c].map(pts).join(' / ')}</td></tr>`).join('');
-  $('model-category').innerHTML='<option value="">All categories</option>'+categories.map(c=>`<option>${esc(c)}</option>`).join('');
-  $('model-category').addEventListener('change',renderWeights);$('changed-only').addEventListener('change',renderWeights);
-  $('export-model').addEventListener('click',()=>A.downloadJson(T,'nebula-experimental-model.json'));
-  const stage=document.createElement('button');stage.textContent='Copy trained weights to configuration draft';stage.addEventListener('click',A.stageTrained);$('export-model').after(stage);
-  document.addEventListener('nebula:change',renderCase);
-  renderCase();renderWeights();
+  document.addEventListener('nebula:change',()=>{if(openCategory && dialog.open)explain(openCategory);});
 })();

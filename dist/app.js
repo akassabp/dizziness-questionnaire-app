@@ -19,7 +19,7 @@
     try { const value = JSON.parse(localStorage.getItem(RULES_KEY)); return Array.isArray(value?.rules) ? value.rules.map(normalizeRule).filter(Boolean) : clone(defaultRules); }
     catch { return clone(defaultRules); }
   }
-  const state = { current: 0, answers: {}, rules: loadRules(), draftRules: [], selectedRule: null, editingRule: null };
+  const state = { current: 0, answers: {}, rules: clone(defaultRules), draftRules: [], selectedRule: null, editingRule: null };
   state.draftRules = clone(state.rules);
 
   const gate = $("access-gate"), accessForm = $("access-form"), accessCode = $("access-code"), accessError = $("access-error");
@@ -96,7 +96,7 @@
   function saveSession() {
     const patientId = clean(els.patientId.value); if (!patientId) return showToast("Enter an anonymous patient ID before saving.", true);
     const now = new Date(), stamp = now.toISOString().replace(/[-:]/g, "").slice(0, 15), safeId = patientId.replace(/[^a-z0-9_-]/gi, "_");
-    downloadJson({ patient: { ...state.casePatient, anonymous_id: patientId, visit_date: els.visitDate.value, birth_year: els.birthYear.value ? Number(els.birthYear.value) : "", notes: clean(els.notes.value) }, import_warnings: state.caseWarnings || {}, answers: clone(state.answers), scores: scoreAnswers(), saved_at: now.toISOString().slice(0, 19) }, `${safeId}_${stamp}.json`);
+    downloadJson({ patient: { ...state.casePatient, anonymous_id: patientId, visit_date: els.visitDate.value, birth_year: els.birthYear.value ? Number(els.birthYear.value) : "", notes: clean(els.notes.value) }, import_warnings: state.caseWarnings || {}, answers: clone(state.answers), scores: { initiallyDefined: window.NebulaModel.score(defaultRules, state.answers), trained: window.NebulaModel.score(window.NEBULA_TRAINED.rules, state.answers) }, saved_at: now.toISOString().slice(0, 19) }, `${safeId}_${stamp}.json`);
     showToast("Session saved.");
   }
   async function loadSession(file) {
@@ -136,49 +136,9 @@
     els.sessionFile.value = "";
   }
 
-  function refreshCategoryControls(preferred) {
-    const values = categories(), chosen = values.includes(preferred) ? preferred : values[0] || "";
-    els.category.innerHTML = values.map((value) => `<option ${value === chosen ? "selected" : ""}>${escapeHtml(value)}</option>`).join("");
-    els.categoryFilter.innerHTML = values.map((value) => `<option ${value === chosen ? "selected" : ""}>${escapeHtml(value)}</option>`).join("");
-  }
-  function populateQuestionSelect() { els.question.innerHTML = questions.map((question) => `<option value="${escapeHtml(question.id)}">${escapeHtml(question.id)} | ${escapeHtml(question.prompt)}</option>`).join(""); populateAnswers(); }
-  function populateAnswers(preferred = "") {
-    const question = questions.find((item) => item.id === els.question.value), values = question?.options || [];
-    if (!values.length) {
-      els.answer.innerHTML = '<option value="">No configurable answers</option>';
-      els.answer.disabled = true;
-      return;
-    }
-    const selected = values.includes(preferred) ? preferred : "";
-    els.answer.disabled = false;
-    els.answer.innerHTML = `<option value="" ${selected ? "" : "selected"} disabled>Select an answer</option>${values.map((answer) => `<option value="${escapeHtml(answer)}" ${answer === selected ? "selected" : ""}>${escapeHtml(answer)}</option>`).join("")}`;
-  }
-  function filteredRules() {
-    const category = els.categoryFilter.value, query = clean(els.search.value).toLocaleLowerCase();
-    return state.draftRules.map((rule, index) => ({ rule, index })).filter(({ rule }) => rule.category === category && (!query || `${rule.category} ${rule.questionId} ${questions.find((q) => q.id === rule.questionId)?.prompt || "Unknown question"} ${rule.answer}`.toLocaleLowerCase().includes(query)));
-  }
-  function renderRuleTable() {
-    const rows = filteredRules();
-    if (!rows.some(({ index }) => index === state.selectedRule)) state.selectedRule = null;
-    els.tableBody.innerHTML = rows.map(({ rule, index }) => `<tr data-index="${index}" class="${index === state.selectedRule ? "selected" : ""}"><td>${escapeHtml(rule.category)}</td><td>${escapeHtml(rule.questionId)}</td><td>${escapeHtml(questions.find((q) => q.id === rule.questionId)?.prompt || "Unknown question")}</td><td>${escapeHtml(rule.answer)}</td><td class="weight ${rule.weight < 0 ? "negative" : "positive"}">${rule.weight >= 0 ? "+" : ""}${Number(rule.weight).toFixed(3)}</td></tr>`).join("");
-    els.deleteRule.disabled = state.selectedRule === null;
-  }
-  function syncCategory(category) { if ([...els.category.options].some((option) => option.value === category)) els.category.value = category; if ([...els.categoryFilter.options].some((option) => option.value === category)) els.categoryFilter.value = category; renderRuleTable(); }
-  function clearEditor() { state.editingRule = null; els.addUpdate.textContent = "Add rule"; els.weight.value = "10"; populateAnswers(); }
-  function editRule(index) { const rule = state.draftRules[index]; if (!rule) return; state.editingRule = index; syncCategory(rule.category); els.question.value = rule.questionId; populateAnswers(rule.answer); els.weight.value = rule.weight; els.addUpdate.textContent = "Update rule"; }
-  function addOrUpdateRule() {
-    const rule = normalizeRule({ category: els.category.value, questionId: els.question.value, answer: els.answer.value, weight: els.weight.value, source: "Custom" });
-    if (!rule || rule.weight < -1000 || rule.weight > 1000) return showToast("Choose a category, question, answer, and weight from -1000 to 1000.", true);
-    if (state.editingRule === null) state.draftRules.push(rule); else state.draftRules[state.editingRule] = rule;
-    refreshCategoryControls(rule.category); clearEditor(); renderRuleTable();
-  }
-  function saveAndApply() { state.rules = clone(state.draftRules); localStorage.setItem(RULES_KEY, JSON.stringify({ version: 1, rules: state.rules })); renderScores(); showToast("Custom rules updated in Model & Predictions. Default and trained panels remain fixed for comparison."); }
-  function restoreDefaults() { if (!confirm("Replace the current draft with the diagnosis-sheet defaults?")) return; state.rules = clone(defaultRules); state.draftRules = clone(defaultRules); localStorage.setItem(RULES_KEY, JSON.stringify({ version: 1, rules: state.rules })); refreshCategoryControls(); clearEditor(); renderRuleTable(); renderScores(); showToast("Workbook defaults restored."); }
-
   let toastTimer;
   function showToast(message, error = false) { clearTimeout(toastTimer); els.toast.textContent = message; els.toast.classList.toggle("error", error); els.toast.classList.add("show"); toastTimer = setTimeout(() => els.toast.classList.remove("show"), 3200); }
 
-  document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => { const target = tab.dataset.view; document.querySelectorAll(".tab").forEach((item) => { const active = item.dataset.view === target; item.classList.toggle("active", active); item.setAttribute("aria-selected", active); }); document.querySelectorAll(".view").forEach((view) => view.classList.remove("active")); $(`${target}-view`).classList.add("active"); }));
   els.list.addEventListener("click", (event) => { const button = event.target.closest("[data-index]"); if (button) { state.current = Number(button.dataset.index); renderQuestion(); } });
   els.options.addEventListener("change", (event) => setAnswerFromControl(event.target));
   els.options.addEventListener("input", (event) => { if (event.target.matches(".free-answer")) setAnswerFromControl(event.target); });
@@ -191,21 +151,9 @@
   drop.addEventListener("keydown", (event) => { if (["Enter", " "].includes(event.key)) { event.preventDefault(); els.sessionFile.click(); } });
   document.addEventListener("dragover", (event) => { if (event.dataTransfer.types.includes("Files")) { event.preventDefault(); if (!gate.hidden) return; drop.classList.add("dragging"); } });
   document.addEventListener("dragleave", (event) => { if (!event.relatedTarget) drop.classList.remove("dragging"); });
-  document.addEventListener("drop", (event) => { event.preventDefault(); drop.classList.remove("dragging"); if (!gate.hidden) return; const files = event.dataTransfer.files; if (files.length !== 1) return showToast("Drop one patient JSON file at a time.", true); document.querySelector('.tab[data-view="questionnaire"]').click(); loadSession(files[0]); });
-  els.category.addEventListener("change", () => syncCategory(els.category.value)); els.categoryFilter.addEventListener("change", () => { syncCategory(els.categoryFilter.value); clearEditor(); }); els.question.addEventListener("change", () => populateAnswers()); els.search.addEventListener("input", renderRuleTable);
-  els.addUpdate.addEventListener("click", addOrUpdateRule); $("clear-editor").addEventListener("click", clearEditor);
-  els.tableBody.addEventListener("click", (event) => { const row = event.target.closest("tr[data-index]"); if (!row) return; state.selectedRule = Number(row.dataset.index); els.tableBody.querySelectorAll("tr").forEach((item) => item.classList.toggle("selected", item === row)); els.deleteRule.disabled = false; });
-  els.tableBody.addEventListener("dblclick", (event) => { const row = event.target.closest("tr[data-index]"); if (row) editRule(Number(row.dataset.index)); });
-  els.deleteRule.addEventListener("click", () => { if (state.selectedRule === null) return; state.draftRules.splice(state.selectedRule, 1); state.selectedRule = null; refreshCategoryControls(els.categoryFilter.value); clearEditor(); renderRuleTable(); });
-  $("save-apply").addEventListener("click", saveAndApply); $("restore-defaults").addEventListener("click", restoreDefaults);
-
+  document.addEventListener("drop", (event) => { event.preventDefault(); drop.classList.remove("dragging"); if (!gate.hidden) return; const files = event.dataTransfer.files; if (files.length !== 1) return showToast("Drop one patient JSON file at a time.", true); loadSession(files[0]); });
   window.NebulaApp = {
-    snapshot: (model='default') => clone({ answers:state.answers, rules:activeRules(model), configuredRules:state.rules, patient:state.casePatient, model:model==='trained'?'Trained multi-label model':'Original workbook defaults' }), downloadJson,
-    stageTrained: () => {
-      if (!confirm('Replace the configuration draft with experimental trained weights? Your active rules stay unchanged until Save and apply.')) return;
-      state.draftRules=clone(window.NEBULA_TRAINED.rules); refreshCategoryControls(); clearEditor(); renderRuleTable();
-      document.querySelector('.tab[data-view="configuration"]').click(); showToast('Trained weights copied to draft. Review before Save and apply.');
-    }
+    snapshot: (model='default') => clone({ answers:state.answers, rules:activeRules(model), configuredRules:state.rules, patient:state.casePatient, model:model==='trained'?'Trained AI Model':'Initially Defined Weights' }), downloadJson
   };
-  els.visitDate.value = new Date().toISOString().slice(0, 10); refreshCategoryControls(); populateQuestionSelect(); renderRuleTable(); renderQuestion();
+  els.visitDate.value = new Date().toISOString().slice(0, 10); renderQuestion();
 })();

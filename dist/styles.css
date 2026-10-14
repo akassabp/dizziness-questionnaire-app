@@ -65,7 +65,7 @@ summary { cursor:pointer; padding:10px 0; font-weight:600; }
 .patient-drop.dragging,.patient-drop:focus { outline:2px solid var(--teal); background:#d9f3f5; }
 #case-summary { display:block; margin-top:3px; color:var(--teal-dark); max-height:64px; overflow:auto; }
 .view.active { display:flex; height:100%; min-height:0; flex-direction:column; }
-.view-header { display:grid; grid-template-columns:minmax(200px,1fr) auto minmax(200px,1fr); align-items:center; gap:16px; margin-bottom:8px; }
+.view-header { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:8px; flex-wrap:wrap; }
 .view-header h1 { margin:0; color:#11333c; font-size:22px; line-height:1.15; }
 .view-header p { margin:3px 0 0; color:var(--muted); }
 .header-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; }
