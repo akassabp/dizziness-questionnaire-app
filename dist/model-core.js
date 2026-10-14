@@ -56,6 +56,22 @@
   function metrics(rules, records) {
     return multiMetrics(records, records.map(r => score(rules, r.answers)));
   }
+  function rankingMetrics(records, scores) {
+    let pairwise=0,rank=0,top1=0,recall3=0;
+    records.forEach((r,i)=>{
+      // Match the UI: support first, then net points, then category name.
+      const entries=Object.entries(scores[i]).sort((a,b)=>b[1].percent-a[1].percent||b[1].points-a[1].points||a[0].localeCompare(b[0]));
+      const others=entries.filter(([c])=>!r.labels.includes(c));let correct=0;
+      for(const c of r.labels){
+        rank+=(entries.findIndex(([name])=>name===c)+1)/r.labels.length/records.length;
+        for(const [,s] of others){const p=scores[i][c],d=p.percent-s.percent||p.points-s.points;correct+=d>0?1:d===0?0.5:0;}
+      }
+      pairwise+=(others.length?correct/(r.labels.length*others.length):1)/records.length;
+      top1+=Number(r.labels.includes(entries[0][0]))/records.length;
+      recall3+=entries.slice(0,3).filter(([c])=>r.labels.includes(c)).length/r.labels.length/records.length;
+    });
+    return {pairwiseConcordance:pairwise,meanRecordedRank:rank,top1Recorded:top1,recallAt3:recall3};
+  }
   function multiMetrics(records, scores) {
     const categories=[...new Set(records.flatMap(r=>r.labels))].sort(), byClass={};
     for(const c of categories) {
@@ -65,7 +81,7 @@
       byClass[c]={positiveCount:pos.length,assumedNegativeCount:neg.length,positiveSupport:mean(pos),otherSupport:mean(neg),balancedSquaredError:(mean(pos.map(v=>(1-v)**2))+mean(neg.map(v=>v*v)))/2};
     }
     const avg=key=>categories.reduce((s,c)=>s+byClass[c][key],0)/categories.length;
-    return {n:records.length,byClass,positiveSupport:avg('positiveSupport'),otherSupport:avg('otherSupport'),balancedSquaredError:avg('balancedSquaredError')};
+    return {n:records.length,byClass,positiveSupport:avg('positiveSupport'),otherSupport:avg('otherSupport'),balancedSquaredError:avg('balancedSquaredError'),ranking:rankingMetrics(records,scores)};
   }
   function mergeRecords(records, questions) {
     const groups=new Map();
@@ -90,7 +106,9 @@
     return {n:labels.length, correct, accuracy:correct / labels.length,
       macroRecall:Object.values(byClass).reduce((s,c) => s+c.correct/c.total,0)/Object.keys(byClass).length, byClass, confusion};
   }
-  function fit(rules, records) {
+  function fit(rules, records, options={}) {
+    const mode=options.objective||'pairwise-ranking';
+    if(!['pairwise-ranking','support'].includes(mode))throw new Error('Unknown training objective');
     const baseline = integerBaseline(rules), weights = [...baseline];
     const cats = [...new Set(rules.map(r=>r.category))];
     const catIndex = rules.map(r=>cats.indexOf(r.category));
@@ -111,10 +129,16 @@
       let loss=0, positiveMean=0, otherMean=0;
       records.forEach((p,n) => {
         const points=cats.map(()=>0); weights.forEach((w,i)=>points[catIndex[i]]+=w*hits[n][i]);
+        const supports=points.map((v,i)=>Math.max(0,Math.min(1,v/Math.max(available[i],1))));
+        if(mode==='pairwise-ranking'){
+          const negatives=cats.filter(c=>!p.labels.includes(c));
+          for(const positive of p.labels)for(const negative of negatives)
+            loss+=Math.max(0,0.1-supports[cats.indexOf(positive)]+supports[cats.indexOf(negative)])**2/(records.length*p.labels.length*negatives.length);
+        }
         for(const c of evaluated) {
           const support=Math.max(0,Math.min(1,points[cats.indexOf(c)]/Math.max(available[cats.indexOf(c)],1)));
           const positive=p.labels.includes(c);
-          loss+=(support-(positive?1:0))**2 / (positive?counts[c]:records.length-counts[c]) / 2 / evaluated.length;
+          if(mode==='support')loss+=(support-(positive?1:0))**2 / (positive?counts[c]:records.length-counts[c]) / 2 / evaluated.length;
           if(positive)positiveMean+=support/counts[c]/evaluated.length;
           else otherMean+=support/(records.length-counts[c])/evaluated.length;
         }
@@ -137,5 +161,5 @@
     }
     return {rules:rules.map((r,i)=>({...r,weight:weights[i],source:'Experimental integer calibration'})), objective:best, sweeps, moves, baseline, lower, upper};
   }
-  return {norm, values, matched, score, prediction, sanitize, integerBaseline, metrics, multiMetrics, mergeRecords, evaluate, fit};
+  return {norm, values, matched, score, prediction, sanitize, integerBaseline, metrics, multiMetrics, rankingMetrics, mergeRecords, evaluate, fit};
 });

@@ -18,6 +18,10 @@ assert.equal(M.prediction({A:{percent:0},B:{percent:0}}),'Uncertain / tied');
 assert.equal(M.prediction({A:{percent:10},B:{percent:10}}),'Uncertain / tied');
 const fixture=[{category:'A',questionId:'1',answer:'x',weight:10},{category:'A',questionId:'1',answer:'y',weight:-2}];
 assert.deepEqual(M.score(fixture,{'1':['x','y']}),{A:{points:8,available:10,percent:80}});
+const rankScores={A:{points:20,percent:20},B:{points:10,percent:10},C:{points:0,percent:0}};
+assert.deepEqual(M.rankingMetrics([{labels:['A','B']}],[rankScores]),{pairwiseConcordance:1,meanRecordedRank:1.5,top1Recorded:1,recallAt3:1});
+assert.equal(M.rankingMetrics([{labels:['C']}],[rankScores]).pairwiseConcordance,0);
+assert.equal(M.rankingMetrics([{labels:['A']}],[{A:{points:0,percent:0},B:{points:0,percent:0}}]).pairwiseConcordance,0.5);
 if(process.argv[2]) {
   const fs=require('node:fs');const cohort=JSON.parse(fs.readFileSync(process.argv[2]));
   const records=M.mergeRecords(cohort.records,D.questions);
@@ -29,5 +33,10 @@ if(process.argv[2]) {
   assert.deepEqual(M.fit(D.rules,records).rules,T.rules);
   assert.ok(T.metrics.trained.positiveSupport>=T.metrics.integerBaseline.positiveSupport);
   assert.ok(T.metrics.trained.otherSupport<=T.metrics.integerBaseline.otherSupport+0.0005);
+  assert.equal(T.training.objectiveName,'pairwise-ranking');
+  assert.deepEqual(M.metrics(M.fit(D.rules,records,{objective:'support'}).rules,records),T.metrics.previousSupportModel);
+  assert.ok(T.metrics.trained.ranking.pairwiseConcordance>T.metrics.previousSupportModel.ranking.pairwiseConcordance);
+  assert.ok(T.metrics.trained.ranking.meanRecordedRank<T.metrics.previousSupportModel.ranking.meanRecordedRank);
+  D.rules.forEach((r,i)=>{if(!records.some(p=>M.matched(r,p.answers))||!records.some(p=>p.labels.includes(r.category)))assert.equal(T.rules[i].weight,baseline[i]);});
 }
 console.log('PASS: integer weights, unchanged rule identities/signs, bounds, frozen rule-outs, fixed budgets, scoring, ties, reproducible fit/metrics.');
