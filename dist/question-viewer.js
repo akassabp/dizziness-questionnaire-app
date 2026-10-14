@@ -19,6 +19,7 @@
     }).join('');
     $('review-page').textContent=`Questions ${start+1}–${Math.min(start+12,questions.length)} of ${questions.length} · Page ${page+1} of ${pages}`;
     $('review-previous').disabled=page===0;$('review-next').disabled=page===pages-1;
+    $('review-cards').scrollTop=0;
   }
   function switchView(review){
     if($('score-dialog').open)$('score-dialog').close();
