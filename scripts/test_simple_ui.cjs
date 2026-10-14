@@ -36,6 +36,7 @@ await page.locator('#answer-options input').first().check();
 const downloadPromise=page.waitForEvent('download');await page.click('#export-json');const download=await downloadPromise;
 const exported=JSON.parse(fs.readFileSync(await download.path(),'utf8'));
 assert.equal(exported.format,'nebula-patient-case');assert.equal(exported.version,1);
+assert.equal(exported.questionnaire_revision,'km2-attack-tinnitus-v1');
 assert.deepEqual(exported.patient.recorded_labels,[]);assert.equal(exported.patient.age,42);assert.equal(exported.patient.sex,'Female');assert.equal(exported.scores,undefined);
 assert.equal(Object.keys(exported.answers).length,1);
 await page.click('#new-questionnaire');await page.setInputFiles('#session-file',{name:'roundtrip.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(exported))});
@@ -77,6 +78,18 @@ assert.match(await page.locator('td.effect-negative:nth-child(3)').first().inner
 assert.match(await page.locator('.rule-potential.effect-negative').first().innerText(),/^-/);
 await page.locator('#close-score-dialog').click();
 assert.deepEqual(dialogs,[]);
+// Old constant-tinnitus answers must never be silently reinterpreted.
+const tinnitus={patient:{anonymous_id:'OLD-TINNITUS'},answers:{'259416':'Yes, left ear only'}};
+await page.setInputFiles('#session-file',{name:'old.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(tinnitus))});
+await page.waitForFunction(()=>document.querySelector('#patient-id').value==='OLD-TINNITUS');
+assert.equal(await page.evaluate(()=>NebulaApp.snapshot().answers['259416']),undefined);
+const oldExport=page.waitForEvent('download');await page.click('#export-json');
+const preserved=JSON.parse(fs.readFileSync(await (await oldExport).path(),'utf8'));
+assert.deepEqual(preserved.unscored_answers['259416'],{reason:'legacy_tinnitus_wording_requires_new_answer',values:['Yes, left ear only']});
+await page.setInputFiles('#session-file',{name:'corrected.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({...tinnitus,questionnaire_revision:'km2-attack-tinnitus-v1',patient:{anonymous_id:'NEW-TINNITUS'}}))});
+await page.waitForFunction(()=>document.querySelector('#patient-id').value==='NEW-TINNITUS');
+assert.equal(await page.evaluate(()=>NebulaApp.snapshot().answers['259416']),'Yes, left ear only');
+assert.match(await page.evaluate(()=>NEBULA_DATA.questions.find(q=>q.id==='259416').prompt),/before or during a dizziness attack/);
 for(const width of [1440,1280,390]){await page.setViewportSize({width,height:900});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
 await browser.close();console.log('PASS: single page, renamed panels, both explanations, drag/drop, case loading, privacy and responsive layout.');
 })().catch(e=>{console.error(e);process.exit(1);});

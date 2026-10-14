@@ -99,7 +99,7 @@
     state.modified=true;
     if(clean(els.patientId.value))els.patientId.value=modifiedId(clean(els.patientId.value));
   }
-  function resetQuestionnaire() { state.answers = {}; state.modified=false; state.casePatient = null; state.caseWarnings = null; state.current = 0; els.patientId.value = ""; $("patient-age").value = ""; $("patient-age").title = ""; $("patient-sex").value = ""; renderQuestion(); document.dispatchEvent(new Event('nebula:case-reset')); }
+  function resetQuestionnaire() { state.answers = {}; state.modified=false; state.casePatient = null; state.caseWarnings = null; state.caseUnscored = {}; state.current = 0; els.patientId.value = ""; $("patient-age").value = ""; $("patient-age").title = ""; $("patient-sex").value = ""; renderQuestion(); document.dispatchEvent(new Event('nebula:case-reset')); }
   function downloadJson(value, filename) { const url = URL.createObjectURL(new Blob([JSON.stringify(value, null, 2)], { type: "application/json" })); const anchor = document.createElement("a"); anchor.href = url; anchor.download = filename; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 0); }
   function exportCase() {
     const ageInput=$("patient-age"), age=ageInput.value===''?null:Number(ageInput.value);
@@ -108,7 +108,7 @@
     if(state.modified)patientId=modifiedId(patientId);
     els.patientId.value=patientId;
     const now = new Date(), stamp = now.toISOString().replace(/[-:]/g, "").slice(0, 15), safeId = patientId.replace(/[^a-z0-9_-]/gi, "_");
-    downloadJson({ format:"nebula-patient-case",version:1,patient: { anonymous_id:patientId,age,sex:$("patient-sex").value||null,recorded_labels:state.casePatient?.recorded_labels||[],age_conflict:age===null&&state.casePatient?.age_conflict===true }, import_warnings: state.caseWarnings || {}, answers: clone(state.answers) }, `${safeId}_${stamp}.json`);
+    downloadJson({ format:"nebula-patient-case",version:1,questionnaire_revision:defaults.questionnaireRevision,patient: { anonymous_id:patientId,age,sex:$("patient-sex").value||null,recorded_labels:state.casePatient?.recorded_labels||[],age_conflict:age===null&&state.casePatient?.age_conflict===true }, import_warnings: state.caseWarnings || {}, unscored_answers:state.caseUnscored||{}, answers: clone(state.answers) }, `${safeId}_${stamp}.json`);
   }
   async function loadSession(file) {
     try {
@@ -116,10 +116,18 @@
       const payload = JSON.parse(await file.text());
       if (!payload || !payload.answers || typeof payload.answers !== "object" || Array.isArray(payload.answers)) throw new Error("Choose a patient or session JSON file containing answers.");
       if (payload.format && (payload.format !== "nebula-patient-case" || payload.version !== 1)) throw new Error("Unsupported patient file format.");
-      const answers = {}; let skipped = 0;
+      const answers = {}, unscored = {}; let skipped = 0, legacyTinnitus = 0;
+      for(const [id,item] of Object.entries(payload.unscored_answers||{})){
+        const q=questions.find(q=>q.id===id);
+        if(q&&item&&typeof item.reason==='string'&&Array.isArray(item.values))unscored[id]={reason:item.reason.slice(0,100),values:item.values.filter(v=>typeof v==='string'&&q.options?.includes(v))};
+      }
       for (const [id, value] of Object.entries(payload.answers)) {
         const q = questions.find((item) => item.id === id);
         if (!q || q.kind === "text") { skipped++; continue; }
+        if(id==='259416'&&payload.questionnaire_revision!==defaults.questionnaireRevision){
+          const values=(Array.isArray(value)?value:[value]).filter(v=>typeof v==='string'&&q.options.includes(v));
+          unscored[id]={reason:'legacy_tinnitus_wording_requires_new_answer',values};legacyTinnitus++;skipped++;continue;
+        }
         if (q.kind === "single" || q.kind === "multi") {
           const values = Array.isArray(value) ? value : [value];
           if (values.some((v) => typeof v !== "string" || !q.options.includes(v)) || (q.kind === "single" && values.length !== 1) || (values.length > 1 && values.some((v) => normalized(v) === "none of the above"))) { skipped++; continue; }
@@ -128,13 +136,15 @@
         else if (q.kind === "date" && typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) answers[id] = value;
         else skipped++;
       }
-      if (!Object.keys(answers).length && Object.keys(payload.answers).length) throw new Error("No answers match the current questionnaire.");
+      if (!Object.keys(answers).length && Object.keys(payload.answers).length&&!legacyTinnitus) throw new Error("No answers match the current questionnaire.");
       resetQuestionnaire();
       const patient = payload.patient && typeof payload.patient === "object" ? payload.patient : {};
       const field = (key) => typeof patient[key] === "string" ? patient[key].slice(0, 200) : "";
       const labels=Array.isArray(patient.recorded_labels)?patient.recorded_labels:[field('recorded_label')];
       state.casePatient = { age: Number.isInteger(patient.age) && patient.age >= 0 && patient.age <= 120 ? patient.age : null, sex: field("sex"), recorded_labels:[...new Set(labels.filter(v=>typeof v==='string'&&defaults.rules.some(r=>r.category===v)))],age_conflict:patient.age_conflict===true };
       state.caseWarnings = payload.import_warnings && typeof payload.import_warnings === "object" ? Object.fromEntries(Object.entries(payload.import_warnings).filter(([k,v]) => /^[a-z_]+$/.test(k) && Number.isInteger(v) && v >= 0)) : {};
+      state.caseUnscored=unscored;
+      if(legacyTinnitus)state.caseWarnings.legacy_tinnitus_requires_new_answer=legacyTinnitus;
       els.patientId.value = field("anonymous_id");
       $("patient-age").value = state.casePatient.age_conflict ? "" : state.casePatient.age ?? "";
       $("patient-age").title = state.casePatient.age_conflict ? "Conflicting source ages" : "";

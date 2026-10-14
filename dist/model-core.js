@@ -92,7 +92,7 @@
     }
     return [...groups.values()].map((rs,i)=>{
       const ages=[...new Set(rs.map(r=>r.age).filter(v=>v!=null))], sexes=[...new Set(rs.map(r=>r.sex).filter(Boolean))];
-      return {id:`PATIENT-${String(i+1).padStart(3,'0')}`,labels:[...new Set(rs.map(r=>r.label))].sort(),answers:sanitize(rs[0].answers,questions),age:ages.length===1?ages[0]:null,sex:sexes.length===1?sexes[0]:null,ageConflict:ages.length>1,sourceCaseIds:rs.map(r=>r.id),sourceAnswerFingerprint:rs[0].sourceAnswerFingerprint,issues:rs[0].issues};
+      return {id:`PATIENT-${String(i+1).padStart(3,'0')}`,labels:[...new Set(rs.map(r=>r.label))].sort(),answers:sanitize(rs[0].answers,questions),unscoredAnswers:rs[0].unscoredAnswers||{},mappingAudit:rs.map(r=>({sourceCaseId:r.id,mappings:r.mappingAudit||[]})),age:ages.length===1?ages[0]:null,sex:sexes.length===1?sexes[0]:null,ageConflict:ages.length>1,sourceCaseIds:rs.map(r=>r.id),sourceAnswerFingerprint:rs[0].sourceAnswerFingerprint,issues:rs[0].issues};
     });
   }
   function evaluate(labels, predictions) {

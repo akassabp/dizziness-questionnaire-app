@@ -1,5 +1,6 @@
 window.NEBULA_DATA = {
-  "version": 2,
+  "version": 3,
+  "questionnaireRevision": "km2-attack-tinnitus-v1",
   "sourceWorkbook": "OTO Dizziness Questionnaire -Nebula cloud 5-9-241_KM2.xlsx",
   "questions": [
     {
@@ -369,7 +370,7 @@ window.NEBULA_DATA = {
     },
     {
       "id": "259416",
-      "prompt": "Do you have ringing, buzzing, or other noise in your ears that is there all the time?",
+      "prompt": "I have a roaring or ringing in one ear only before or during a dizziness attack?",
       "kind": "single",
       "options": [
         "No",

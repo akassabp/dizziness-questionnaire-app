@@ -5,6 +5,7 @@ if(!process.argv[2])throw new Error('Usage: node scripts/train_model.cjs PRIVATE
 const source=path.resolve(process.argv[2]),repo=path.resolve(__dirname,'..');
 if(source.startsWith(repo+path.sep))throw new Error('Keep patient data outside the public repository.');
 const input=fs.readFileSync(source),cohort=JSON.parse(input),records=M.mergeRecords(cohort.records,D.questions);
+if(cohort.questionnaireRevision!==D.questionnaireRevision)throw new Error('Re-extract source data for the current questionnaire revision before training.');
 // Keep identical modeled profiles together even when omitted source answers differ.
 const groups=new Map();records.forEach((r,i)=>{const key=JSON.stringify(Object.entries(r.answers).sort().map(([k,v])=>[k,Array.isArray(v)?[...v].sort():v]));if(!groups.has(key))groups.set(key,[]);groups.get(key).push(i);});
 const folds=[[],[],[]],counts=[{},{},{}];
@@ -15,7 +16,7 @@ for(const ids of [...groups.values()].sort((a,b)=>b.length-a.length||a[0]-b[0]))
 const oof=[],supportOof=[];
 for(const fold of folds){const held=new Set(fold),training=records.filter((_,i)=>!held.has(i)),model=M.fit(D.rules,training),support=M.fit(D.rules,training,{objective:'support'});fold.forEach(i=>{oof[i]=M.score(model.rules,records[i].answers);supportOof[i]=M.score(support.rules,records[i].answers);});}
 const fit=M.fit(D.rules,records),previousSupportFit=M.fit(D.rules,records,{objective:'support'}),rounded=D.rules.map((r,i)=>({...r,weight:fit.baseline[i]}));
-const report={version:3,method:'Expert-constrained multi-label pairwise ranking scorecard',trainedAt:new Date().toISOString(),sourceHash:crypto.createHash('sha256').update(input).digest('hex'),rules:fit.rules,
+const report={version:4,questionnaireRevision:D.questionnaireRevision,method:'Expert-constrained multi-label pairwise ranking scorecard',trainedAt:new Date().toISOString(),sourceHash:crypto.createHash('sha256').update(input).digest('hex'),rules:fit.rules,
  metrics:{default:M.metrics(D.rules,records),integerBaseline:M.metrics(rounded,records),previousSupportModel:M.metrics(previousSupportFit.rules,records),trained:M.metrics(fit.rules,records),crossValidation:M.multiMetrics(records,oof),previousSupportCrossValidation:M.multiMetrics(records,supportOof)},
  constraints:{radiusFraction:0.25,minimumRadius:1,integerOnly:true,signsPreserved:true,categoryPositiveAndNegativeBudgets:'Fixed at rounded original totals',ruleOutMinus100:'Frozen',unobservedRules:'Frozen at integer baseline',regularization:0.002,maxSweeps:30},
  training:{sourceEntries:cohort.records.length,mergedPatients:records.length,multiLabelPatients:records.filter(r=>r.labels.length>1).length,ageConflicts:records.filter(r=>r.ageConflict).length,foldSizes:folds.map(f=>f.length),objectiveName:'pairwise-ranking',loss:'Patient-balanced squared hinge on clipped support differences plus weight displacement regularization',margin:0.1,comparisonClasses:'All displayed categories; positive versus unrecorded only',objective:fit.objective,sweeps:fit.sweeps,moves:fit.moves},
@@ -25,5 +26,9 @@ report.constraints.negativeLabels='Assumed from absence among merged source labe
 fs.writeFileSync(path.join(repo,'dist/trained-model.js'),'window.NEBULA_TRAINED = '+JSON.stringify(report,null,2)+';\n');
 fs.writeFileSync(path.join(path.dirname(source),'training-audit-ranking.json'),JSON.stringify({records,folds:folds.map(f=>f.map(i=>records[i].id)),oof,supportOof,previousSupportRules:previousSupportFit.rules},null,2));
 const caseDir=path.resolve(path.dirname(source),'../patient-cases-multilabel');fs.mkdirSync(caseDir,{recursive:true});
-for(const r of records){const existing=fs.readdirSync(caseDir).filter(n=>n===r.id+'.json'||new RegExp('^\\d{3}-'+r.id+'\\.json$').test(n));if(existing.length>1)throw new Error('Duplicate case filenames; review local folder.');fs.writeFileSync(path.join(caseDir,existing[0]||r.id+'.json'),JSON.stringify({format:'nebula-patient-case',version:1,patient:{anonymous_id:r.id,age:r.age,sex:r.sex,recorded_labels:r.labels,age_conflict:r.ageConflict},answers:r.answers,import_warnings:r.issues},null,2));}
+for(const r of records){
+ const existing=fs.readdirSync(caseDir).filter(n=>n===r.id+'.json'||new RegExp('^\\d{3}-'+r.id+'\\.json$').test(n));
+ if(existing.length>1)throw new Error('Duplicate case filenames; review local folder.');
+ fs.writeFileSync(path.join(caseDir,existing[0]||r.id+'.json'),JSON.stringify({format:'nebula-patient-case',version:1,questionnaire_revision:D.questionnaireRevision,patient:{anonymous_id:r.id,age:r.age,sex:r.sex,recorded_labels:r.labels,age_conflict:r.ageConflict},answers:r.answers,unscored_answers:r.unscoredAnswers,import_warnings:r.issues},null,2));
+}
 console.log(JSON.stringify({training:report.training,metrics:Object.fromEntries(Object.entries(report.metrics).map(([k,v])=>[k,{positiveSupport:v.positiveSupport,otherSupport:v.otherSupport,error:v.balancedSquaredError,ranking:v.ranking}]))},null,2));

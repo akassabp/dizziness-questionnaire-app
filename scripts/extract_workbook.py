@@ -2,17 +2,18 @@ from __future__ import annotations
 
 import json
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 
 APP_DIR = Path(__file__).resolve().parents[1]
 PROJECT_DIR = APP_DIR.parent
-sys.path.insert(0, str(PROJECT_DIR))
+sys.path.insert(0, str(PROJECT_DIR / "archive" / "legacy-desktop-source"))
 
 from scoring_core import build_default_rules, load_questions, normalized  # noqa: E402
 
 
-WORKBOOK_PATH = PROJECT_DIR / "OTO Dizziness Questionnaire -Nebula cloud 5-9-241_KM2.xlsx"
+WORKBOOK_PATH = PROJECT_DIR / "data" / "reference" / "OTO Dizziness Questionnaire -Nebula cloud 5-9-241_KM2.xlsx"
 OUTPUT_PATH = APP_DIR / "dist" / "questionnaire-data.js"
 
 BRANCHING_QUESTIONS = {
@@ -24,6 +25,10 @@ BRANCHING_QUESTIONS = {
 
 def main() -> None:
     questions = load_questions(WORKBOOK_PATH)
+    # Explicit KM2 Sheet1!F39 edit; the old constant-tinnitus wording is not equivalent.
+    questions = [replace(q, prompt="I have a roaring or ringing in one ear only before or during a dizziness attack?") if q.question_id == "259416" else q for q in questions]
+    # Preserve the separately requested standing-up option when rebuilding defaults.
+    questions = [replace(q, options=q.options[:5] + ["standing up"] + q.options[5:]) if q.question_id == "259371" and "standing up" not in q.options else q for q in questions]
     workbook_rules = build_default_rules(WORKBOOK_PATH, questions)
     rules = [
         {
@@ -50,7 +55,8 @@ def main() -> None:
         all_questions.append(item)
 
     payload = {
-        "version": 2,
+        "version": 3,
+        "questionnaireRevision": "km2-attack-tinnitus-v1",
         "sourceWorkbook": WORKBOOK_PATH.name,
         "questions": all_questions,
         "rules": rules,

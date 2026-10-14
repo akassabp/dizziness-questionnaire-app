@@ -1,8 +1,9 @@
 window.NEBULA_TRAINED = {
-  "version": 3,
+  "version": 4,
+  "questionnaireRevision": "km2-attack-tinnitus-v1",
   "method": "Expert-constrained multi-label pairwise ranking scorecard",
-  "trainedAt": "2026-10-14T20:09:13.177Z",
-  "sourceHash": "7e6eb1de6d4b39dc039129457c6c517dcebb13cb0d8eac2800b6118ca8893fd0",
+  "trainedAt": "2026-10-14T22:26:07.922Z",
+  "sourceHash": "1a72fb25ebfbe0d69abba9e8705c0dae3239fdd368dd52e683874a81a7d34d77",
   "rules": [
     {
       "category": "BPPV",
@@ -112,7 +113,7 @@ window.NEBULA_TRAINED = {
       "category": "Neuritis",
       "questionId": "259362",
       "answer": "Yes",
-      "weight": 15,
+      "weight": 16,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -144,7 +145,7 @@ window.NEBULA_TRAINED = {
       "category": "Neuritis",
       "questionId": "260448",
       "answer": "Yes",
-      "weight": 14,
+      "weight": 13,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -184,7 +185,7 @@ window.NEBULA_TRAINED = {
       "category": "Meniere's",
       "questionId": "259369",
       "answer": "Days and can last continuously for weeks",
-      "weight": 4,
+      "weight": 3,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -200,7 +201,7 @@ window.NEBULA_TRAINED = {
       "category": "Meniere's",
       "questionId": "259417",
       "answer": "Yes, right ear only",
-      "weight": 8,
+      "weight": 7,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -208,7 +209,7 @@ window.NEBULA_TRAINED = {
       "category": "Meniere's",
       "questionId": "259417",
       "answer": "Yes, left ear only",
-      "weight": 6,
+      "weight": 4,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -216,7 +217,7 @@ window.NEBULA_TRAINED = {
       "category": "Meniere's",
       "questionId": "259418",
       "answer": "Yes, right ear only",
-      "weight": 7,
+      "weight": 6,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -224,7 +225,7 @@ window.NEBULA_TRAINED = {
       "category": "Meniere's",
       "questionId": "259418",
       "answer": "Yes, left ear only",
-      "weight": 6,
+      "weight": 4,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -232,7 +233,7 @@ window.NEBULA_TRAINED = {
       "category": "Meniere's",
       "questionId": "259416",
       "answer": "Yes, right ear only",
-      "weight": 6,
+      "weight": 4,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -240,7 +241,7 @@ window.NEBULA_TRAINED = {
       "category": "Meniere's",
       "questionId": "259416",
       "answer": "Yes, left ear only",
-      "weight": 6,
+      "weight": 8,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -256,7 +257,7 @@ window.NEBULA_TRAINED = {
       "category": "Meniere's",
       "questionId": "260450",
       "answer": "changes in the weather",
-      "weight": 3,
+      "weight": 4,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -280,7 +281,7 @@ window.NEBULA_TRAINED = {
       "category": "Meniere's",
       "questionId": "259363",
       "answer": "No",
-      "weight": 10,
+      "weight": 16,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -288,7 +289,7 @@ window.NEBULA_TRAINED = {
       "category": "Meniere's",
       "questionId": "259400",
       "answer": "no",
-      "weight": -6,
+      "weight": -8,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -296,7 +297,7 @@ window.NEBULA_TRAINED = {
       "category": "Meniere's",
       "questionId": "259416",
       "answer": "No",
-      "weight": -13,
+      "weight": -16,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -304,7 +305,7 @@ window.NEBULA_TRAINED = {
       "category": "Meniere's",
       "questionId": "259417",
       "answer": "No",
-      "weight": -25,
+      "weight": -19,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -320,7 +321,7 @@ window.NEBULA_TRAINED = {
       "category": "Meniere's",
       "questionId": "260448",
       "answer": "No",
-      "weight": -8,
+      "weight": -6,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -328,7 +329,7 @@ window.NEBULA_TRAINED = {
       "category": "Meniere's",
       "questionId": "260450",
       "answer": "none of the above",
-      "weight": -4,
+      "weight": -7,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -400,7 +401,7 @@ window.NEBULA_TRAINED = {
       "category": "Migraine",
       "questionId": "259369",
       "answer": "Days",
-      "weight": 3,
+      "weight": 2,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -440,7 +441,7 @@ window.NEBULA_TRAINED = {
       "category": "Migraine",
       "questionId": "259383",
       "answer": "Yes",
-      "weight": 12,
+      "weight": 13,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -568,7 +569,7 @@ window.NEBULA_TRAINED = {
       "category": "Migraine",
       "questionId": "259384",
       "answer": "No",
-      "weight": -11,
+      "weight": -10,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -584,7 +585,7 @@ window.NEBULA_TRAINED = {
       "category": "Migraine",
       "questionId": "260450",
       "answer": "none of the above",
-      "weight": -5,
+      "weight": -6,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -592,7 +593,7 @@ window.NEBULA_TRAINED = {
       "category": "PPPD",
       "questionId": "259361",
       "answer": "Gradual",
-      "weight": 16,
+      "weight": 19,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -624,7 +625,7 @@ window.NEBULA_TRAINED = {
       "category": "PPPD",
       "questionId": "259372",
       "answer": "stress, nerves, or anxiety",
-      "weight": 2,
+      "weight": 1,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -640,7 +641,7 @@ window.NEBULA_TRAINED = {
       "category": "PPPD",
       "questionId": "259372",
       "answer": "supermarket aisles, malls, or tunnels",
-      "weight": 2,
+      "weight": 1,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -696,7 +697,7 @@ window.NEBULA_TRAINED = {
       "category": "PPPD",
       "questionId": "259372",
       "answer": "traffic",
-      "weight": 1,
+      "weight": 2,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -720,7 +721,7 @@ window.NEBULA_TRAINED = {
       "category": "PPPD",
       "questionId": "259374",
       "answer": "unsteady when standing",
-      "weight": 12,
+      "weight": 10,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -912,7 +913,7 @@ window.NEBULA_TRAINED = {
       "category": "Bilateral",
       "questionId": "259356",
       "answer": "imbalance",
-      "weight": 9,
+      "weight": 10,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -920,7 +921,7 @@ window.NEBULA_TRAINED = {
       "category": "Bilateral",
       "questionId": "259356",
       "answer": "dizziness and imbalance",
-      "weight": 6,
+      "weight": 7,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -944,7 +945,7 @@ window.NEBULA_TRAINED = {
       "category": "Bilateral",
       "questionId": "259381",
       "answer": "Vision \"jumping\" or \"bouncing\" when walking or riding",
-      "weight": 30,
+      "weight": 28,
       "editable": true,
       "source": "Experimental integer calibration"
     },
@@ -986,9 +987,9 @@ window.NEBULA_TRAINED = {
         "Meniere's": {
           "positiveCount": 5,
           "assumedNegativeCount": 45,
-          "positiveSupport": 0.21679999999999996,
-          "otherSupport": 0.028733333333333333,
-          "balancedSquaredError": 0.32664736666666666
+          "positiveSupport": 0.23360000000000003,
+          "otherSupport": 0.026422222222222222,
+          "balancedSquaredError": 0.3147174555555555
         },
         "Migraine": {
           "positiveCount": 13,
@@ -1007,9 +1008,9 @@ window.NEBULA_TRAINED = {
         "PPPD": {
           "positiveCount": 7,
           "assumedNegativeCount": 43,
-          "positiveSupport": 0.33271428571428574,
-          "otherSupport": 0.1926976744186047,
-          "balancedSquaredError": 0.3249348588039867
+          "positiveSupport": 0.33885714285714286,
+          "otherSupport": 0.21093023255813959,
+          "balancedSquaredError": 0.3335407707641196
         },
         "Third Window": {
           "positiveCount": 3,
@@ -1019,14 +1020,14 @@ window.NEBULA_TRAINED = {
           "balancedSquaredError": 0.345436585106383
         }
       },
-      "positiveSupport": 0.3777402026544884,
-      "otherSupport": 0.20634055427880268,
-      "balancedSquaredError": 0.2772725066398853,
+      "positiveSupport": 0.3810177536748966,
+      "otherSupport": 0.20861504671143466,
+      "balancedSquaredError": 0.276797649618317,
       "ranking": {
-        "pairwiseConcordance": 0.7289285714285716,
-        "meanRecordedRank": 3.1900000000000017,
+        "pairwiseConcordance": 0.7278571428571429,
+        "meanRecordedRank": 3.200000000000002,
         "top1Recorded": 0.36000000000000004,
-        "recallAt3": 0.6200000000000002
+        "recallAt3": 0.6000000000000002
       }
     },
     "integerBaseline": {
@@ -1049,9 +1050,9 @@ window.NEBULA_TRAINED = {
         "Meniere's": {
           "positiveCount": 5,
           "assumedNegativeCount": 45,
-          "positiveSupport": 0.22400000000000003,
-          "otherSupport": 0.030444444444444448,
-          "balancedSquaredError": 0.32235222222222215
+          "positiveSupport": 0.24200000000000005,
+          "otherSupport": 0.027333333333333334,
+          "balancedSquaredError": 0.30841111111111114
         },
         "Migraine": {
           "positiveCount": 13,
@@ -1070,9 +1071,9 @@ window.NEBULA_TRAINED = {
         "PPPD": {
           "positiveCount": 7,
           "assumedNegativeCount": 43,
-          "positiveSupport": 0.33,
-          "otherSupport": 0.18883720930232561,
-          "balancedSquaredError": 0.32362607973421925
+          "positiveSupport": 0.3385714285714286,
+          "otherSupport": 0.20976744186046511,
+          "balancedSquaredError": 0.33277956810631226
         },
         "Third Window": {
           "positiveCount": 3,
@@ -1082,14 +1083,14 @@ window.NEBULA_TRAINED = {
           "balancedSquaredError": 0.3455468085106383
         }
       },
-      "positiveSupport": 0.37843156843156844,
-      "otherSupport": 0.2061949261542285,
-      "balancedSquaredError": 0.27646148670873233,
+      "positiveSupport": 0.3822274867989154,
+      "otherSupport": 0.2087405149323754,
+      "balancedSquaredError": 0.2757775406031583,
       "ranking": {
-        "pairwiseConcordance": 0.731607142857143,
-        "meanRecordedRank": 3.160000000000002,
+        "pairwiseConcordance": 0.7303571428571429,
+        "meanRecordedRank": 3.180000000000002,
         "top1Recorded": 0.36000000000000004,
-        "recallAt3": 0.6200000000000002
+        "recallAt3": 0.6000000000000002
       }
     },
     "previousSupportModel": {
@@ -1112,9 +1113,9 @@ window.NEBULA_TRAINED = {
         "Meniere's": {
           "positiveCount": 5,
           "assumedNegativeCount": 45,
-          "positiveSupport": 0.26,
-          "otherSupport": 0.03177777777777778,
-          "balancedSquaredError": 0.30042555555555556
+          "positiveSupport": 0.30799999999999994,
+          "otherSupport": 0.02822222222222222,
+          "balancedSquaredError": 0.2566277777777778
         },
         "Migraine": {
           "positiveCount": 13,
@@ -1126,33 +1127,33 @@ window.NEBULA_TRAINED = {
         "Neuritis": {
           "positiveCount": 10,
           "assumedNegativeCount": 40,
-          "positiveSupport": 0.253,
-          "otherSupport": 0.20600000000000004,
-          "balancedSquaredError": 0.3227875
+          "positiveSupport": 0.252,
+          "otherSupport": 0.20325000000000001,
+          "balancedSquaredError": 0.32277125
         },
         "PPPD": {
           "positiveCount": 7,
           "assumedNegativeCount": 43,
-          "positiveSupport": 0.3385714285714286,
-          "otherSupport": 0.18023255813953487,
-          "balancedSquaredError": 0.31313621262458474
+          "positiveSupport": 0.3614285714285715,
+          "otherSupport": 0.20348837209302326,
+          "balancedSquaredError": 0.31801926910299
         },
         "Third Window": {
           "positiveCount": 3,
           "assumedNegativeCount": 47,
           "positiveSupport": 0.2833333333333333,
-          "otherSupport": 0.03127659574468085,
-          "balancedSquaredError": 0.3444035460992908
+          "otherSupport": 0.03212765957446809,
+          "balancedSquaredError": 0.3441312056737589
         }
       },
-      "positiveSupport": 0.40247890205033066,
-      "otherSupport": 0.2061934143898518,
-      "balancedSquaredError": 0.262734624349141,
+      "positiveSupport": 0.4124584938870653,
+      "otherSupport": 0.20873646042238322,
+      "balancedSquaredError": 0.25713415124558325,
       "ranking": {
-        "pairwiseConcordance": 0.7594642857142857,
-        "meanRecordedRank": 2.9600000000000017,
-        "top1Recorded": 0.4000000000000001,
-        "recallAt3": 0.6800000000000003
+        "pairwiseConcordance": 0.7494642857142857,
+        "meanRecordedRank": 3.0100000000000016,
+        "top1Recorded": 0.38000000000000006,
+        "recallAt3": 0.6600000000000003
       }
     },
     "trained": {
@@ -1168,37 +1169,37 @@ window.NEBULA_TRAINED = {
         "Bilateral": {
           "positiveCount": 6,
           "assumedNegativeCount": 44,
-          "positiveSupport": 0.5383333333333334,
-          "otherSupport": 0.33068181818181813,
-          "balancedSquaredError": 0.19832689393939393
+          "positiveSupport": 0.5316666666666667,
+          "otherSupport": 0.3336363636363635,
+          "balancedSquaredError": 0.20004469696969696
         },
         "Meniere's": {
           "positiveCount": 5,
           "assumedNegativeCount": 45,
-          "positiveSupport": 0.262,
-          "otherSupport": 0.03333333333333333,
-          "balancedSquaredError": 0.29939
+          "positiveSupport": 0.32399999999999995,
+          "otherSupport": 0.03288888888888889,
+          "balancedSquaredError": 0.2470577777777778
         },
         "Migraine": {
           "positiveCount": 13,
           "assumedNegativeCount": 37,
-          "positiveSupport": 0.5107692307692309,
-          "otherSupport": 0.2902702702702703,
-          "balancedSquaredError": 0.19095176715176715
+          "positiveSupport": 0.5146153846153846,
+          "otherSupport": 0.2935135135135135,
+          "balancedSquaredError": 0.18997349272349268
         },
         "Neuritis": {
           "positiveCount": 10,
           "assumedNegativeCount": 40,
-          "positiveSupport": 0.255,
-          "otherSupport": 0.21075000000000005,
-          "balancedSquaredError": 0.32177875
+          "positiveSupport": 0.26,
+          "otherSupport": 0.21475,
+          "balancedSquaredError": 0.31972625
         },
         "PPPD": {
           "positiveCount": 7,
           "assumedNegativeCount": 43,
-          "positiveSupport": 0.3157142857142857,
-          "otherSupport": 0.16953488372093026,
-          "balancedSquaredError": 0.3190269102990033
+          "positiveSupport": 0.32428571428571434,
+          "otherSupport": 0.18558139534883722,
+          "balancedSquaredError": 0.3249705980066445
         },
         "Third Window": {
           "positiveCount": 3,
@@ -1208,14 +1209,14 @@ window.NEBULA_TRAINED = {
           "balancedSquaredError": 0.34528333333333333
         }
       },
-      "positiveSupport": 0.3826837923980782,
-      "otherSupport": 0.20007851063776347,
-      "balancedSquaredError": 0.26677791670875145,
+      "positiveSupport": 0.39307678036249455,
+      "otherSupport": 0.20376420433508508,
+      "balancedSquaredError": 0.2599634158641011,
       "ranking": {
-        "pairwiseConcordance": 0.7678571428571429,
-        "meanRecordedRank": 2.8600000000000017,
-        "top1Recorded": 0.38000000000000006,
-        "recallAt3": 0.7100000000000003
+        "pairwiseConcordance": 0.7557142857142858,
+        "meanRecordedRank": 2.9700000000000015,
+        "top1Recorded": 0.36000000000000004,
+        "recallAt3": 0.7000000000000003
       }
     },
     "crossValidation": {
@@ -1224,44 +1225,44 @@ window.NEBULA_TRAINED = {
         "BPPV": {
           "positiveCount": 11,
           "assumedNegativeCount": 39,
-          "positiveSupport": 0.5263636363636364,
-          "otherSupport": 0.33589743589743587,
-          "balancedSquaredError": 0.1916469696969697
+          "positiveSupport": 0.5254545454545455,
+          "otherSupport": 0.33743589743589747,
+          "balancedSquaredError": 0.19263426573426573
         },
         "Bilateral": {
           "positiveCount": 6,
           "assumedNegativeCount": 44,
-          "positiveSupport": 0.5316666666666667,
-          "otherSupport": 0.33295454545454534,
-          "balancedSquaredError": 0.20339962121212116
+          "positiveSupport": 0.5316666666666666,
+          "otherSupport": 0.33363636363636356,
+          "balancedSquaredError": 0.20378712121212117
         },
         "Meniere's": {
           "positiveCount": 5,
           "assumedNegativeCount": 45,
-          "positiveSupport": 0.24,
-          "otherSupport": 0.03177777777777778,
-          "balancedSquaredError": 0.31262333333333336
+          "positiveSupport": 0.27399999999999997,
+          "otherSupport": 0.03244444444444444,
+          "balancedSquaredError": 0.2860611111111111
         },
         "Migraine": {
           "positiveCount": 13,
           "assumedNegativeCount": 37,
-          "positiveSupport": 0.4715384615384616,
-          "otherSupport": 0.2886486486486486,
-          "balancedSquaredError": 0.21280509355509358
+          "positiveSupport": 0.4776923076923077,
+          "otherSupport": 0.29324324324324313,
+          "balancedSquaredError": 0.21116881496881496
         },
         "Neuritis": {
           "positiveCount": 10,
           "assumedNegativeCount": 40,
-          "positiveSupport": 0.248,
-          "otherSupport": 0.21850000000000006,
-          "balancedSquaredError": 0.33247249999999995
+          "positiveSupport": 0.24900000000000003,
+          "otherSupport": 0.22125000000000003,
+          "balancedSquaredError": 0.33257125
         },
         "PPPD": {
           "positiveCount": 7,
           "assumedNegativeCount": 43,
-          "positiveSupport": 0.31142857142857144,
-          "otherSupport": 0.17093023255813955,
-          "balancedSquaredError": 0.3232088039867109
+          "positiveSupport": 0.3185714285714286,
+          "otherSupport": 0.1911627906976744,
+          "balancedSquaredError": 0.3323393687707641
         },
         "Third Window": {
           "positiveCount": 3,
@@ -1271,14 +1272,14 @@ window.NEBULA_TRAINED = {
           "balancedSquaredError": 0.34514148936170214
         }
       },
-      "positiveSupport": 0.37223771466628613,
-      "otherSupport": 0.20163922825476513,
-      "balancedSquaredError": 0.2744711158779901,
+      "positiveSupport": 0.37900737357880215,
+      "otherSupport": 0.20599124241491878,
+      "balancedSquaredError": 0.2719576315941113,
       "ranking": {
-        "pairwiseConcordance": 0.7521428571428572,
-        "meanRecordedRank": 3.0100000000000016,
+        "pairwiseConcordance": 0.7467857142857144,
+        "meanRecordedRank": 3.0500000000000016,
         "top1Recorded": 0.38000000000000006,
-        "recallAt3": 0.6500000000000002
+        "recallAt3": 0.6600000000000003
       }
     },
     "previousSupportCrossValidation": {
@@ -1301,47 +1302,47 @@ window.NEBULA_TRAINED = {
         "Meniere's": {
           "positiveCount": 5,
           "assumedNegativeCount": 45,
-          "positiveSupport": 0.27,
-          "otherSupport": 0.036000000000000004,
-          "balancedSquaredError": 0.2942055555555555
+          "positiveSupport": 0.30999999999999994,
+          "otherSupport": 0.032,
+          "balancedSquaredError": 0.26021222222222223
         },
         "Migraine": {
           "positiveCount": 13,
           "assumedNegativeCount": 37,
-          "positiveSupport": 0.4930769230769231,
-          "otherSupport": 0.28216216216216217,
-          "balancedSquaredError": 0.19995020790020787
+          "positiveSupport": 0.493076923076923,
+          "otherSupport": 0.28378378378378377,
+          "balancedSquaredError": 0.20062733887733888
         },
         "Neuritis": {
           "positiveCount": 10,
           "assumedNegativeCount": 40,
-          "positiveSupport": 0.23600000000000004,
-          "otherSupport": 0.21774999999999997,
-          "balancedSquaredError": 0.34100125
+          "positiveSupport": 0.23900000000000002,
+          "otherSupport": 0.21875,
+          "balancedSquaredError": 0.3391187499999999
         },
         "PPPD": {
           "positiveCount": 7,
           "assumedNegativeCount": 43,
-          "positiveSupport": 0.3157142857142857,
-          "otherSupport": 0.18,
-          "balancedSquaredError": 0.3252191029900332
+          "positiveSupport": 0.33000000000000007,
+          "otherSupport": 0.20023255813953486,
+          "balancedSquaredError": 0.33183687707641196
         },
         "Third Window": {
           "positiveCount": 3,
           "assumedNegativeCount": 47,
           "positiveSupport": 0.27,
-          "otherSupport": 0.03531914893617021,
-          "balancedSquaredError": 0.3461010638297872
+          "otherSupport": 0.03319148936170213,
+          "balancedSquaredError": 0.3458414893617021
         }
       },
-      "positiveSupport": 0.3889095666238524,
-      "otherSupport": 0.21161779302736747,
-      "balancedSquaredError": 0.2711414286840577,
+      "positiveSupport": 0.39709324009324015,
+      "otherSupport": 0.21400729591118012,
+      "balancedSquaredError": 0.2670213568643565,
       "ranking": {
-        "pairwiseConcordance": 0.7460714285714286,
-        "meanRecordedRank": 3.060000000000002,
-        "top1Recorded": 0.4000000000000001,
-        "recallAt3": 0.6100000000000002
+        "pairwiseConcordance": 0.7401785714285715,
+        "meanRecordedRank": 3.0900000000000016,
+        "top1Recorded": 0.36000000000000004,
+        "recallAt3": 0.6300000000000002
       }
     }
   },
@@ -1372,9 +1373,9 @@ window.NEBULA_TRAINED = {
     "loss": "Patient-balanced squared hinge on clipped support differences plus weight displacement regularization",
     "margin": 0.1,
     "comparisonClasses": "All displayed categories; positive versus unrecorded only",
-    "objective": 0.027497385416666693,
+    "objective": 0.02616050181878308,
     "sweeps": 4,
-    "moves": 156
+    "moves": 164
   },
   "limitations": [
     "Identical full-source answer blocks are assumed to be the same patient at user direction; this is not independently verified.",
