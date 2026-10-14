@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Nebula dizziness questionnaire scoring platform." />
   <title>Nebula Questionnaire Scoring Platform</title>
-  <link rel="stylesheet" href="styles.css?v=simple-3" />
+  <link rel="stylesheet" href="styles.css?v=compact-case-4" />
 </head>
 <body class="auth-locked">
   <section id="access-gate" class="access-gate" aria-labelledby="access-title">
@@ -26,14 +26,12 @@
           <div class="header-actions"><button id="new-questionnaire">New questionnaire</button><button id="load-session">Load session</button><input id="session-file" type="file" accept="application/json,.json" hidden /><button id="save-session" class="primary">Save session</button></div>
         </header>
         <div id="patient-drop" class="patient-drop" tabindex="0" role="button" aria-label="Load a local patient JSON file">
-          Drop one patient JSON file here or click to choose. Read locally in your browser—not uploaded.
-          <span id="case-summary" role="status"></span>
+          Drag a case file here to auto-fill, or click to choose.
         </div>
         <div class="patient-strip panel">
-          <label>Anonymous patient ID<input id="patient-id" placeholder="Required anonymous ID" /></label>
-          <label>Visit date<input id="visit-date" type="date" /></label>
-          <label>Birth year<input id="birth-year" type="number" min="1900" max="2100" placeholder="Unknown" /></label>
-          <label>Notes<input id="visit-notes" placeholder="Optional visit notes" /></label>
+          <div class="case-detail"><span>Case ID</span><output id="patient-id"></output></div>
+          <div class="case-detail"><span>Age</span><output id="patient-age"></output></div>
+          <div class="case-detail"><span>Sex</span><output id="patient-sex"></output></div>
         </div>
         <div class="questionnaire-grid">
           <aside class="question-list-panel panel"><div id="question-list" class="question-list"></div></aside>
@@ -49,7 +47,7 @@
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <dialog id="score-dialog" aria-labelledby="score-dialog-title"><header><div><p class="eyebrow">Score breakdown</p><h2 id="score-dialog-title"></h2></div><button id="close-score-dialog">Close ×</button></header><div id="score-dialog-body"></div><p class="hint">A transparent review of the selected scorecard—not a diagnosis or advice to change answers.</p></dialog>
-  <script src="questionnaire-data.js?v=km2-3"></script><script src="model-core.js?v=simple-3"></script><script src="trained-model.js?v=simple-3"></script>
-  <script src="app.js?v=simple-3"></script><script src="research.js?v=simple-3"></script>
+  <script src="questionnaire-data.js?v=km2-3"></script><script src="model-core.js?v=compact-case-4"></script><script src="trained-model.js?v=compact-case-4"></script>
+  <script src="app.js?v=compact-case-4"></script><script src="research.js?v=compact-case-4"></script>
 </body>
 </html>

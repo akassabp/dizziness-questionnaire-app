@@ -91,12 +91,12 @@
     questions.filter((item) => item.showWhen && !conditionMet(item)).forEach((item) => delete state.answers[item.id]);
     renderQuestion();
   }
-  function resetQuestionnaire() { state.answers = {}; state.casePatient = null; state.caseWarnings = null; $("case-summary").textContent = ""; state.current = 0; els.patientId.value = ""; els.birthYear.value = ""; els.notes.value = ""; els.visitDate.value = new Date().toISOString().slice(0, 10); renderQuestion(); }
+  function resetQuestionnaire() { state.answers = {}; state.casePatient = null; state.caseWarnings = null; state.current = 0; els.patientId.value = ""; $("patient-age").value = ""; $("patient-age").title = ""; $("patient-sex").value = ""; renderQuestion(); }
   function downloadJson(value, filename) { const url = URL.createObjectURL(new Blob([JSON.stringify(value, null, 2)], { type: "application/json" })); const anchor = document.createElement("a"); anchor.href = url; anchor.download = filename; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 0); }
   function saveSession() {
-    const patientId = clean(els.patientId.value); if (!patientId) return showToast("Enter an anonymous patient ID before saving.", true);
+    const patientId = clean(els.patientId.value) || `SESSION-${Date.now()}`;
     const now = new Date(), stamp = now.toISOString().replace(/[-:]/g, "").slice(0, 15), safeId = patientId.replace(/[^a-z0-9_-]/gi, "_");
-    downloadJson({ patient: { ...state.casePatient, anonymous_id: patientId, visit_date: els.visitDate.value, birth_year: els.birthYear.value ? Number(els.birthYear.value) : "", notes: clean(els.notes.value) }, import_warnings: state.caseWarnings || {}, answers: clone(state.answers), scores: { initiallyDefined: window.NebulaModel.score(defaultRules, state.answers), trained: window.NebulaModel.score(window.NEBULA_TRAINED.rules, state.answers) }, saved_at: now.toISOString().slice(0, 19) }, `${safeId}_${stamp}.json`);
+    downloadJson({ patient: { ...state.casePatient, anonymous_id: patientId }, import_warnings: state.caseWarnings || {}, answers: clone(state.answers), scores: { initiallyDefined: window.NebulaModel.score(defaultRules, state.answers), trained: window.NebulaModel.score(window.NEBULA_TRAINED.rules, state.answers) }, saved_at: now.toISOString().slice(0, 19) }, `${safeId}_${stamp}.json`);
     showToast("Session saved.");
   }
   async function loadSession(file) {
@@ -118,19 +118,20 @@
         else skipped++;
       }
       if (!Object.keys(answers).length && Object.keys(payload.answers).length) throw new Error("No answers match the current questionnaire.");
-      if (Object.keys(state.answers).length && !confirm("Replace the current questionnaire with this local file?")) return;
       resetQuestionnaire();
       const patient = payload.patient && typeof payload.patient === "object" ? payload.patient : {};
       const field = (key) => typeof patient[key] === "string" ? patient[key].slice(0, 200) : "";
       const labels=Array.isArray(patient.recorded_labels)?patient.recorded_labels:[field('recorded_label')];
       state.casePatient = { age: Number.isInteger(patient.age) && patient.age >= 0 && patient.age <= 120 ? patient.age : null, sex: field("sex"), recorded_labels:[...new Set(labels.filter(v=>typeof v==='string'&&defaults.rules.some(r=>r.category===v)))],age_conflict:patient.age_conflict===true };
       state.caseWarnings = payload.import_warnings && typeof payload.import_warnings === "object" ? Object.fromEntries(Object.entries(payload.import_warnings).filter(([k,v]) => /^[a-z_]+$/.test(k) && Number.isInteger(v) && v >= 0)) : {};
-      els.patientId.value = field("anonymous_id"); els.visitDate.value = field("visit_date"); els.birthYear.value = Number.isInteger(patient.birth_year) ? patient.birth_year : ""; els.notes.value = field("notes");
+      els.patientId.value = field("anonymous_id");
+      $("patient-age").value = state.casePatient.age_conflict ? "" : state.casePatient.age ?? "";
+      $("patient-age").title = state.casePatient.age_conflict ? "Conflicting source ages" : "";
+      $("patient-sex").value = state.casePatient.sex;
       state.answers = answers;
       questions.filter((q) => !conditionMet(q)).forEach((q) => { if (Object.hasOwn(state.answers, q.id)) { delete state.answers[q.id]; skipped++; } });
-      const omissions = Object.values(state.caseWarnings).reduce((a,b) => a+b, 0) + skipped;
-      $("case-summary").textContent = `${els.patientId.value || "Local session"} · Age: ${state.casePatient.age_conflict?'conflicting source ages':state.casePatient.age ?? "unknown"} · Sex: ${state.casePatient.sex || "unknown"} · Recorded diagnoses: ${state.casePatient.recorded_labels.join(', ') || "not supplied"}. Other diagnoses are unrecorded, not confirmed absent. ${omissions ? `${omissions} source/import entries omitted or flagged; scores may reflect incomplete answers.` : ""}`;
-      renderQuestion(); showToast("Local file loaded. Nothing was uploaded.");
+      if(skipped)state.caseWarnings.browser_entries_omitted=skipped;
+      renderQuestion();
     }
     catch (error) { showToast(error instanceof SyntaxError ? "Invalid JSON. Choose a patient or session JSON file." : error.message, true); }
     els.sessionFile.value = "";
@@ -155,5 +156,5 @@
   window.NebulaApp = {
     snapshot: (model='default') => clone({ answers:state.answers, rules:activeRules(model), configuredRules:state.rules, patient:state.casePatient, model:model==='trained'?'Trained AI Model':'Initially Defined Weights' }), downloadJson
   };
-  els.visitDate.value = new Date().toISOString().slice(0, 10); renderQuestion();
+  renderQuestion();
 })();
