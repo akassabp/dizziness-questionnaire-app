@@ -2,7 +2,8 @@
   "use strict";
   const defaults = window.NEBULA_DATA;
   if (!defaults) throw new Error("Questionnaire data did not load.");
-  const ACCESS_HASH = "0f7a4f8120712df5464758e375faf9829818369c774fcedb64ed7bd3b62f5ea1";
+  const ACCESS_HASH = "36264baea14a8f35983ace970d1a3cea763954021ed1222546df2463a37f5899";
+  const ACCESS_SESSION_KEY = "nebula-access-20261014-temp";
   const RULES_KEY = "nebula-desktop-compatible-rules-v2-km2";
   const $ = (id) => document.getElementById(id);
   const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -24,8 +25,8 @@
 
   const gate = $("access-gate"), accessForm = $("access-form"), accessCode = $("access-code"), accessError = $("access-error");
   async function sha256(value) { const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value)); return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join(""); }
-  function unlock() { sessionStorage.setItem("nebula-access", "granted"); document.body.classList.remove("auth-locked"); gate.hidden = true; }
-  if (sessionStorage.getItem("nebula-access") === "granted") unlock();
+  function unlock() { sessionStorage.setItem(ACCESS_SESSION_KEY, "granted"); document.body.classList.remove("auth-locked"); gate.hidden = true; }
+  if (sessionStorage.getItem(ACCESS_SESSION_KEY) === "granted") unlock();
   accessForm.addEventListener("submit", async (event) => { event.preventDefault(); accessError.textContent = ""; if (await sha256(accessCode.value) === ACCESS_HASH) { accessCode.value = ""; unlock(); } else { accessError.textContent = "Incorrect access code."; accessCode.select(); } });
 
   const els = {

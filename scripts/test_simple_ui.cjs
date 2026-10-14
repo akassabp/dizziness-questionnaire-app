@@ -2,7 +2,7 @@ const{chromium}=require('playwright'),assert=require('node:assert/strict'),fs=re
 (async()=>{
 const browser=await chromium.launch({channel:'chrome',headless:true}),page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[];
 page.on('pageerror',e=>errors.push(e.message));const dialogs=[];page.on('dialog',d=>{dialogs.push(d.message());d.dismiss();});
-await page.addInitScript(()=>sessionStorage.setItem('nebula-access','granted'));
+await page.addInitScript(()=>sessionStorage.setItem('nebula-access-20261014-temp','granted'));
 await page.goto(process.env.NEBULA_TEST_URL||'http://localhost:8765');
 assert.equal(await page.locator('.tab,#configuration-view,#model-view').count(),0);
 assert.equal(await page.locator('#visit-date,#birth-year,#visit-notes,#case-summary,#save-session,#load-session').count(),0);

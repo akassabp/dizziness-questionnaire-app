@@ -3,7 +3,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
  const browser=await chromium.launch({channel:'chrome',headless:true});
  const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));
- await page.addInitScript(()=>sessionStorage.setItem('nebula-access','granted'));
+ await page.addInitScript(()=>sessionStorage.setItem('nebula-access-20261014-temp','granted'));
  await page.goto(process.env.NEBULA_TEST_URL||'http://localhost:8765');
  const fixture=await page.evaluate(()=>{const q=NEBULA_DATA.questions.find(q=>q.kind==='multi'&&!q.showWhen);return {patient:{anonymous_id:'VIEWER-TEST',age:42,sex:'Female',recorded_labels:['BPPV']},answers:{[q.id]:q.options.slice(0,2)}};});
  const load=async data=>{await page.setInputFiles('#session-file',{name:'synthetic.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(data))});await page.waitForFunction(id=>document.querySelector('#patient-id').value===id,data.patient.anonymous_id);};
