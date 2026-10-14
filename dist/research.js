@@ -1,42 +1,41 @@
 (() => {
   'use strict';
-  const M=window.NebulaModel, D=window.NEBULA_DATA, T=window.NEBULA_TRAINED, A=window.NebulaApp;
-  const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const pts=v=>(v>0?'+':'')+Number(v.toFixed(3))+' pts', pct=v=>(v*100).toFixed(1)+'%';
-  const categories=[...new Set(D.rules.map(r=>r.category))].sort();
-  const dialog=$('score-dialog'); let openCategory=null, openModel='default';
-  function explain(category, model=openModel) {
-    openCategory=category;
-    openModel=model;
-    const s=A.snapshot(model), score=M.score(s.rules,s.answers)[category];
-    $('score-dialog-title').textContent=category;
-    const groups=new Map();
-    s.rules.filter(r=>r.category===category).forEach(r=>{ if(!groups.has(r.questionId)) groups.set(r.questionId,[]);groups.get(r.questionId).push(r); });
-    const active=[], inactive=[];
-    for(const [id,rules] of groups) {
-      const q=D.questions.find(q=>q.id===id), selected=rules.filter(r=>M.matched(r,s.answers)&&r.weight!==0), remaining=rules.filter(r=>!M.matched(r,s.answers)||r.weight===0);
-      const header=`<p class="eyebrow">Question ${esc(id)}</p><h3>${esc(q?.prompt||'Unknown question')}</h3>`;
-      // Aggregate duplicate rule rows for the same option, while retaining each option separately.
-      const rows=list=>{
-        const options=new Map(); list.forEach(r=>options.set(r.answer,(options.get(r.answer)||0)+r.weight));
-        return [...options].map(([answer,w])=>`<div class="contribution"><span>${esc(answer)}</span><strong class="${w<0?'penalty':'support'}">${pts(w)}</strong></div>`).join('');
-      };
-      if(selected.length) active.push(`<article class="explanation-question">${header}${rows(selected)}<div class="question-total"><b>Question total</b><b>${pts(selected.reduce((sum,r)=>sum+r.weight,0))}</b></div></article>`);
-      if(remaining.length) {
-        const hidden=q?.showWhen&&!M.values(s.answers[q.showWhen.questionId]).includes(M.norm(q.showWhen.answer));
-        const raw=s.answers[id],actual=(Array.isArray(raw)?raw:raw==null||raw===''?[]:[raw]);
-        const expected=new Map();remaining.forEach(r=>expected.set(r.answer,(expected.get(r.answer)||0)+r.weight));
-        const expectedRows=[...expected];
-        const comparison=`<table class="answer-comparison"><thead><tr><th>Expected answer (rule)</th><th>Patient’s actual reply</th></tr></thead><tbody>${Array.from({length:Math.max(expectedRows.length,actual.length)},(_,index)=>{const rule=expectedRows[index];return `<tr><td>${rule?`${esc(rule[0])}<small>${pts(rule[1])}</small>`:''}</td><td class="${index<actual.length?'actual-reply':'no-reply'}">${index<actual.length?esc(actual[index]):''}</td></tr>`;}).join('')}</tbody></table>`;
-        inactive.push(`<article class="explanation-question">${header}<p class="hint">${hidden?'Conditional question not currently shown':actual.length?'Other options / rules not contributing':'Unanswered question'} — potential rule points only; not included in the current score.</p>${comparison}</article>`);
+  const M=window.NebulaModel,D=window.NEBULA_DATA,A=window.NebulaApp;
+  const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const pts=v=>(v>0?'+':'')+Number(v.toFixed(3))+' pts';
+  const dialog=$('score-dialog');let openCategory=null,openModel='default';
+  function explain(category,model=openModel){
+    openCategory=category;openModel=model;
+    const s=A.snapshot(model),score=M.score(s.rules,s.answers)[category],groups=new Map(),cards=[];
+    s.rules.filter(r=>r.category===category).forEach(r=>{if(!groups.has(r.questionId))groups.set(r.questionId,[]);groups.get(r.questionId).push(r);});
+    for(const[id,rules]of groups){
+      const q=D.questions.find(q=>q.id===id),raw=s.answers[id],actual=Array.isArray(raw)?raw:raw==null||raw===''?[]:[raw];
+      const expected=new Map();
+      rules.forEach(r=>{const key=M.norm(r.answer);if(!expected.has(key))expected.set(key,{answer:r.answer,weight:0});expected.get(key).weight+=r.weight;});
+      const rows=[],used=new Set(),remaining=[];
+      for(const[key,rule]of expected){
+        const index=actual.findIndex((a,i)=>!used.has(i)&&M.norm(a)===key);
+        if(index>=0){used.add(index);rows.push({expected:rule.answer,actual:actual[index],weight:rule.weight});}
+        else remaining.push(rule);
       }
+      const unmatched=actual.filter((_,i)=>!used.has(i));
+      for(let i=0;i<Math.max(remaining.length,unmatched.length);i++)rows.push({expected:remaining[i]?.answer||'',actual:unmatched[i]??'',weight:0});
+      if(!actual.length&&rows.length)rows[0].missing=true;
+      const total=rows.reduce((sum,r)=>sum+r.weight,0),applied=rows.some(r=>r.weight!==0);
+      const hidden=q?.showWhen&&!M.values(s.answers[q.showWhen.questionId]).includes(M.norm(q.showWhen.answer));
+      const table=rows.map(r=>{
+        const status=r.weight>0?'effect-positive':r.weight<0?'effect-negative':r.actual!==''?'effect-neutral':'effect-missing';
+        const label=r.weight>0?'Adds support':r.weight<0?'Subtracts support':r.actual!==''?'No effect':'';
+        return `<tr><td>${esc(r.expected)}</td><td class="${status}">${r.missing?'Not answered':esc(r.actual)}${label?`<small>${label}</small>`:''}</td><td class="${status}">${r.weight!==0?pts(r.weight):''}</td></tr>`;
+      }).join('');
+      cards.push(`<article class="explanation-question" data-question-id="${esc(id)}"><p class="eyebrow">Question ${esc(id)}</p><h3>${esc(q?.prompt||'Unknown question')}</h3>${hidden?'<p class="hint">Conditional question not currently shown.</p>':''}<table class="answer-comparison"><thead><tr><th>Expected answer (rule)</th><th>Patient’s answer</th><th>Points applied</th></tr></thead><tbody>${table}</tbody></table>${applied?`<div class="question-total"><b>Question total</b><b>${pts(total)}</b></div>`:''}</article>`);
     }
-    $('score-dialog-body').innerHTML=`<p>${esc(s.model)}${s.patient?.recorded_labels?.includes(category)?' · ✓ Recorded source label':''}</p><div class="explanation-totals"><div>Total points<strong>${pts(score.points)}</strong></div><div>Current support<strong>${score.percent.toFixed(1)}%</strong></div></div><p class="hint">Support = net points ÷ ${Number(score.available.toFixed(3))} available positive points, clipped to 0–100%. Totals are rounded for display.</p>${active.join('')||'<p>No selected answers currently add or subtract points for this class.</p>'}<details class="inactive-rules"><summary>Unanswered / non-contributing options (${inactive.length} questions)</summary><p class="hint">“Expected” means the answer that activates a rule, not a correct or recommended response. Rules can add or subtract points. Single-choice options are alternatives.</p>${inactive.join('')||'<p>None.</p>'}</details>`;
-    if(!dialog.open) dialog.showModal();
+    $('score-dialog-title').textContent=category;
+    $('score-dialog-body').innerHTML=`<p>${esc(s.model)}${s.patient?.recorded_labels?.includes(category)?' · ✓ Recorded source label':''}</p><div class="explanation-totals"><div>Total points<strong>${pts(score.points)}</strong></div><div>Current support<strong>${score.percent.toFixed(1)}%</strong></div></div><p class="hint">Support = net points ÷ ${Number(score.available.toFixed(3))} available positive points, clipped to 0–100%. “Expected” identifies a scoring rule, not a correct answer.</p><p class="effect-legend"><span class="effect-positive">Green: adds support</span> · <span class="effect-negative">Red: subtracts support</span> · <span class="effect-neutral">Purple: answered, no effect</span> · <span class="effect-missing">Gray: not answered</span></p>${cards.join('')||'<p>No rules for this category.</p>'}`;
+    if(!dialog.open)dialog.showModal();
   }
-  for(const id of ['score-list','trained-score-list'])$(id).addEventListener('click',e=>{ const b=e.target.closest('[data-category]');if(b)explain(b.dataset.category,b.dataset.model); });
+  for(const id of ['score-list','trained-score-list'])$(id).addEventListener('click',e=>{const b=e.target.closest('[data-category]');if(b)explain(b.dataset.category,b.dataset.model);});
   $('close-score-dialog').addEventListener('click',()=>{openCategory=null;dialog.close();});
-  dialog.addEventListener('cancel',()=>{openCategory=null;});
-  dialog.addEventListener('close',()=>{openCategory=null;});
-  document.addEventListener('nebula:change',()=>{if(openCategory && dialog.open)explain(openCategory);});
+  dialog.addEventListener('cancel',()=>{openCategory=null;});dialog.addEventListener('close',()=>{openCategory=null;});
+  document.addEventListener('nebula:change',()=>{if(openCategory&&dialog.open)explain(openCategory);});
 })();
