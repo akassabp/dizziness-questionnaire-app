@@ -75,6 +75,9 @@ summary { cursor:pointer; padding:10px 0; font-weight:600; }
 .case-detail { display:flex; align-items:baseline; gap:12px; }
 .case-detail > span { color:var(--muted); font-size:12px; }
 .case-detail output { font-weight:600; min-height:18px; }
+.patient-strip .case-detail { display:flex; align-items:center; gap:10px; }
+.case-detail input,.case-detail select { flex:1; width:100%; min-width:0; }
+.case-detail > span { white-space:nowrap; }
 .patient-strip label { display:grid; gap:5px; color:#3d5058; font-size:12px; font-weight:600; }
 .questionnaire-grid { display:grid; grid-template-columns:minmax(180px,230px) minmax(310px,1fr) minmax(480px,600px); gap:12px; min-height:0; flex:1; }
 .score-comparison { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:minmax(0,1fr) auto; gap:8px; min-height:0; min-width:0; }

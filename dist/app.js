@@ -93,11 +93,13 @@
   }
   function resetQuestionnaire() { state.answers = {}; state.casePatient = null; state.caseWarnings = null; state.current = 0; els.patientId.value = ""; $("patient-age").value = ""; $("patient-age").title = ""; $("patient-sex").value = ""; renderQuestion(); }
   function downloadJson(value, filename) { const url = URL.createObjectURL(new Blob([JSON.stringify(value, null, 2)], { type: "application/json" })); const anchor = document.createElement("a"); anchor.href = url; anchor.download = filename; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 0); }
-  function saveSession() {
-    const patientId = clean(els.patientId.value) || `SESSION-${Date.now()}`;
+  function exportCase() {
+    const ageInput=$("patient-age"), age=ageInput.value===''?null:Number(ageInput.value);
+    if(!ageInput.checkValidity() || (age!==null && (!Number.isInteger(age)||age<0||age>120)))return showToast("Enter a whole-number age from 0 to 120, or leave it blank.",true);
+    const patientId = clean(els.patientId.value) || `CASE-${Date.now()}`;
+    els.patientId.value=patientId;
     const now = new Date(), stamp = now.toISOString().replace(/[-:]/g, "").slice(0, 15), safeId = patientId.replace(/[^a-z0-9_-]/gi, "_");
-    downloadJson({ patient: { ...state.casePatient, anonymous_id: patientId }, import_warnings: state.caseWarnings || {}, answers: clone(state.answers), scores: { initiallyDefined: window.NebulaModel.score(defaultRules, state.answers), trained: window.NebulaModel.score(window.NEBULA_TRAINED.rules, state.answers) }, saved_at: now.toISOString().slice(0, 19) }, `${safeId}_${stamp}.json`);
-    showToast("Session saved.");
+    downloadJson({ format:"nebula-patient-case",version:1,patient: { anonymous_id:patientId,age,sex:$("patient-sex").value||null,recorded_labels:state.casePatient?.recorded_labels||[],age_conflict:age===null&&state.casePatient?.age_conflict===true }, import_warnings: state.caseWarnings || {}, answers: clone(state.answers) }, `${safeId}_${stamp}.json`);
   }
   async function loadSession(file) {
     try {
@@ -146,7 +148,7 @@
   els.previous.addEventListener("click", () => { state.current = Math.max(0, state.current - 1); renderQuestion(); });
   els.next.addEventListener("click", () => { state.current = Math.min(visibleQuestions().length - 1, state.current + 1); renderQuestion(); });
   els.clearAnswer.addEventListener("click", () => { delete state.answers[currentQuestion().id]; questions.filter((item) => item.showWhen && !conditionMet(item)).forEach((item) => delete state.answers[item.id]); renderQuestion(); });
-  $("new-questionnaire").addEventListener("click", resetQuestionnaire); $("save-session").addEventListener("click", saveSession); $("load-session").addEventListener("click", () => els.sessionFile.click()); els.sessionFile.addEventListener("change", () => els.sessionFile.files[0] && loadSession(els.sessionFile.files[0]));
+  $("new-questionnaire").addEventListener("click", resetQuestionnaire); $("export-json").addEventListener("click", exportCase); els.sessionFile.addEventListener("change", () => els.sessionFile.files[0] && loadSession(els.sessionFile.files[0]));
   const drop = $("patient-drop");
   drop.addEventListener("click", () => els.sessionFile.click());
   drop.addEventListener("keydown", (event) => { if (["Enter", " "].includes(event.key)) { event.preventDefault(); els.sessionFile.click(); } });
