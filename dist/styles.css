@@ -155,9 +155,11 @@ summary { cursor:pointer; padding:10px 0; font-weight:600; }
 .score-label { display:flex; justify-content:space-between; gap:8px; margin-bottom:4px; font-size:12px; }
 .score-label > span:last-child { display:flex; gap:8px; }
 .score-label small { width:66px; color:var(--muted); text-align:right; }
-.score-track { display:block; height:8px; overflow:hidden; border-radius:4px; background:#e5eaec; }
-.score-track i { display:block; height:100%; border-radius:4px; background:var(--um-blue); }
-.score-track i.negative { background:var(--red); }
+.score-track { position:relative; display:block; height:8px; overflow:hidden; border-radius:4px; background:linear-gradient(90deg,#f8eded 0 50%,#edf2f7 50% 100%); }
+.score-track::after { position:absolute; top:0; bottom:0; left:50%; z-index:2; width:1px; background:#778994; content:""; transform:translateX(-.5px); }
+.score-track i { position:absolute; top:0; bottom:0; display:block; border-radius:4px; }
+.score-track i.positive { left:50%; background:var(--um-blue); border-radius:0 4px 4px 0; }
+.score-track i.negative { right:50%; background:var(--red); border-radius:4px 0 0 4px; }
 
 .configuration-grid { display:grid; grid-template-columns:minmax(390px,500px) minmax(650px,1fr); gap:12px; min-height:0; flex:1; }
 .rule-editor { padding:16px; }
