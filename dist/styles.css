@@ -126,6 +126,7 @@ summary { cursor:pointer; padding:10px 0; font-weight:600; }
 .score-comparison #score-list,.score-comparison #trained-score-list { display:grid; grid-auto-rows:minmax(0,1fr); flex:1; min-height:0; }
 .score-comparison .score-row { display:flex; min-height:0; flex-direction:column; justify-content:center; margin:0; padding:clamp(1px,.45vh,6px) 0; }
 .score-comparison .score-label { flex-wrap:wrap; margin-bottom:clamp(1px,.35vh,4px); font-size:clamp(8px,calc((100vh - 150px)/37),12px); line-height:1.05; }
+.score-class-label { display:inline-flex; min-width:0; align-items:center; gap:4px; }
 .score-comparison .score-label > span:last-child { width:100%; flex-wrap:wrap; justify-content:flex-end; gap:4px; }
 .score-comparison .score-track { height:clamp(3px,.9vh,8px); }
 .question-list-panel { min-width:0; min-height:0; overflow:auto; }
@@ -155,11 +156,14 @@ summary { cursor:pointer; padding:10px 0; font-weight:600; }
 .score-label { display:flex; justify-content:space-between; gap:8px; margin-bottom:4px; font-size:12px; }
 .score-label > span:last-child { display:flex; gap:8px; }
 .score-label small { width:66px; color:var(--muted); text-align:right; }
-.score-track { position:relative; display:block; height:8px; overflow:hidden; border-radius:4px; background:linear-gradient(90deg,#f8eded 0 50%,#edf2f7 50% 100%); }
-.score-track::after { position:absolute; top:0; bottom:0; left:50%; z-index:2; width:1px; background:#778994; content:""; transform:translateX(-.5px); }
+.score-track { position:relative; display:block; height:8px; overflow:hidden; border:1px solid #111; border-radius:999px; background:#fff; box-shadow:none; }
+.score-track::after { position:absolute; top:0; bottom:0; left:50%; z-index:2; width:1px; background:#111; content:""; transform:translateX(-.5px); }
 .score-track i { position:absolute; top:0; bottom:0; display:block; border-radius:4px; }
-.score-track i.positive { left:50%; background:var(--um-blue); border-radius:0 4px 4px 0; }
-.score-track i.negative { right:50%; background:var(--red); border-radius:4px 0 0 4px; }
+.score-track i.positive { left:50%; background:#079447; border-radius:0 999px 999px 0; }
+.score-track i.negative { right:50%; background:#d21f26; border-radius:999px 0 0 999px; }
+.score-value.positive { color:#067a3c; }
+.score-value.negative { color:#c5161d; }
+.score-value.zero { color:#111; }
 
 .configuration-grid { display:grid; grid-template-columns:minmax(390px,500px) minmax(650px,1fr); gap:12px; min-height:0; flex:1; }
 .rule-editor { padding:16px; }
