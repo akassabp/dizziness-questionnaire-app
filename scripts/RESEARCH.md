@@ -1,5 +1,7 @@
 # Local research workflow
 
+Revision `km2-duration-multi-v2` accepts multiple durations for Q259369. Re-extraction restores 10 merged patients' duration answers (12 source blocks). Each distinct selected option activates its existing rule once; default rules are unchanged. Old browser JSON with quarantined duration values is recovered automatically. The preceding tinnitus revision remains compatible. Regenerate the cohort, refit the model, and rerun `discover_patterns.py` to a new private dated directory after this correction; do not reuse the October 14 findings as current results.
+
 Patient files and private audit outputs must remain outside this repository.
 
 1. Extract with `python scripts/prepare_cohort.py /private/source.xlsx /private/cohort.json --cases-dir /private/patient-cases`.

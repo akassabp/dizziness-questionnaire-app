@@ -1,6 +1,6 @@
 window.NEBULA_DATA = {
-  "version": 3,
-  "questionnaireRevision": "km2-attack-tinnitus-v1",
+  "version": 4,
+  "questionnaireRevision": "km2-duration-multi-v2",
   "sourceWorkbook": "OTO Dizziness Questionnaire -Nebula cloud 5-9-241_KM2.xlsx",
   "questions": [
     {
@@ -132,7 +132,7 @@ window.NEBULA_DATA = {
     {
       "id": "259369",
       "prompt": "How long do most of your episodes usually last?",
-      "kind": "single",
+      "kind": "multi",
       "options": [
         "Seconds",
         "Minutes",

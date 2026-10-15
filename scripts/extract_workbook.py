@@ -52,11 +52,14 @@ def main() -> None:
         }
         if question.question_id in BRANCHING_QUESTIONS:
             item["showWhen"] = BRANCHING_QUESTIONS[question.question_id]
+        # Preserve source multi-duration responses without altering rule weights.
+        if question.question_id == "259369":
+            item["kind"] = "multi"
         all_questions.append(item)
 
     payload = {
-        "version": 3,
-        "questionnaireRevision": "km2-attack-tinnitus-v1",
+        "version": 4,
+        "questionnaireRevision": "km2-duration-multi-v2",
         "sourceWorkbook": WORKBOOK_PATH.name,
         "questions": all_questions,
         "rules": rules,

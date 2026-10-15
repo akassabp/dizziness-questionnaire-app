@@ -125,7 +125,7 @@
       for (const [id, value] of Object.entries(payload.answers)) {
         const q = questions.find((item) => item.id === id);
         if (!q || q.kind === "text") { skipped++; continue; }
-        if(id==='259416'&&payload.questionnaire_revision!==defaults.questionnaireRevision){
+        if(id==='259416'&&![defaults.questionnaireRevision,'km2-attack-tinnitus-v1'].includes(payload.questionnaire_revision)){
           const values=(Array.isArray(value)?value:[value]).filter(v=>typeof v==='string'&&q.options.includes(v));
           unscored[id]={reason:'legacy_tinnitus_wording_requires_new_answer',values};legacyTinnitus++;skipped++;continue;
         }
@@ -139,6 +139,12 @@
       }
       if (!Object.keys(answers).length && Object.keys(payload.answers).length&&!legacyTinnitus) throw new Error("No answers match the current questionnaire.");
       resetQuestionnaire();
+      // Restore duration answers quarantined by the previous single-choice importer.
+      // An explicit current answer takes precedence over the historical values.
+      if (!answers['259369'] && unscored['259369']?.reason === 'multiple_answers_for_single_choice' && unscored['259369'].values.length) {
+        answers['259369'] = [...new Set(unscored['259369'].values)];
+        delete unscored['259369'];
+      }
       const patient = payload.patient && typeof payload.patient === "object" ? payload.patient : {};
       const field = (key) => typeof patient[key] === "string" ? patient[key].slice(0, 200) : "";
       const labels=Array.isArray(patient.recorded_labels)?patient.recorded_labels:[field('recorded_label')];

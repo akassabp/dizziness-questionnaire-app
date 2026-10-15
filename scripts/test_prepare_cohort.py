@@ -33,11 +33,17 @@ class ExtractionTests(unittest.TestCase):
         old = fixture_extract([("Do you have ringing, buzzing, or other noise in your ears that is there all the time?", "Yes. Left ear only")])
         self.assertNotIn("259416", old["answers"])
 
-    def test_duration_conflicts_preserved_but_not_scored(self):
+    def test_multiple_durations_preserved_and_deduplicated(self):
         q = next(q for q in DEFINITIONS["questions"] if q["id"] == "259369")
-        r = fixture_extract([(q["prompt"], "Minutes"), (None, "Hours"), (None, "Days")])
+        r = fixture_extract([(q["prompt"], "Minutes"), (None, "Hours"), (None, "Days"), (None, "Hours")])
+        self.assertEqual(r["answers"][q["id"]], ["Minutes", "Hours", "Days"])
+        self.assertNotIn(q["id"], r["unscoredAnswers"])
+
+    def test_other_single_choice_conflicts_still_quarantined(self):
+        q = next(q for q in DEFINITIONS["questions"] if q["kind"] == "single" and len(q["options"]) > 1)
+        r = fixture_extract([(q["prompt"], q["options"][0]), (None, q["options"][1])])
         self.assertNotIn(q["id"], r["answers"])
-        self.assertEqual(r["unscoredAnswers"][q["id"]]["values"], ["Minutes", "Hours", "Days"])
+        self.assertEqual(r["unscoredAnswers"][q["id"]]["reason"], "multiple_answers_for_single_choice")
 
     def test_panic_alias_and_explicit_diagnosis_mapping(self):
         q = next(q for q in DEFINITIONS["questions"] if q["id"] == "259381")

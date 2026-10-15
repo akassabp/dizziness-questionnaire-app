@@ -36,7 +36,7 @@ await page.locator('#answer-options input').first().check();
 const downloadPromise=page.waitForEvent('download');await page.click('#export-json');const download=await downloadPromise;
 const exported=JSON.parse(fs.readFileSync(await download.path(),'utf8'));
 assert.equal(exported.format,'nebula-patient-case');assert.equal(exported.version,1);
-assert.equal(exported.questionnaire_revision,'km2-attack-tinnitus-v1');
+assert.equal(exported.questionnaire_revision,'km2-duration-multi-v2');
 assert.deepEqual(exported.patient.recorded_labels,[]);assert.equal(exported.patient.age,42);assert.equal(exported.patient.sex,'Female');assert.equal(exported.scores,undefined);
 assert.equal(Object.keys(exported.answers).length,1);
 await page.click('#new-questionnaire');await page.setInputFiles('#session-file',{name:'roundtrip.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(exported))});
