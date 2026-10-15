@@ -181,7 +181,7 @@
   document.addEventListener("dragleave", (event) => { if (!event.relatedTarget) drop.classList.remove("dragging"); });
   document.addEventListener("drop", (event) => { event.preventDefault(); drop.classList.remove("dragging"); if (!gate.hidden) return; const files = event.dataTransfer.files; if (files.length !== 1) return showToast("Drop one patient JSON file at a time.", true); loadSession(files[0]); });
   window.NebulaApp = {
-    snapshot: (model='default') => clone({ answers:state.answers, rules:activeRules(model), configuredRules:state.rules, patient:state.casePatient, model:model==='trained'?'Trained AI Model':'Initially Defined Weights' }), downloadJson
+    snapshot: (model='default') => clone({ answers:state.answers, rules:activeRules(model), configuredRules:state.rules, patient:state.casePatient, model:model==='trained'?'AI-Tuned Model':'Baseline Model' }), downloadJson
   };
   renderQuestion();
 })();

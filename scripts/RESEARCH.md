@@ -12,7 +12,7 @@ Patient files and private audit outputs must remain outside this repository.
 4. Serve `dist` on localhost:8765. With Playwright and Chrome installed, run `node scripts/test_local_import.cjs /private/patient-cases` and `node scripts/test_research_ui.cjs`. The optional `NEBULA_TEST_URL` on the latter selects a deployed site. Fixtures in UI screenshots are synthetic.
 5. Review metrics and `dist/methodology.html`. Do not replace expert defaults automatically or claim clinical superiority from training performance.
 
-The browser uses the exact shared score implementation used in training. Only original rule points vary. Initially Defined Weights and Trained AI Model appear simultaneously in independently sorted columns. The interface is questionnaire-only: configuration and model-analysis tabs have been removed. Default rules remain unchanged. Use test_simple_ui.cjs for browser checks; the previous test entry points forward to it.
+The browser uses the exact shared score implementation used in training. Only original rule points vary. Baseline Model and AI-Tuned Model appear simultaneously in independently sorted columns. The interface is questionnaire-only: configuration and model-analysis tabs have been removed. Default rules remain unchanged. Use test_simple_ui.cjs for browser checks; the previous test entry points forward to it.
 
 Run `node scripts/shuffle_cases.cjs /private/patient-cases-multilabel` to randomize filename prefixes while preserving all file contents and patient IDs. Sort by filename to use the mixed ordering. Subsequent training exports preserve existing shuffled names.
 
