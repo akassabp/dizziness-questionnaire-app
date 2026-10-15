@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Nebula dizziness questionnaire scoring platform." />
-  <title>Nebula Questionnaire Scoring Platform</title>
-  <link rel="stylesheet" href="styles.css?v=um-brand-19" />
+  <meta name="description" content="Dizziness Triage scoring platform." />
+  <title>Dizziness Triage</title>
+  <link rel="stylesheet" href="styles.css?v=dizziness-triage-20" />
 </head>
 <body class="auth-locked">
   <section id="access-gate" class="access-gate" aria-labelledby="access-title">
     <form id="access-form" class="access-card">
       <img class="access-brand-logo" src="assets/michigan-medicine-logo.png" width="860" height="540" alt="Michigan Medicine, University of Michigan" />
       <p class="eyebrow">Dizziness classification project</p>
-      <h1 id="access-title">Nebula Questionnaire</h1>
+      <h1 id="access-title">Dizziness Triage</h1>
       <p>Enter the project access code and press Enter.</p>
       <label for="access-code">Access code</label>
       <input id="access-code" type="password" autocomplete="current-password" required autofocus />
@@ -23,7 +23,7 @@
     <main>
       <section id="questionnaire-view" class="view active">
         <header class="view-header">
-          <div class="app-brand"><img src="assets/michigan-medicine-logo.png" width="860" height="540" alt="Michigan Medicine, University of Michigan" /><h1>Nebula Questionnaire</h1></div>
+          <div class="app-brand"><img src="assets/michigan-medicine-logo.png" width="860" height="540" alt="Michigan Medicine, University of Michigan" /><h1>Dizziness Triage</h1></div>
           <nav class="viewer-switch" aria-label="Questionnaire viewers"><button id="show-scoring" aria-pressed="true" aria-controls="scoring-view">Scoring view</button><button id="show-review" aria-pressed="false" aria-controls="question-review">Question viewer</button></nav>
           <div class="header-actions"><button id="new-questionnaire">New questionnaire</button><input id="session-file" type="file" accept="application/json,.json" hidden /><button id="export-json" class="primary">Export JSON</button></div>
         </header>
@@ -42,7 +42,7 @@
             <h2 id="question-prompt"></h2><div id="answer-options" class="answer-options"></div>
             <div class="question-controls"><button id="previous-question">Previous</button><button id="clear-answer">Clear answer</button><span></span><button id="next-question" class="primary">Next</button></div>
           </section>
-          <aside class="score-comparison"><section class="score-panel panel"><h2>Initially Defined Weights</h2><p>Original workbook points. Click a class for its explanation.</p><div id="score-list"></div><div id="answered-count" class="completion"></div></section><section class="score-panel panel"><h2>Trained AI Model</h2><p>Experimental multi-label points. Independently sorted.</p><div id="trained-score-list"></div></section><p class="score-disclaimer">Support scores, not calibrated probabilities. ✓ Recorded = source diagnosis; unmarked does not mean ruled out. Multiple diagnoses can be supported together.</p></aside>
+          <aside class="score-comparison"><section class="score-panel panel"><h2>Initially Defined Weights</h2><p>Original workbook points. Click a class for its explanation.</p><div id="score-list"></div></section><section class="score-panel panel"><h2>Trained AI Model</h2><p>Experimental multi-label points. Independently sorted.</p><div id="trained-score-list"></div></section></aside>
         </div>
         <section id="question-review" class="question-review" hidden aria-label="Question viewer">
           <div id="review-cards" class="review-cards"></div>
@@ -53,7 +53,7 @@
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <dialog id="score-dialog" aria-labelledby="score-dialog-title"><header><div><p class="eyebrow">Score breakdown</p><h2 id="score-dialog-title"></h2></div><button id="close-score-dialog">Close ×</button></header><div id="score-dialog-body"></div><p class="hint">A transparent review of the selected scorecard—not a diagnosis or advice to change answers.</p></dialog>
-  <script src="questionnaire-data.js?v=um-brand-19"></script><script src="model-core.js?v=um-brand-19"></script><script src="trained-model.js?v=um-brand-19"></script>
-  <script src="app.js?v=um-brand-19"></script><script src="research.js?v=um-brand-19"></script><script src="question-viewer.js?v=um-brand-19"></script>
+  <script src="questionnaire-data.js?v=dizziness-triage-20"></script><script src="model-core.js?v=dizziness-triage-20"></script><script src="trained-model.js?v=dizziness-triage-20"></script>
+  <script src="app.js?v=dizziness-triage-20"></script><script src="research.js?v=dizziness-triage-20"></script><script src="question-viewer.js?v=dizziness-triage-20"></script>
 </body>
 </html>

@@ -30,7 +30,7 @@
   accessForm.addEventListener("submit", async (event) => { event.preventDefault(); accessError.textContent = ""; if (await sha256(accessCode.value) === ACCESS_HASH) { accessCode.value = ""; unlock(); } else { accessError.textContent = "Incorrect access code."; accessCode.select(); } });
 
   const els = {
-    list: $("question-list"), meta: $("question-meta"), answerState: $("answer-state"), prompt: $("question-prompt"), options: $("answer-options"), previous: $("previous-question"), next: $("next-question"), clearAnswer: $("clear-answer"), scores: $("score-list"), completion: $("answered-count"), patientId: $("patient-id"), visitDate: $("visit-date"), birthYear: $("birth-year"), notes: $("visit-notes"), sessionFile: $("session-file"), category: $("rule-category"), question: $("rule-question"), answer: $("rule-answer"), weight: $("rule-weight"), categoryFilter: $("category-filter"), search: $("rule-search"), tableBody: $("rule-table-body"), addUpdate: $("add-update-rule"), deleteRule: $("delete-rule"), toast: $("toast")
+    list: $("question-list"), meta: $("question-meta"), answerState: $("answer-state"), prompt: $("question-prompt"), options: $("answer-options"), previous: $("previous-question"), next: $("next-question"), clearAnswer: $("clear-answer"), scores: $("score-list"), patientId: $("patient-id"), visitDate: $("visit-date"), birthYear: $("birth-year"), notes: $("visit-notes"), sessionFile: $("session-file"), category: $("rule-category"), question: $("rule-question"), answer: $("rule-answer"), weight: $("rule-weight"), categoryFilter: $("category-filter"), search: $("rule-search"), tableBody: $("rule-table-body"), addUpdate: $("add-update-rule"), deleteRule: $("delete-rule"), toast: $("toast")
   };
   const escapeHtml = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
   const isAnswered = (question) => { const value = state.answers[question.id]; return Array.isArray(value) ? value.length > 0 : value !== undefined && value !== null && value !== ""; };
@@ -76,8 +76,6 @@
     const barScale=Math.max(100,...rankedScores.map(([,score])=>Math.abs(score.points)));
     $(model==='default'?'score-list':'trained-score-list').innerHTML = rankedScores.map(([category, score]) => `<button type="button" class="score-row score-button" data-model="${model}" data-category="${escapeHtml(category)}" aria-label="Explain ${escapeHtml(category)} ${model} score"><div class="score-label"><span>${escapeHtml(category)}</span><span>${state.casePatient?.recorded_labels?.includes(category) ? '<em class="recorded-badge" title="Recorded source diagnosis">✓ Recorded</em>' : ''}<b>${score.points >= 0 ? "+" : ""}${Number(score.points.toFixed(3))} pts</b></span></div><div class="score-track" aria-hidden="true"><i class="${score.points < 0 ? "negative" : ""}" style="width:${Math.abs(score.points)/barScale*100}%"></i></div></button>`).join("");
     }
-    const visible = visibleQuestions().filter((question) => question.kind !== "text");
-    els.completion.textContent = `${visible.filter(isAnswered).length} of ${visible.length} answered`;
     document.dispatchEvent(new CustomEvent('nebula:change'));
   }
   function setAnswerFromControl(target) {
