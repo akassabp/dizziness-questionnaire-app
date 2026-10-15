@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Nebula dizziness questionnaire scoring platform." />
   <title>Nebula Questionnaire Scoring Platform</title>
-  <link rel="stylesheet" href="styles.css?v=flexible-points-18" />
+  <link rel="stylesheet" href="styles.css?v=um-brand-19" />
 </head>
 <body class="auth-locked">
   <section id="access-gate" class="access-gate" aria-labelledby="access-title">
     <form id="access-form" class="access-card">
+      <img class="access-brand-logo" src="assets/michigan-medicine-logo.png" width="860" height="540" alt="Michigan Medicine, University of Michigan" />
       <p class="eyebrow">Dizziness classification project</p>
       <h1 id="access-title">Nebula Questionnaire</h1>
       <p>Enter the project access code and press Enter.</p>
@@ -22,7 +23,7 @@
     <main>
       <section id="questionnaire-view" class="view active">
         <header class="view-header">
-          <div><h1>Nebula Questionnaire</h1></div>
+          <div class="app-brand"><img src="assets/michigan-medicine-logo.png" width="860" height="540" alt="Michigan Medicine, University of Michigan" /><h1>Nebula Questionnaire</h1></div>
           <nav class="viewer-switch" aria-label="Questionnaire viewers"><button id="show-scoring" aria-pressed="true" aria-controls="scoring-view">Scoring view</button><button id="show-review" aria-pressed="false" aria-controls="question-review">Question viewer</button></nav>
           <div class="header-actions"><button id="new-questionnaire">New questionnaire</button><input id="session-file" type="file" accept="application/json,.json" hidden /><button id="export-json" class="primary">Export JSON</button></div>
         </header>
@@ -52,7 +53,7 @@
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <dialog id="score-dialog" aria-labelledby="score-dialog-title"><header><div><p class="eyebrow">Score breakdown</p><h2 id="score-dialog-title"></h2></div><button id="close-score-dialog">Close ×</button></header><div id="score-dialog-body"></div><p class="hint">A transparent review of the selected scorecard—not a diagnosis or advice to change answers.</p></dialog>
-  <script src="questionnaire-data.js?v=flexible-points-18"></script><script src="model-core.js?v=flexible-points-18"></script><script src="trained-model.js?v=flexible-points-18"></script>
-  <script src="app.js?v=flexible-points-18"></script><script src="research.js?v=flexible-points-18"></script><script src="question-viewer.js?v=flexible-points-18"></script>
+  <script src="questionnaire-data.js?v=um-brand-19"></script><script src="model-core.js?v=um-brand-19"></script><script src="trained-model.js?v=um-brand-19"></script>
+  <script src="app.js?v=um-brand-19"></script><script src="research.js?v=um-brand-19"></script><script src="question-viewer.js?v=um-brand-19"></script>
 </body>
 </html>
