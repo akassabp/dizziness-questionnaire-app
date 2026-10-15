@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Dizziness Triage scoring platform." />
   <title>Dizziness Triage</title>
-  <link rel="stylesheet" href="styles.css?v=dizziness-triage-20" />
+  <link rel="stylesheet" href="styles.css?v=compact-header-21" />
 </head>
 <body class="auth-locked">
   <section id="access-gate" class="access-gate" aria-labelledby="access-title">
@@ -25,11 +25,8 @@
         <header class="view-header">
           <div class="app-brand"><img src="assets/michigan-medicine-logo.png" width="860" height="540" alt="Michigan Medicine, University of Michigan" /><h1>Dizziness Triage</h1></div>
           <nav class="viewer-switch" aria-label="Questionnaire viewers"><button id="show-scoring" aria-pressed="true" aria-controls="scoring-view">Scoring view</button><button id="show-review" aria-pressed="false" aria-controls="question-review">Question viewer</button></nav>
-          <div class="header-actions"><button id="new-questionnaire">New questionnaire</button><input id="session-file" type="file" accept="application/json,.json" hidden /><button id="export-json" class="primary">Export JSON</button></div>
+          <div class="header-actions"><div id="patient-drop" class="patient-drop" tabindex="0" role="button" aria-label="Load a local patient JSON file">Drag your case file</div><button id="new-questionnaire">New questionnaire</button><input id="session-file" type="file" accept="application/json,.json" hidden /><button id="export-json" class="primary">Export JSON</button></div>
         </header>
-        <div id="patient-drop" class="patient-drop" tabindex="0" role="button" aria-label="Load a local patient JSON file">
-          Drag a case file here to auto-fill, or click to choose.
-        </div>
         <div class="patient-strip panel">
           <label class="case-detail" for="patient-id"><span>Case ID</span><input id="patient-id" type="text" maxlength="200" autocomplete="off" /></label>
           <label class="case-detail" for="patient-age"><span>Age</span><input id="patient-age" type="number" min="0" max="120" step="1" /></label>
@@ -53,7 +50,7 @@
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <dialog id="score-dialog" aria-labelledby="score-dialog-title"><header><div><p class="eyebrow">Score breakdown</p><h2 id="score-dialog-title"></h2></div><button id="close-score-dialog">Close ×</button></header><div id="score-dialog-body"></div><p class="hint">A transparent review of the selected scorecard—not a diagnosis or advice to change answers.</p></dialog>
-  <script src="questionnaire-data.js?v=dizziness-triage-20"></script><script src="model-core.js?v=dizziness-triage-20"></script><script src="trained-model.js?v=dizziness-triage-20"></script>
-  <script src="app.js?v=dizziness-triage-20"></script><script src="research.js?v=dizziness-triage-20"></script><script src="question-viewer.js?v=dizziness-triage-20"></script>
+  <script src="questionnaire-data.js?v=compact-header-21"></script><script src="model-core.js?v=compact-header-21"></script><script src="trained-model.js?v=compact-header-21"></script>
+  <script src="app.js?v=compact-header-21"></script><script src="research.js?v=compact-header-21"></script><script src="question-viewer.js?v=compact-header-21"></script>
 </body>
 </html>
