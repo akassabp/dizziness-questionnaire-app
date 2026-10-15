@@ -6,7 +6,7 @@ await page.addInitScript(()=>sessionStorage.setItem('nebula-access-20261014-temp
 await page.goto(process.env.NEBULA_TEST_URL||'http://localhost:8765');
 assert.equal(await page.locator('.tab,#configuration-view,#model-view').count(),0);
 assert.equal(await page.locator('#visit-date,#birth-year,#visit-notes,#case-summary,#save-session,#load-session').count(),0);
-assert.equal(await page.locator('.score-panel h2').allTextContents().then(a=>a.join('|')),'Baseline Model|AI-Tuned Model');
+assert.equal(await page.locator('.score-panel h2').allTextContents().then(a=>a.join('|')),'Baseline Model June 2026|AI-Tuned Model October 2026');
 const fixture=await page.evaluate(()=>{const r=window.NEBULA_DATA.rules.find(r=>r.weight>0),q=window.NEBULA_DATA.questions.find(q=>q.id===r.questionId);return{patient:{anonymous_id:'SYNTHETIC',recorded_labels:['BPPV','Migraine']},answers:{[q.id]:q.kind==='multi'?[r.answer]:r.answer}};});
 await page.evaluate(payload=>{const dt=new DataTransfer();dt.items.add(new File([JSON.stringify(payload)],'synthetic.json'));document.dispatchEvent(new DragEvent('drop',{bubbles:true,dataTransfer:dt}));},fixture);
 await page.waitForFunction(()=>document.querySelector('#patient-id').value==='SYNTHETIC');

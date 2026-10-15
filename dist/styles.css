@@ -120,10 +120,14 @@ summary { cursor:pointer; padding:10px 0; font-weight:600; }
 .patient-strip label { display:grid; gap:5px; color:#3d5058; font-size:12px; font-weight:600; }
 .questionnaire-grid { display:grid; grid-template-columns:minmax(180px,230px) minmax(310px,1fr) minmax(480px,600px); gap:12px; min-height:0; flex:1; }
 .score-comparison { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:minmax(0,1fr) auto; gap:8px; min-height:0; min-width:0; }
-.score-comparison .score-panel { grid-column:auto; padding:10px; }
-.score-comparison .score-row { margin-bottom:4px; padding:6px 0; }
-.score-comparison .score-label { flex-wrap:wrap; }
+.score-comparison .score-panel { grid-column:auto; padding:clamp(6px,1.1vh,10px); overflow:hidden; }
+.score-comparison .score-panel h2 { display:flex; flex:none; flex-wrap:wrap; align-items:center; gap:5px; margin-bottom:clamp(2px,.7vh,5px); font-size:clamp(12px,1.8vh,16px); }
+.model-date { padding:2px 5px; border-radius:3px; color:var(--um-blue); background:var(--um-maize-light); font-size:clamp(8px,1.2vh,10px); font-weight:600; white-space:nowrap; }
+.score-comparison #score-list,.score-comparison #trained-score-list { display:grid; grid-auto-rows:minmax(0,1fr); flex:1; min-height:0; }
+.score-comparison .score-row { display:flex; min-height:0; flex-direction:column; justify-content:center; margin:0; padding:clamp(1px,.45vh,6px) 0; }
+.score-comparison .score-label { flex-wrap:wrap; margin-bottom:clamp(1px,.35vh,4px); font-size:clamp(8px,calc((100vh - 150px)/37),12px); line-height:1.05; }
 .score-comparison .score-label > span:last-child { width:100%; flex-wrap:wrap; justify-content:flex-end; gap:4px; }
+.score-comparison .score-track { height:clamp(3px,.9vh,8px); }
 .question-list-panel { min-width:0; min-height:0; overflow:auto; }
 .question-list { padding:5px 0; }
 .question-link { display:grid; grid-template-columns:18px 28px minmax(0,1fr); gap:2px; width:100%; min-height:42px; padding:9px; border:0; border-bottom:1px solid #eef1f2; border-radius:0; text-align:left; background:#fff; }
@@ -188,7 +192,7 @@ td.weight.negative { color:#b03030; }
   .questionnaire-grid { grid-template-columns:225px 1fr; }
   .score-comparison { grid-column:1/-1; grid-template-rows:auto auto; }
   .question-list-panel,.question-panel { height:650px; }
-  .score-panel { grid-column:1/-1; min-height:280px; }
+  .score-panel { min-height:280px; }
   .configuration-grid { grid-template-columns:1fr; height:auto; }
   .rule-editor { max-width:none; }
   .rule-table-panel { min-height:620px; }
