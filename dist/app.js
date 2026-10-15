@@ -71,9 +71,10 @@
     for(const model of ['default','trained']) {
     const scores = window.NebulaModel.score(activeRules(model),state.answers);
     const rankedScores = Object.entries(scores).sort(([categoryA, scoreA], [categoryB, scoreB]) =>
-      scoreB.percent - scoreA.percent || scoreB.points - scoreA.points || categoryA.localeCompare(categoryB, undefined, { sensitivity: "base" })
+      scoreB.points - scoreA.points || categoryA.localeCompare(categoryB, undefined, { sensitivity: "base" })
     );
-    $(model==='default'?'score-list':'trained-score-list').innerHTML = rankedScores.map(([category, score]) => `<button type="button" class="score-row score-button" data-model="${model}" data-category="${escapeHtml(category)}" aria-label="Explain ${escapeHtml(category)} ${model} score"><div class="score-label"><span>${escapeHtml(category)}</span><span>${state.casePatient?.recorded_labels?.includes(category) ? '<em class="recorded-badge" title="Recorded source diagnosis">✓ Recorded</em>' : ''}<b>${score.percent.toFixed(1)}%</b><small>${score.points >= 0 ? "+" : ""}${Number(score.points.toFixed(3))} pts</small></span></div><div class="score-track"><i class="${score.points < 0 ? "negative" : ""}" style="width:${score.percent}%"></i></div></button>`).join("");
+    const barScale=Math.max(100,...rankedScores.map(([,score])=>Math.abs(score.points)));
+    $(model==='default'?'score-list':'trained-score-list').innerHTML = rankedScores.map(([category, score]) => `<button type="button" class="score-row score-button" data-model="${model}" data-category="${escapeHtml(category)}" aria-label="Explain ${escapeHtml(category)} ${model} score"><div class="score-label"><span>${escapeHtml(category)}</span><span>${state.casePatient?.recorded_labels?.includes(category) ? '<em class="recorded-badge" title="Recorded source diagnosis">✓ Recorded</em>' : ''}<b>${score.points >= 0 ? "+" : ""}${Number(score.points.toFixed(3))} pts</b></span></div><div class="score-track" aria-hidden="true"><i class="${score.points < 0 ? "negative" : ""}" style="width:${Math.abs(score.points)/barScale*100}%"></i></div></button>`).join("");
     }
     const visible = visibleQuestions().filter((question) => question.kind !== "text");
     els.completion.textContent = `${visible.filter(isAnswered).length} of ${visible.length} answered`;

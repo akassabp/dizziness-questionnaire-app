@@ -24,6 +24,12 @@ if(process.argv[2])for(const f of fs.readdirSync(process.argv[2]).filter(n=>/^\d
  assert.equal(await page.inputValue('#patient-age'),data.patient.age_conflict?'':String(data.patient.age??''));
  assert.equal(await page.inputValue('#patient-sex'),data.patient.sex||'');
  for(const id of ['score-list','trained-score-list'])assert.equal(await page.locator('#'+id+' .recorded-badge').count(),data.patient.recorded_labels.length);
+ for(const model of ['default','trained']){
+  const expected=await page.evaluate(model=>{const s=NebulaApp.snapshot(model),scores=NebulaModel.score(s.rules,s.answers);return Object.keys(scores).sort((a,b)=>scores[b].points-scores[a].points||a.localeCompare(b,undefined,{sensitivity:'base'}));},model);
+  const list=model==='default'?'#score-list':'#trained-score-list';
+  assert.deepEqual(await page.locator(list+' [data-category]').evaluateAll(nodes=>nodes.map(n=>n.dataset.category)),expected);
+  assert.equal((await page.locator(list).innerText()).includes('%'),false);
+ }
 }
 assert.deepEqual(requests,[]);assert.deepEqual(errors,[]);assert.deepEqual(dialogs,[]);
 const previous=await page.inputValue('#patient-id');

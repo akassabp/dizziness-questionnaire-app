@@ -1,0 +1,7 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),M=require('../dist/model-core.js'),F=require('./flexible_model.cjs');
+global.window=global.window||{};require('../dist/questionnaire-data.js');require('../dist/trained-model.js');const D=window.NEBULA_DATA,T=window.NEBULA_TRAINED,b=M.integerBaseline(D.rules);
+assert.equal(T.scoringMode,'net-points');assert.equal(D.rules.length,T.rules.length);
+T.rules.forEach((r,i)=>{for(const k of ['category','questionId','answer'])assert.equal(r[k],D.rules[i][k]);assert.ok(Number.isInteger(r.weight));assert.equal(Math.sign(r.weight),Math.sign(b[i]));assert.ok(Math.abs(r.weight-b[i])<=Math.max(1,Math.round(Math.abs(b[i])*.25)));if(D.rules[i].weight===-100)assert.equal(r.weight,-100);});
+for(const c of D.categories){const budget=T.rules.filter(r=>r.category===c&&r.weight>0).reduce((s,r)=>s+r.weight,0);assert.equal(budget,T.positiveBudgets[c]);if(D.rules.some(r=>r.category===c&&r.weight===-100))assert.ok(budget<=100);}
+if(process.argv[2]){const cohort=JSON.parse(fs.readFileSync(process.argv[2])),records=M.mergeRecords(cohort.records,D.questions);assert.equal(records.length,T.training.mergedPatients);assert.deepEqual(F.fit(D.rules,records).rules,T.rules);assert.deepEqual(M.rankingMetrics(records,records.map(r=>F.scores(T.rules,r.answers))),T.metrics.trainingRanking);}
+console.log('PASS: deployed flexible model, integer bounds, unchanged rule identities/signs, fixed exclusions, exclusion budgets, reproducible all-data fit.');

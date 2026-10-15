@@ -2,6 +2,7 @@ const assert=require('node:assert/strict');
 const M=require('../dist/model-core.js');
 global.window={}; require('../dist/questionnaire-data.js');require('../dist/trained-model.js');
 const D=window.NEBULA_DATA,T=window.NEBULA_TRAINED, baseline=M.integerBaseline(D.rules);
+if(T.scoringMode==='net-points'){require('./test_deployed_flexible.cjs');return;}
 assert.equal(T.rules.length,D.rules.length);
 T.rules.forEach((r,i)=>{
   const base=D.rules[i];

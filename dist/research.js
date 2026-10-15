@@ -31,7 +31,7 @@
       cards.push(`<article class="explanation-question" data-question-id="${esc(id)}"><p class="eyebrow">Question ${esc(id)}</p><h3>${esc(q?.prompt||'Unknown question')}</h3>${hidden?'<p class="hint">Conditional question not currently shown.</p>':''}<table class="answer-comparison"><thead><tr><th>Expected answer (rule)</th><th>Patient’s answer</th><th>Points applied</th></tr></thead><tbody>${table}</tbody></table>${applied?`<div class="question-total"><b>Question total</b><b>${pts(total)}</b></div>`:''}</article>`);
     }
     $('score-dialog-title').textContent=category;
-    $('score-dialog-body').innerHTML=`<p>${esc(s.model)}${s.patient?.recorded_labels?.includes(category)?' · ✓ Recorded source label':''}</p><div class="explanation-totals"><div>Total points<strong>${pts(score.points)}</strong></div><div>Current support<strong>${score.percent.toFixed(1)}%</strong></div></div>${cards.join('')||'<p>No rules for this category.</p>'}`;
+    $('score-dialog-body').innerHTML=`<p>${esc(s.model)}${s.patient?.recorded_labels?.includes(category)?' · ✓ Recorded source label':''}</p><div class="explanation-totals"><div>Net points · ranking score<strong>${pts(score.points)}</strong></div><div>Available positive points<strong>${Number(score.available.toFixed(3))} pts</strong></div></div>${cards.join('')||'<p>No rules for this category.</p>'}`;
     if(!dialog.open)dialog.showModal();
   }
   for(const id of ['score-list','trained-score-list'])$(id).addEventListener('click',e=>{const b=e.target.closest('[data-category]');if(b)explain(b.dataset.category,b.dataset.model);});
