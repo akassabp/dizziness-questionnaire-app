@@ -26,6 +26,7 @@ class ExtractionTests(unittest.TestCase):
         self.assertEqual(r["answers"][q["id"]], ["supermarket aisles, malls, or tunnels", "stress, nerves, or anxiety"])
         self.assertEqual(len(r["mappingAudit"]), 5)
         self.assertEqual(r["issues"]["unmatched_option"], 1)
+        self.assertEqual(r["unscoredAnswers"][q["id"]], {"reason": "source_answer_not_in_current_questionnaire", "values": ["sneezing or blowing your nose"]})
 
     def test_tinnitus_semantics(self):
         r = fixture_extract([("I have a roaring or ringing in one ear only before or during a dizziness attack", "Yes. Left ear only")])

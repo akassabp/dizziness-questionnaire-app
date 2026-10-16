@@ -42,10 +42,13 @@ def extract(source, definitions):
     for sheet in wb:
         label = LABELS[sheet.title.split("(")[0].strip()]
         blocks, block = [], []
-        for row in sheet.iter_rows(min_col=1, max_col=4):
+        for rownum, row in enumerate(sheet.iter_rows(min_col=1, max_col=4), start=1):
             values = [c.value for c in row]
             if any(v is not None and v != "" for v in values):
-                block.append((row[0].row, values))
+                # A formatted separator row can yield read-only EmptyCell objects,
+                # which do not expose a row attribute. The enumerated worksheet row
+                # is stable for both ordinary and formatted-empty rows.
+                block.append((rownum, values))
             elif block:
                 blocks.append(block)
                 block = []
@@ -82,7 +85,12 @@ def extract(source, definitions):
                     mapping_audit.append({"questionId": current["id"], "cell": f"B{rownum}", "sourceAnswer": str(answer), "mappedAnswer": mapped})
                 if mapped is None:
                     issues["unmatched_option"] += 1
-                    # Audit choice mismatches only; never retain free-text narratives.
+                    # Preserve structured choices that are absent from the current
+                    # questionnaire without guessing a scoring equivalence. Free-text
+                    # narratives never reach this choice-only branch.
+                    unmatched = unscored.setdefault(current["id"], {"reason": "source_answer_not_in_current_questionnaire", "values": []})
+                    if str(answer) not in unmatched["values"]:
+                        unmatched["values"].append(str(answer))
                     unknown[(current["id"], str(answer))] += 1
                     continue
                 qid = current["id"]
@@ -108,7 +116,7 @@ def extract(source, definitions):
                             "issues": dict(issues), "sourceSheet": sheet.title,
                             "sourceRows": [block[0][0], block[-1][0]]})
     wb.close()
-    return {"schemaVersion": 2, "questionnaireRevision": definitions.get("questionnaireRevision"), "labelBasis": "Worksheet membership; other diagnoses not recorded",
+    return {"schemaVersion": 2, "questionnaireRevision": definitions.get("questionnaireRevision"), "sourceWorkbook": pathlib.Path(source).name, "labelBasis": "Worksheet membership; other diagnoses not recorded",
             "sourceSha256": hashlib.sha256(pathlib.Path(source).read_bytes()).hexdigest(),
             "records": records, "audit": audit}, unknown
 
