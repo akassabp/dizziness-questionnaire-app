@@ -17,6 +17,7 @@ const{chromium}=require('playwright'),assert=require('node:assert/strict');
   assert.equal(await page.locator('.progress-svg').count(),1);
   assert.equal(await page.locator('.patient-line').first().evaluate(el=>getComputedStyle(el).strokeWidth),'2px');
   assert.equal(await page.locator('.top3-line').first().evaluate(el=>getComputedStyle(el).fill),'none');
+  assert.deepEqual(await page.locator('.chart-tick-right').allTextContents(),['55%','60%','65%','70%','75%']);
   assert.equal(await page.locator('#progress-view table,#progress-view p,#progress-view article:not(.progress-chart-card)').count(),0);
   assert.deepEqual(errors,[]);
   await page.setViewportSize({width:390,height:844});
