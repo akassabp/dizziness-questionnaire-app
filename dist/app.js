@@ -176,10 +176,10 @@
   $("new-questionnaire").addEventListener("click", resetQuestionnaire); $("export-json").addEventListener("click", exportCase); els.sessionFile.addEventListener("change", () => els.sessionFile.files[0] && loadSession(els.sessionFile.files[0]));
   const drop = $("patient-drop");
   drop.addEventListener("click", () => els.sessionFile.click());
-  drop.addEventListener("keydown", (event) => { if (["Enter", " "].includes(event.key)) { event.preventDefault(); els.sessionFile.click(); } });
-  document.addEventListener("dragover", (event) => { if (event.dataTransfer.types.includes("Files")) { event.preventDefault(); if (!gate.hidden) return; drop.classList.add("dragging"); } });
-  document.addEventListener("dragleave", (event) => { if (!event.relatedTarget) drop.classList.remove("dragging"); });
-  document.addEventListener("drop", (event) => { event.preventDefault(); drop.classList.remove("dragging"); if (!gate.hidden) return; const files = event.dataTransfer.files; if (files.length !== 1) return showToast("Drop one patient JSON file at a time.", true); loadSession(files[0]); });
+  document.addEventListener("dragenter", (event) => { if (event.dataTransfer.types.includes("Files")) { event.preventDefault(); if (gate.hidden) document.body.classList.add("file-dragging"); } });
+  document.addEventListener("dragover", (event) => { if (event.dataTransfer.types.includes("Files")) { event.preventDefault(); if (gate.hidden) document.body.classList.add("file-dragging"); } });
+  document.addEventListener("dragleave", (event) => { if (!event.relatedTarget) document.body.classList.remove("file-dragging"); });
+  document.addEventListener("drop", (event) => { event.preventDefault(); document.body.classList.remove("file-dragging"); if (!gate.hidden) return; const files = event.dataTransfer.files; if (files.length !== 1) return showToast("Drop one patient JSON file at a time.", true); loadSession(files[0]); });
   window.NebulaApp = {
     snapshot: (model='default') => clone({ answers:state.answers, rules:activeRules(model), configuredRules:state.rules, patient:state.casePatient, model:model==='trained'?'AI-Tuned Model':'Baseline Model' }), downloadJson
   };

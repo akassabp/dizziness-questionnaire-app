@@ -98,8 +98,8 @@ summary { cursor:pointer; padding:10px 0; font-weight:600; }
 .prediction-card strong,.prediction-card small { display:block; margin-top:6px; }
 .metric-line { display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; padding:12px 0; border-bottom:1px solid var(--line); }
 .metric-line span:first-child { flex:1; min-width:240px; }
-.patient-drop { display:flex; flex:none; min-height:34px; align-items:center; padding:7px 12px; border:1px dashed var(--um-blue); border-radius:4px; background:#f2f6fa; cursor:pointer; font-size:12px; white-space:nowrap; }
-.patient-drop.dragging,.patient-drop:focus { outline:2px solid var(--um-blue); background:var(--um-maize-light); }
+.case-file-button { white-space:nowrap; }
+body.file-dragging::after { position:fixed; inset:12px; z-index:900; display:grid; place-items:center; border:3px dashed var(--um-blue); border-radius:12px; color:var(--um-blue); background:#fffffff0; content:"Drop your case file"; font-size:clamp(22px,4vw,48px); font-weight:700; letter-spacing:-.02em; pointer-events:none; }
 #case-summary { display:block; margin-top:3px; color:var(--um-blue); max-height:64px; overflow:auto; }
 .view.active { display:flex; height:100%; min-height:0; flex-direction:column; }
 .view-header { display:flex; justify-content:flex-start; align-items:center; gap:20px; margin-bottom:8px; flex-wrap:wrap; }
@@ -210,7 +210,7 @@ td.weight.negative { color:#b03030; }
   .view-header { display:flex; align-items:stretch; flex-direction:column; }
   .app-brand img { width:82px; height:52px; }
   .header-actions { justify-content:flex-start; margin-left:0; }
-  .header-actions .patient-drop { flex:1; justify-content:center; }
+  .header-actions .case-file-button { flex:1; }
   .patient-strip { grid-template-columns:1fr; }
   .questionnaire-grid { grid-template-columns:1fr; }
   .question-list-panel { height:230px; }
