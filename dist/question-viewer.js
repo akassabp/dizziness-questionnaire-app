@@ -58,14 +58,18 @@
     $('review-page').textContent=first?`Questions ${+first.dataset.questionIndex+1}–${+last.dataset.questionIndex+1} of ${questions.length} · Page ${page+1} of ${pages.length}`:'No questions';
     $('review-previous').disabled=page===0;$('review-next').disabled=page>=pages.length-1;
   }
-  function switchView(review){
+  function switchView(mode){
+    const review=mode==='review',progress=mode==='progress';
     if($('score-dialog').open)$('score-dialog').close();
     document.body.classList.toggle('reviewing',review);
-    $('scoring-view').hidden=review;$('question-review').hidden=!review;
-    $('show-scoring').setAttribute('aria-pressed',String(!review));$('show-review').setAttribute('aria-pressed',String(review));
+    document.body.classList.toggle('metrics-viewing',progress);
+    $('scoring-view').hidden=review||progress;$('question-review').hidden=!review;$('progress-view').hidden=!progress;
+    $('patient-strip').hidden=progress;$('case-actions').hidden=progress;
+    $('show-scoring').setAttribute('aria-pressed',String(!review&&!progress));$('show-review').setAttribute('aria-pressed',String(review));$('show-progress').setAttribute('aria-pressed',String(progress));
     if(review)render(true);
+    if(progress)document.dispatchEvent(new Event('nebula:progress-open'));
   }
-  $('show-scoring').addEventListener('click',()=>switchView(false));$('show-review').addEventListener('click',()=>switchView(true));
+  $('show-scoring').addEventListener('click',()=>switchView('scoring'));$('show-review').addEventListener('click',()=>switchView('review'));$('show-progress').addEventListener('click',()=>switchView('progress'));
   $('review-previous').addEventListener('click',()=>{page--;render();});
   $('review-next').addEventListener('click',()=>{page++;render();});
   document.addEventListener('nebula:change',()=>render(true));

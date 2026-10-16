@@ -1,0 +1,26 @@
+const{chromium}=require('playwright'),assert=require('node:assert/strict');
+(async()=>{
+  const browser=await chromium.launch({channel:'chrome',headless:true});
+  const page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[];
+  page.on('pageerror',error=>errors.push(error.message));
+  await page.addInitScript(()=>sessionStorage.setItem('nebula-access-20261014-temp','granted'));
+  await page.goto(process.env.NEBULA_TEST_URL||'http://localhost:8765');
+  await page.click('#show-progress');
+  assert.equal(await page.locator('#progress-view').isVisible(),true);
+  assert.equal(await page.locator('#patient-strip').isVisible(),false);
+  assert.equal(await page.locator('#case-actions').isVisible(),false);
+  assert.equal(await page.locator('#progress-table-body tr').count(),4);
+  assert.deepEqual(await page.locator('#progress-table-body tr td:first-child strong').allTextContents(),['June 2, 2026','June 26, 2026','October 14, 2026','October 16, 2026']);
+  assert.match(await page.locator('#progress-table-body tr').nth(0).innerText(),/50 scored questions|29 scored questions/);
+  assert.match(await page.locator('#progress-table-body tr').nth(0).innerText(),/103 answer rules/);
+  assert.match(await page.locator('#progress-table-body tr').nth(1).innerText(),/Not measurable/);
+  assert.match(await page.locator('#progress-table-body tr').nth(2).innerText(),/50/);
+  assert.match(await page.locator('#progress-table-body tr').nth(3).innerText(),/65/);
+  assert.equal(await page.locator('.progress-svg').count(),2);
+  assert.equal(await page.locator('#progress-definitions').innerText().then(t=>t.includes('No patient-level data is included.')),true);
+  assert.deepEqual(errors,[]);
+  await page.setViewportSize({width:390,height:844});
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+  await page.click('#show-scoring');assert.equal(await page.locator('#scoring-view').isVisible(),true);
+  await browser.close();console.log('PASS: four aggregate progress milestones, charts, definitions, privacy and responsive navigation.');
+})().catch(error=>{console.error(error);process.exit(1);});

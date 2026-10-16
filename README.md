@@ -21,6 +21,8 @@ Public site access uses an access-code screen. Entering the code and pressing En
 
 Run `scripts/extract_workbook.py` with the project Python environment after the workbook changes.
 
+After refreshing the private cohort or deployed model, run `python3 scripts/build_progress_metrics.py`. It rebuilds the aggregate-only Team metrics page from the historical workbooks, historical Git model, and private cohorts. The public output contains counts and percentages only—never patient answers or demographics.
+
 ## Local preview
 
 Serve the `dist` directory with any static web server. Opening `index.html` directly also works in modern browsers.

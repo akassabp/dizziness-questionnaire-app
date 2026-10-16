@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Dizziness Triage scoring platform." />
   <title>Dizziness Triage</title>
-  <link rel="stylesheet" href="styles.css?v=source-options-27" />
+  <link rel="stylesheet" href="styles.css?v=team-metrics-28" />
 </head>
 <body class="auth-locked">
   <section id="access-gate" class="access-gate" aria-labelledby="access-title">
@@ -24,10 +24,10 @@
       <section id="questionnaire-view" class="view active">
         <header class="view-header">
           <div class="app-brand"><img src="assets/michigan-medicine-logo.png" width="860" height="540" alt="Michigan Medicine, University of Michigan" /><h1>Dizziness Triage</h1></div>
-          <nav class="viewer-switch" aria-label="Questionnaire viewers"><button id="show-scoring" aria-pressed="true" aria-controls="scoring-view">Scoring view</button><button id="show-review" aria-pressed="false" aria-controls="question-review">Question viewer</button></nav>
-          <div class="header-actions"><button id="patient-drop" class="case-file-button" type="button">Load case file</button><button id="new-questionnaire">New questionnaire</button><input id="session-file" type="file" accept="application/json,.json" hidden /><button id="export-json" class="primary">Export JSON</button></div>
+          <nav class="viewer-switch" aria-label="Application pages"><button id="show-scoring" aria-pressed="true" aria-controls="scoring-view">Questionnaire</button><button id="show-review" aria-pressed="false" aria-controls="question-review">Question viewer</button><button id="show-progress" aria-pressed="false" aria-controls="progress-view">Team metrics</button></nav>
+          <div id="case-actions" class="header-actions"><button id="patient-drop" class="case-file-button" type="button">Load case file</button><button id="new-questionnaire">New questionnaire</button><input id="session-file" type="file" accept="application/json,.json" hidden /><button id="export-json" class="primary">Export JSON</button></div>
         </header>
-        <div class="patient-strip panel">
+        <div id="patient-strip" class="patient-strip panel">
           <label class="case-detail" for="patient-id"><span>Case ID</span><input id="patient-id" type="text" maxlength="200" autocomplete="off" /></label>
           <label class="case-detail" for="patient-age"><span>Age</span><input id="patient-age" type="number" min="0" max="120" step="1" /></label>
           <label class="case-detail" for="patient-sex"><span>Sex</span><select id="patient-sex"><option value=""></option><option>Female</option><option>Male</option><option>Other</option><option>Unknown</option></select></label>
@@ -45,12 +45,19 @@
           <div id="review-cards" class="review-cards"></div>
           <footer class="review-navigation"><button id="review-previous">Previous page</button><span id="review-page" role="status" aria-live="polite"></span><button id="review-next">Next page</button></footer>
         </section>
+        <section id="progress-view" class="progress-view" hidden aria-labelledby="progress-title">
+          <div class="progress-intro panel"><div><p class="eyebrow">Development history</p><h2 id="progress-title">Team model progress</h2><p>Four reproducible snapshots of the questionnaire, available labeled data, and development-set ranking results.</p></div><p id="progress-updated" class="progress-updated"></p></div>
+          <div id="progress-highlights" class="progress-highlights" aria-label="Latest progress summary"></div>
+          <div class="progress-chart-grid"><article class="panel progress-chart-card"><h3>Labeled patient growth</h3><p>Unique merged patient profiles available at each milestone.</p><div id="patient-growth-chart"></div></article><article class="panel progress-chart-card"><h3>Ranking and nonpositive-score trend</h3><p>Outcome metrics begin only after labeled outputs became available.</p><div id="outcome-trend-chart"></div></article></div>
+          <article class="panel progress-table-card"><h3>Milestone record</h3><div class="progress-table-scroll"><table class="progress-table"><thead><tr><th>Date</th><th>Model milestone</th><th>Patients</th><th>Recorded diagnoses</th><th>Top 1</th><th>Top 3</th><th>Patients ≤ 0</th><th>Mean recorded rank</th><th>Model size</th></tr></thead><tbody id="progress-table-body"></tbody></table></div></article>
+          <article class="panel progress-definitions"><h3>How these numbers are calculated</h3><div id="progress-definitions"></div></article>
+        </section>
       </section>
     </main>
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <dialog id="score-dialog" aria-labelledby="score-dialog-title"><header><div><p class="eyebrow">Score breakdown</p><h2 id="score-dialog-title"></h2></div><button id="close-score-dialog">Close ×</button></header><div id="score-dialog-body"></div><p class="hint">A transparent review of the selected scorecard—not a diagnosis or advice to change answers.</p></dialog>
-  <script src="questionnaire-data.js?v=source-options-27"></script><script src="model-core.js?v=source-options-27"></script><script src="trained-model.js?v=source-options-27"></script>
-  <script src="app.js?v=source-options-27"></script><script src="research.js?v=source-options-27"></script><script src="question-viewer.js?v=source-options-27"></script>
+  <script src="questionnaire-data.js?v=team-metrics-28"></script><script src="model-core.js?v=team-metrics-28"></script><script src="trained-model.js?v=team-metrics-28"></script><script src="progress-data.js?v=team-metrics-28"></script>
+  <script src="app.js?v=team-metrics-28"></script><script src="research.js?v=team-metrics-28"></script><script src="progress.js?v=team-metrics-28"></script><script src="question-viewer.js?v=team-metrics-28"></script>
 </body>
 </html>
