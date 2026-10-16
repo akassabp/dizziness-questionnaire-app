@@ -2,7 +2,6 @@
   'use strict';
   const D=window.NEBULA_PROGRESS,$=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   if(!D)return;
-  const pct=value=>value==null?'Not measurable':`${value.toFixed(1)}%`;
   const latest=[...D.milestones].reverse().find(m=>m.metrics);
   function patientChart(){
     const max=Math.max(...D.milestones.map(m=>m.availablePatients),1),base=150,bar=70,gap=38;
@@ -10,15 +9,11 @@
   }
   function outcomeChart(){
     const points=D.milestones.filter(m=>m.metrics),xs=points.map((_,i)=>85+i*(350/Math.max(points.length-1,1))),y=value=>145-value*1.15;
-    const series=[['Top 3',points.map(m=>m.top3DiagnosisPercent),'top3-line'],['Top 1',points.map(m=>m.top1PatientPercent),'top1-line'],['Patients ≤ 0',points.map(m=>m.nonpositivePatientPercent),'nonpositive-line']];
-    return `<div class="chart-legend"><span class="top3-key">Top 3</span><span class="top1-key">Top 1</span><span class="nonpositive-key">Patients ≤ 0</span></div><svg class="progress-svg" viewBox="0 0 520 190" role="img" aria-label="Top 1, Top 3, and nonpositive score percentages for all four historical models on the same current cohort">${[0,25,50,75,100].map(v=>`<g><line x1="45" y1="${y(v)}" x2="485" y2="${y(v)}" class="chart-grid"/><text x="38" y="${y(v)+4}" class="chart-tick">${v}%</text></g>`).join('')}${series.map(([,values,klass])=>`<polyline points="${values.map((v,i)=>`${xs[i]},${y(v)}`).join(' ')}" class="trend-line ${klass}"/>${values.map((v,i)=>`<g><circle cx="${xs[i]}" cy="${y(v)}" r="5" class="${klass}"/><text x="${xs[i]}" y="${y(v)-10}" class="chart-value">${v.toFixed(1)}%</text></g>`).join('')}`).join('')}${points.map((m,i)=>`<text x="${xs[i]}" y="174" class="chart-label">${esc(m.shortDate)}</text>`).join('')}</svg>`;
+    const values=points.map(m=>m.top3DiagnosisPercent);
+    return `<svg class="progress-svg" viewBox="0 0 520 190" role="img" aria-label="Top 3 score for all four models evaluated on the same 65-patient cohort">${[0,25,50,75,100].map(v=>`<g><line x1="45" y1="${y(v)}" x2="485" y2="${y(v)}" class="chart-grid"/><text x="38" y="${y(v)+4}" class="chart-tick">${v}%</text></g>`).join('')}<polyline points="${values.map((v,i)=>`${xs[i]},${y(v)}`).join(' ')}" class="trend-line top3-line"/>${values.map((v,i)=>`<g><circle cx="${xs[i]}" cy="${y(v)}" r="6" class="top3-line"/><text x="${xs[i]}" y="${y(v)-11}" class="chart-value">${v.toFixed(1)}%</text></g>`).join('')}${points.map((m,i)=>`<text x="${xs[i]}" y="174" class="chart-label">${esc(m.shortDate)}</text>`).join('')}</svg>`;
   }
   function render(){
-    $('progress-updated').textContent=`Updated ${D.updated}`;
-    $('progress-highlights').innerHTML=`<article class="panel"><span>Current cohort</span><strong>${latest.patients}</strong><small>${latest.recordedDiagnoses} recorded diagnoses</small></article><article class="panel"><span>Top 1</span><strong>${pct(latest.top1PatientPercent)}</strong><small>recorded class ranked first</small></article><article class="panel"><span>Top 3</span><strong>${pct(latest.top3DiagnosisPercent)}</strong><small>patient-balanced recorded-class recall</small></article><article class="panel"><span>Patients at ≤ 0</span><strong>${latest.nonpositivePatients}</strong><small>${pct(latest.nonpositivePatientPercent)} of current cohort</small></article>`;
     $('patient-growth-chart').innerHTML=patientChart();$('outcome-trend-chart').innerHTML=outcomeChart();
-    $('progress-table-body').innerHTML=D.milestones.map(m=>`<tr><td><strong>${esc(m.date)}</strong></td><td><strong>${esc(m.name)}</strong><small>${esc(m.note)}</small></td><td>${m.availablePatients}</td><td>${m.patients}</td><td>${m.recordedDiagnoses}</td><td>${pct(m.top1PatientPercent)}</td><td>${pct(m.top3DiagnosisPercent)}</td><td>${m.nonpositivePatients} (${pct(m.nonpositivePatientPercent)})</td><td>${m.meanRecordedRank.toFixed(2)}</td><td>${m.scoredQuestions} scored questions<small>${m.rules} answer rules</small></td></tr>`).join('');
-    $('progress-definitions').innerHTML=`<p><strong>Top 1:</strong> ${esc(D.definitions.top1)}</p><p><strong>Top 3:</strong> ${esc(D.definitions.top3)}</p><p><strong>Patients ≤ 0:</strong> ${esc(D.definitions.nonpositive)}</p><p>${esc(D.definitions.scope)} “Patients available then” preserves the historical data timeline; “Evaluation cohort” is fixed at today’s 65 patients for every model.</p><p>Only aggregate counts and percentages are published on this page. No patient-level data is included.</p>`;
   }
   document.addEventListener('nebula:progress-open',render);render();
 })();
