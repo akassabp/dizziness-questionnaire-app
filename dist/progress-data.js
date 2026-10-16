@@ -5,7 +5,7 @@ window.NEBULA_PROGRESS = {
     "top1": "Patients with at least one recorded diagnosis ranked first.",
     "top3": "Patient-balanced share of recorded diagnoses appearing among the three highest-ranked classes.",
     "nonpositive": "Patients with at least one recorded diagnosis scoring zero or below.",
-    "scope": "Aggregate development-set results only; these are not validation or clinical-performance claims."
+    "scope": "Every model is evaluated retrospectively on the same current cohort of 65 merged patients and 71 recorded diagnoses. These are aggregate development-set results, not validation or clinical-performance claims."
   },
   "milestones": [
     {
@@ -16,10 +16,24 @@ window.NEBULA_PROGRESS = {
       "questionnaireEntries": 50,
       "scoredQuestions": 29,
       "rules": 103,
-      "patients": 0,
-      "recordedDiagnoses": 0,
-      "metrics": null,
-      "note": "First scoring design. No labeled patient outputs were available for evaluation."
+      "availablePatients": 0,
+      "patients": 65,
+      "recordedDiagnoses": 71,
+      "top1PatientPercent": 38.5,
+      "top3DiagnosisPercent": 67.7,
+      "nonpositivePatients": 1,
+      "nonpositivePatientPercent": 1.5,
+      "meanRecordedRank": 2.72,
+      "metrics": {
+        "patients": 65,
+        "recordedDiagnoses": 71,
+        "top1PatientPercent": 38.5,
+        "top3DiagnosisPercent": 67.7,
+        "nonpositivePatients": 1,
+        "nonpositivePatientPercent": 1.5,
+        "meanRecordedRank": 2.72
+      },
+      "note": "First scoring design. It had no labeled outputs at the time; today it is evaluated retrospectively on all 65 current patients."
     },
     {
       "date": "June 26, 2026",
@@ -29,10 +43,24 @@ window.NEBULA_PROGRESS = {
       "questionnaireEntries": 50,
       "scoredQuestions": 30,
       "rules": 120,
-      "patients": 0,
-      "recordedDiagnoses": 0,
-      "metrics": null,
-      "note": "Expanded questionnaire and baseline weights. No labeled patient outputs were available for evaluation."
+      "availablePatients": 0,
+      "patients": 65,
+      "recordedDiagnoses": 71,
+      "top1PatientPercent": 36.9,
+      "top3DiagnosisPercent": 61.5,
+      "nonpositivePatients": 7,
+      "nonpositivePatientPercent": 10.8,
+      "meanRecordedRank": 3.17,
+      "metrics": {
+        "patients": 65,
+        "recordedDiagnoses": 71,
+        "top1PatientPercent": 36.9,
+        "top3DiagnosisPercent": 61.5,
+        "nonpositivePatients": 7,
+        "nonpositivePatientPercent": 10.8,
+        "meanRecordedRank": 3.17
+      },
+      "note": "Expanded baseline question links and weights. It is evaluated retrospectively on all 65 current patients."
     },
     {
       "date": "October 14, 2026",
@@ -42,23 +70,24 @@ window.NEBULA_PROGRESS = {
       "questionnaireEntries": 50,
       "scoredQuestions": 30,
       "rules": 120,
-      "patients": 50,
-      "recordedDiagnoses": 55,
-      "top1PatientPercent": 36.0,
-      "top3DiagnosisPercent": 70.0,
-      "nonpositivePatients": 6,
-      "nonpositivePatientPercent": 12.0,
-      "meanRecordedRank": 2.97,
+      "availablePatients": 50,
+      "patients": 65,
+      "recordedDiagnoses": 71,
+      "top1PatientPercent": 38.5,
+      "top3DiagnosisPercent": 69.2,
+      "nonpositivePatients": 5,
+      "nonpositivePatientPercent": 7.7,
+      "meanRecordedRank": 2.94,
       "metrics": {
-        "patients": 50,
-        "recordedDiagnoses": 55,
-        "top1PatientPercent": 36.0,
-        "top3DiagnosisPercent": 70.0,
-        "nonpositivePatients": 6,
-        "nonpositivePatientPercent": 12.0,
-        "meanRecordedRank": 2.97
+        "patients": 65,
+        "recordedDiagnoses": 71,
+        "top1PatientPercent": 38.5,
+        "top3DiagnosisPercent": 69.2,
+        "nonpositivePatients": 5,
+        "nonpositivePatientPercent": 7.7,
+        "meanRecordedRank": 2.94
       },
-      "note": "Training-set fit on the first 50 merged patients; five patients had two recorded diagnoses."
+      "note": "First labeled calibration, now re-evaluated on all 65 current patients using its historical scorecard."
     },
     {
       "date": "October 16, 2026",
@@ -68,6 +97,7 @@ window.NEBULA_PROGRESS = {
       "questionnaireEntries": 50,
       "scoredQuestions": 30,
       "rules": 120,
+      "availablePatients": 65,
       "patients": 65,
       "recordedDiagnoses": 71,
       "top1PatientPercent": 32.3,
@@ -84,7 +114,7 @@ window.NEBULA_PROGRESS = {
         "nonpositivePatientPercent": 7.7,
         "meanRecordedRank": 2.96
       },
-      "note": "Current scorecard evaluated on 65 merged patients; six patients have two recorded diagnoses. The new cases have not yet been used for a new calibration."
+      "note": "Current scorecard evaluated on all 65 merged patients; six patients have two recorded diagnoses. The new cases have not yet been used for a new calibration."
     }
   ]
 };

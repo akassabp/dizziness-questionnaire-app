@@ -21,7 +21,6 @@ from scoring_core import build_default_rules, load_questions  # noqa: E402
 
 ORIGINAL_WORKBOOK = PROJECT / "data" / "OTO Dizziness Questionnaire -Nebula cloud 5-9-241.xlsx"
 KM2_WORKBOOK = PROJECT / "data" / "reference" / "OTO Dizziness Questionnaire -Nebula cloud 5-9-241_KM2.xlsx"
-FIRST_WORKBOOK = PROJECT / "data" / "reference" / "AI data pull - before 2026-10-16.xlsx"
 CURRENT_COHORT = PROJECT / "data" / "processed" / "nebula-private-cohort.json"
 OUTPUT = APP / "dist" / "progress-data.js"
 OCTOBER_14_COMMIT = "8292d8c"
@@ -135,24 +134,32 @@ def workbook_summary(path: pathlib.Path) -> dict:
     }
 
 
+def workbook_rules(path: pathlib.Path) -> list[dict]:
+    questions = load_questions(path)
+    return [
+        {
+            "category": rule.category,
+            "questionId": rule.question_id,
+            "answer": rule.answer,
+            "weight": rule.weight,
+        }
+        for rule in build_default_rules(path, questions)
+    ]
+
+
 def main() -> None:
     original = workbook_summary(ORIGINAL_WORKBOOK)
     km2 = workbook_summary(KM2_WORKBOOK)
-    historical_definitions = git_payload(OCTOBER_14_COMMIT, "dist/questionnaire-data.js")
     october_14 = git_payload(OCTOBER_14_COMMIT, "dist/trained-model.js")
     current_definitions = js_payload((APP / "dist" / "questionnaire-data.js").read_text())
     current = js_payload((APP / "dist" / "trained-model.js").read_text())
-    from prepare_cohort import extract  # local workflow, imported late to keep dependencies explicit
-    first_cohort, _ = extract(FIRST_WORKBOOK, historical_definitions)
     current_cohort = json.loads(CURRENT_COHORT.read_text())
-    first_metrics = evaluate(october_14["rules"], first_cohort, historical_definitions["questions"], "support_then_points")
-    # Preserve the historical model artifact's own training summary for ranking
-    # metrics. Re-extraction code has evolved since this snapshot, so recomputing
-    # those two values today would not faithfully reproduce the recorded release.
-    historical_ranking = october_14["metrics"]["trained"]["ranking"]
-    first_metrics["top1PatientPercent"] = round(historical_ranking["top1Recorded"] * 100, 1)
-    first_metrics["top3DiagnosisPercent"] = round(historical_ranking["recallAt3"] * 100, 1)
-    first_metrics["meanRecordedRank"] = round(historical_ranking["meanRecordedRank"], 2)
+    # One common evaluation cohort is used for all four scorecards. This isolates
+    # model changes from cohort-size changes and makes the historical comparison
+    # directly interpretable.
+    june_2_metrics = evaluate(workbook_rules(ORIGINAL_WORKBOOK), current_cohort, current_definitions["questions"], "support_then_points")
+    june_26_metrics = evaluate(current_definitions["rules"], current_cohort, current_definitions["questions"], "support_then_points")
+    first_metrics = evaluate(october_14["rules"], current_cohort, current_definitions["questions"], "support_then_points")
     current_metrics = evaluate(current["rules"], current_cohort, current_definitions["questions"], "points")
     payload = {
         "schemaVersion": 1,
@@ -161,7 +168,7 @@ def main() -> None:
             "top1": "Patients with at least one recorded diagnosis ranked first.",
             "top3": "Patient-balanced share of recorded diagnoses appearing among the three highest-ranked classes.",
             "nonpositive": "Patients with at least one recorded diagnosis scoring zero or below.",
-            "scope": "Aggregate development-set results only; these are not validation or clinical-performance claims.",
+            "scope": "Every model is evaluated retrospectively on the same current cohort of 65 merged patients and 71 recorded diagnoses. These are aggregate development-set results, not validation or clinical-performance claims.",
         },
         "milestones": [
             {
@@ -170,10 +177,10 @@ def main() -> None:
                 "name": "Original workbook scorecard",
                 "source": ORIGINAL_WORKBOOK.name,
                 **original,
-                "patients": 0,
-                "recordedDiagnoses": 0,
-                "metrics": None,
-                "note": "First scoring design. No labeled patient outputs were available for evaluation.",
+                "availablePatients": 0,
+                **june_2_metrics,
+                "metrics": june_2_metrics,
+                "note": "First scoring design. It had no labeled outputs at the time; today it is evaluated retrospectively on all 65 current patients.",
             },
             {
                 "date": "June 26, 2026",
@@ -181,10 +188,10 @@ def main() -> None:
                 "name": "Expanded baseline scorecard",
                 "source": KM2_WORKBOOK.name,
                 **km2,
-                "patients": 0,
-                "recordedDiagnoses": 0,
-                "metrics": None,
-                "note": "Expanded questionnaire and baseline weights. No labeled patient outputs were available for evaluation.",
+                "availablePatients": 0,
+                **june_26_metrics,
+                "metrics": june_26_metrics,
+                "note": "Expanded baseline question links and weights. It is evaluated retrospectively on all 65 current patients.",
             },
             {
                 "date": "October 14, 2026",
@@ -192,9 +199,10 @@ def main() -> None:
                 "name": "First labeled calibration",
                 "source": "First labeled data pull and historical deployed model",
                 **km2,
+                "availablePatients": 50,
                 **first_metrics,
                 "metrics": first_metrics,
-                "note": "Training-set fit on the first 50 merged patients; five patients had two recorded diagnoses.",
+                "note": "First labeled calibration, now re-evaluated on all 65 current patients using its historical scorecard.",
             },
             {
                 "date": "October 16, 2026",
@@ -202,9 +210,10 @@ def main() -> None:
                 "name": "Expanded cohort check",
                 "source": "AI data pull.xlsx and current deployed model",
                 **km2,
+                "availablePatients": 65,
                 **current_metrics,
                 "metrics": current_metrics,
-                "note": "Current scorecard evaluated on 65 merged patients; six patients have two recorded diagnoses. The new cases have not yet been used for a new calibration.",
+                "note": "Current scorecard evaluated on all 65 merged patients; six patients have two recorded diagnoses. The new cases have not yet been used for a new calibration.",
             },
         ],
     }
