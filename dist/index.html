@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Dizziness Triage scoring platform." />
   <title>Dizziness Triage</title>
-  <link rel="stylesheet" href="styles.css?v=progress-axis-31" />
+  <link rel="stylesheet" href="styles.css?v=separate-progress-32" />
 </head>
 <body class="auth-locked">
   <section id="access-gate" class="access-gate" aria-labelledby="access-title">
@@ -46,14 +46,14 @@
           <footer class="review-navigation"><button id="review-previous">Previous page</button><span id="review-page" role="status" aria-live="polite"></span><button id="review-next">Next page</button></footer>
         </section>
         <section id="progress-view" class="progress-view" hidden aria-label="Tracking Progress">
-          <article class="panel progress-chart-card"><h2>Tracking Progress</h2><div id="tracking-progress-chart"></div></article>
+          <div class="progress-chart-grid"><article class="panel progress-chart-card"><h2>Labeled Patient Growth</h2><div id="patient-growth-chart"></div></article><article class="panel progress-chart-card"><h2>Top 3 Score</h2><div id="top3-progress-chart"></div></article></div>
         </section>
       </section>
     </main>
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <dialog id="score-dialog" aria-labelledby="score-dialog-title"><header><div><p class="eyebrow">Score breakdown</p><h2 id="score-dialog-title"></h2></div><button id="close-score-dialog">Close ×</button></header><div id="score-dialog-body"></div><p class="hint">A transparent review of the selected scorecard—not a diagnosis or advice to change answers.</p></dialog>
-  <script src="questionnaire-data.js?v=progress-axis-31"></script><script src="model-core.js?v=progress-axis-31"></script><script src="trained-model.js?v=progress-axis-31"></script><script src="progress-data.js?v=progress-axis-31"></script>
-  <script src="app.js?v=progress-axis-31"></script><script src="research.js?v=progress-axis-31"></script><script src="progress.js?v=progress-axis-31"></script><script src="question-viewer.js?v=progress-axis-31"></script>
+  <script src="questionnaire-data.js?v=separate-progress-32"></script><script src="model-core.js?v=separate-progress-32"></script><script src="trained-model.js?v=separate-progress-32"></script><script src="progress-data.js?v=separate-progress-32"></script>
+  <script src="app.js?v=separate-progress-32"></script><script src="research.js?v=separate-progress-32"></script><script src="progress.js?v=separate-progress-32"></script><script src="question-viewer.js?v=separate-progress-32"></script>
 </body>
 </html>
