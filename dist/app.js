@@ -136,6 +136,20 @@
         else if (q.kind === "date" && typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) answers[id] = value;
         else skipped++;
       }
+      // Recover structured source choices that older case exports quarantined
+      // before those options became part of the standard questionnaire.
+      for(const [id,item] of Object.entries(unscored)){
+        if(item.reason!=='source_answer_not_in_current_questionnaire')continue;
+        const q=questions.find(q=>q.id===id);if(!q||!['single','multi'].includes(q.kind))continue;
+        const recovered=item.values.filter(value=>q.options.includes(value));if(!recovered.length)continue;
+        if(q.kind==='single'&&!answers[id]&&recovered.length===1)answers[id]=recovered[0];
+        if(q.kind==='multi'){
+          const combined=[...new Set([...(answers[id]||[]),...recovered])];
+          if(!(combined.length>1&&combined.some(value=>normalized(value)==='none of the above')))answers[id]=combined;
+        }
+        const used=new Set(q.kind==='multi'?(answers[id]||[]):answers[id]?[answers[id]]:[]);item.values=item.values.filter(value=>!used.has(value));
+        if(!item.values.length)delete unscored[id];
+      }
       if (!Object.keys(answers).length && Object.keys(payload.answers).length&&!legacyTinnitus) throw new Error("No answers match the current questionnaire.");
       resetQuestionnaire();
       // Restore duration answers quarantined by the previous single-choice importer.

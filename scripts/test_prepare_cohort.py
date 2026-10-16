@@ -20,13 +20,22 @@ def fixture_extract(rows):
 
 
 class ExtractionTests(unittest.TestCase):
-    def test_grouped_aliases_are_deduplicated(self):
+    def test_grouped_aliases_and_standard_source_options_are_preserved(self):
         q = next(q for q in DEFINITIONS["questions"] if q["id"] == "259372")
         r = fixture_extract([(q["prompt"], "supermarket aisles"), (None, "malls"), (None, "tunnels"), (None, "stress"), (None, "nerves or anxiety"), (None, "sneezing or blowing your nose")])
-        self.assertEqual(r["answers"][q["id"]], ["supermarket aisles, malls, or tunnels", "stress, nerves, or anxiety"])
+        self.assertEqual(r["answers"][q["id"]], ["supermarket aisles, malls, or tunnels", "stress, nerves, or anxiety", "sneezing or blowing your nose"])
         self.assertEqual(len(r["mappingAudit"]), 5)
-        self.assertEqual(r["issues"]["unmatched_option"], 1)
-        self.assertEqual(r["unscoredAnswers"][q["id"]], {"reason": "source_answer_not_in_current_questionnaire", "values": ["sneezing or blowing your nose"]})
+        self.assertNotIn("unmatched_option", r["issues"])
+        self.assertNotIn(q["id"], r["unscoredAnswers"])
+
+    def test_q259381_source_options_are_standard_unweighted_choices(self):
+        q = next(q for q in DEFINITIONS["questions"] if q["id"] == "259381")
+        self.assertIn("Chest pain", q["options"])
+        self.assertIn("None of the above", q["options"])
+        r = fixture_extract([(q["prompt"], "Chest pain")])
+        self.assertEqual(r["answers"][q["id"]], ["Chest pain"])
+        self.assertNotIn(q["id"], r["unscoredAnswers"])
+        self.assertFalse(any(rule["questionId"] == q["id"] and rule["answer"] in {"Chest pain", "None of the above"} for rule in DEFINITIONS["rules"]))
 
     def test_tinnitus_semantics(self):
         r = fixture_extract([("I have a roaring or ringing in one ear only before or during a dizziness attack", "Yes. Left ear only")])

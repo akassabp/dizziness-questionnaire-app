@@ -1,6 +1,6 @@
 window.NEBULA_TRAINED = {
   "version": 5,
-  "questionnaireRevision": "km2-duration-multi-v2",
+  "questionnaireRevision": "km2-source-options-v3",
   "scoringMode": "net-points",
   "method": "All-data expert-constrained flexible-total integer scorecard",
   "trainedAt": "2026-10-15T21:47:20.343Z",

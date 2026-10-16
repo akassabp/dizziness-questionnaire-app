@@ -32,6 +32,14 @@ if(process.argv[2])for(const f of fs.readdirSync(process.argv[2]).filter(n=>/^\d
  }
 }
 assert.deepEqual(requests,[]);assert.deepEqual(errors,[]);assert.deepEqual(dialogs,[]);
+const sourceOptions=await page.evaluate(()=>({q372:NEBULA_DATA.questions.find(q=>q.id==='259372').options,q381:NEBULA_DATA.questions.find(q=>q.id==='259381').options}));
+assert.ok(sourceOptions.q372.includes('sneezing or blowing your nose'));
+assert.ok(sourceOptions.q381.includes('Chest pain'));assert.ok(sourceOptions.q381.includes('None of the above'));
+const legacySource={patient:{anonymous_id:'LEGACY-SOURCE'},answers:{'259372':['reading']},unscored_answers:{'259372':{reason:'source_answer_not_in_current_questionnaire',values:['sneezing or blowing your nose']},'259381':{reason:'source_answer_not_in_current_questionnaire',values:['Chest pain']}}};
+await page.setInputFiles('#session-file',{name:'legacy-source.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(legacySource))});
+await page.waitForFunction(()=>document.querySelector('#patient-id').value==='LEGACY-SOURCE');
+assert.deepEqual(await page.evaluate(()=>NebulaApp.snapshot().answers['259372']),['reading','sneezing or blowing your nose']);
+assert.deepEqual(await page.evaluate(()=>NebulaApp.snapshot().answers['259381']),['Chest pain']);
 const previous=await page.inputValue('#patient-id');
 await page.setInputFiles('#session-file',{name:'broken.json',mimeType:'application/json',buffer:Buffer.from('invalid')});
 await page.waitForFunction(()=>document.querySelector('#toast').textContent.startsWith('Invalid JSON'));
@@ -42,7 +50,7 @@ await page.locator('#answer-options input').first().check();
 const downloadPromise=page.waitForEvent('download');await page.click('#export-json');const download=await downloadPromise;
 const exported=JSON.parse(fs.readFileSync(await download.path(),'utf8'));
 assert.equal(exported.format,'nebula-patient-case');assert.equal(exported.version,1);
-assert.equal(exported.questionnaire_revision,'km2-duration-multi-v2');
+assert.equal(exported.questionnaire_revision,'km2-source-options-v3');
 assert.deepEqual(exported.patient.recorded_labels,[]);assert.equal(exported.patient.age,42);assert.equal(exported.patient.sex,'Female');assert.equal(exported.scores,undefined);
 assert.equal(Object.keys(exported.answers).length,1);
 await page.click('#new-questionnaire');await page.setInputFiles('#session-file',{name:'roundtrip.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(exported))});

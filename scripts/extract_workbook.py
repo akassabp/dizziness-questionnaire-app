@@ -22,6 +22,11 @@ BRANCHING_QUESTIONS = {
     "260607": {"questionId": "260450", "answer": "certain beverages"},
 }
 
+STANDARD_OPTION_ADDITIONS = {
+    "259372": ["sneezing or blowing your nose"],
+    "259381": ["Chest pain", "None of the above"],
+}
+
 
 def main() -> None:
     questions = load_questions(WORKBOOK_PATH)
@@ -29,6 +34,10 @@ def main() -> None:
     questions = [replace(q, prompt="I have a roaring or ringing in one ear only before or during a dizziness attack?") if q.question_id == "259416" else q for q in questions]
     # Preserve the separately requested standing-up option when rebuilding defaults.
     questions = [replace(q, options=q.options[:5] + ["standing up"] + q.options[5:]) if q.question_id == "259371" and "standing up" not in q.options else q for q in questions]
+    # Preserve structured choices found in the labeled patient exports even when
+    # they are absent from the KM2 question-option cells. These additions carry no
+    # points unless an exact scoring rule exists.
+    questions = [replace(q, options=q.options + [option for option in STANDARD_OPTION_ADDITIONS.get(q.question_id, []) if option not in q.options]) for q in questions]
     workbook_rules = build_default_rules(WORKBOOK_PATH, questions)
     rules = [
         {
@@ -59,7 +68,7 @@ def main() -> None:
 
     payload = {
         "version": 4,
-        "questionnaireRevision": "km2-duration-multi-v2",
+        "questionnaireRevision": "km2-source-options-v3",
         "sourceWorkbook": WORKBOOK_PATH.name,
         "questions": all_questions,
         "rules": rules,

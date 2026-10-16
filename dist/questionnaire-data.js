@@ -1,6 +1,6 @@
 window.NEBULA_DATA = {
   "version": 4,
-  "questionnaireRevision": "km2-duration-multi-v2",
+  "questionnaireRevision": "km2-source-options-v3",
   "sourceWorkbook": "OTO Dizziness Questionnaire -Nebula cloud 5-9-241_KM2.xlsx",
   "questions": [
     {
@@ -198,7 +198,8 @@ window.NEBULA_DATA = {
         "blowing your nose",
         "loud sounds",
         "lifting or straining",
-        "coughing"
+        "coughing",
+        "sneezing or blowing your nose"
       ]
     },
     {
@@ -263,7 +264,9 @@ window.NEBULA_DATA = {
         "Double vision",
         "Vision \"jumping\" or \"bouncing\" when walking or riding",
         "heart racing",
-        "panic feeling or sudden need to leave a place"
+        "panic feeling or sudden need to leave a place",
+        "Chest pain",
+        "None of the above"
       ]
     },
     {
