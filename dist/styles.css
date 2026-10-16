@@ -20,13 +20,11 @@
 .review-value { font-size:13px; overflow-wrap:anywhere; }
 .review-navigation { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:12px; }
 .progress-view { display:flex; flex:1; min-height:0; align-items:flex-start; padding-top:28px; }
-.progress-chart-grid { display:grid; width:100%; grid-template-columns:1fr 1fr; gap:16px; }
-.progress-chart-card { padding:24px; }
+.progress-chart-card { width:min(1100px,100%); margin:0 auto; padding:24px; }
 .progress-chart-card h2 { margin:0 0 18px; color:var(--um-blue); font-size:20px; text-align:center; }
-.progress-svg { display:block; width:100%; height:auto; max-height:360px; overflow:visible; }
-.chart-axis { stroke:#89979f; stroke-width:1; }.chart-grid { stroke:#e1e6e9; stroke-width:1; }.patient-bar { fill:var(--um-blue); }.patient-bar:hover { fill:#174f7c; }
-.chart-value { fill:var(--ink); font-size:12px; font-weight:700; text-anchor:middle; }.chart-label { fill:var(--muted); font-size:12px; text-anchor:middle; }.chart-tick { fill:var(--muted); font-size:10px; text-anchor:end; }
-.trend-line { fill:none; stroke-width:4; }.top3-line { stroke:#087f5b; fill:#087f5b; }
+.progress-svg { display:block; width:100%; height:auto; max-height:500px; overflow:visible; }
+.chart-grid { stroke:#dce3e7; stroke-width:1; }.patient-line,.top3-line { fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }.patient-line { stroke:var(--um-blue); }.top3-line { stroke:#087f5b; }.patient-point { fill:var(--um-blue); }.top3-point { fill:#087f5b; }
+.chart-value { font-size:12px; font-weight:700; text-anchor:middle; }.patient-value { fill:var(--um-blue); }.top3-value { fill:#087f5b; }.chart-label { fill:var(--muted); font-size:12px; text-anchor:middle; }.chart-tick { fill:var(--muted); font-size:10px; }.chart-tick-left { text-anchor:end; }.chart-tick-right { text-anchor:start; }.axis-title { fill:var(--muted); font-size:11px; text-anchor:middle; }.chart-legend text { fill:var(--ink); font-size:11px; }
 @media(max-width:720px){.viewer-switch{align-self:flex-start;}.review-navigation button{font-size:12px;}}
 html,body { height:100%; }
 body { margin:0; min-width:320px; overflow:hidden; background:var(--page); color:var(--ink); font-size:14px; }

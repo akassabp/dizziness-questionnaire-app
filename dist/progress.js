@@ -2,18 +2,20 @@
   'use strict';
   const D=window.NEBULA_PROGRESS,$=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   if(!D)return;
-  const latest=[...D.milestones].reverse().find(m=>m.metrics);
-  function patientChart(){
-    const max=Math.max(...D.milestones.map(m=>m.availablePatients),1),base=150,bar=70,gap=38;
-    return `<svg class="progress-svg" viewBox="0 0 520 190" role="img" aria-label="Patient count available at each date rose from zero in June to ${latest.availablePatients} in October"><line x1="35" y1="${base}" x2="500" y2="${base}" class="chart-axis"/>${D.milestones.map((m,i)=>{const x=55+i*(bar+gap),h=m.availablePatients/max*105,y=base-h;return `<g><rect x="${x}" y="${y}" width="${bar}" height="${h}" rx="4" class="patient-bar"/><text x="${x+bar/2}" y="${Math.max(20,y-8)}" class="chart-value">${m.availablePatients}</text><text x="${x+bar/2}" y="174" class="chart-label">${esc(m.shortDate)}</text></g>`;}).join('')}</svg>`;
+  function chart(){
+    const items=D.milestones,x=i=>110+i*(580/Math.max(items.length-1,1)),top=62,bottom=292,height=bottom-top;
+    const patientY=value=>bottom-value/80*height,scoreY=value=>bottom-value/100*height;
+    const patientPoints=items.map((m,i)=>`${x(i)},${patientY(m.availablePatients)}`).join(' ');
+    const scorePoints=items.map((m,i)=>`${x(i)},${scoreY(m.top3DiagnosisPercent)}`).join(' ');
+    const ticks=[0,25,50,75,100];
+    return `<svg class="progress-svg" viewBox="0 0 800 360" role="img" aria-label="Labeled patient growth and Top 3 score across four model milestones. Patient count uses the left axis and Top 3 percentage uses the right axis.">
+      <g class="chart-legend"><line x1="270" y1="28" x2="300" y2="28" class="patient-line"/><circle cx="285" cy="28" r="4" class="patient-point"/><text x="308" y="32">Labeled patients</text><line x1="445" y1="28" x2="475" y2="28" class="top3-line"/><circle cx="460" cy="28" r="4" class="top3-point"/><text x="483" y="32">Top 3 score</text></g>
+      ${ticks.map((tick,index)=>{const y=bottom-index*(height/4),patients=index*20;return `<g><line x1="75" y1="${y}" x2="725" y2="${y}" class="chart-grid"/><text x="64" y="${y+4}" class="chart-tick chart-tick-left">${patients}</text><text x="736" y="${y+4}" class="chart-tick chart-tick-right">${tick}%</text></g>`;}).join('')}
+      <text x="22" y="178" class="axis-title" transform="rotate(-90 22 178)">Labeled patients</text><text x="778" y="178" class="axis-title" transform="rotate(90 778 178)">Top 3 score</text>
+      <polyline points="${patientPoints}" class="patient-line"/><polyline points="${scorePoints}" class="top3-line"/>
+      ${items.map((m,i)=>`<g><circle cx="${x(i)}" cy="${patientY(m.availablePatients)}" r="5" class="patient-point"/><text x="${x(i)}" y="${Math.max(top+10,patientY(m.availablePatients)-11)}" class="chart-value patient-value">${m.availablePatients}</text><circle cx="${x(i)}" cy="${scoreY(m.top3DiagnosisPercent)}" r="5" class="top3-point"/><text x="${x(i)}" y="${scoreY(m.top3DiagnosisPercent)-11}" class="chart-value top3-value">${m.top3DiagnosisPercent.toFixed(1)}%</text><text x="${x(i)}" y="326" class="chart-label">${esc(m.shortDate)}</text></g>`).join('')}
+    </svg>`;
   }
-  function outcomeChart(){
-    const points=D.milestones.filter(m=>m.metrics),xs=points.map((_,i)=>85+i*(350/Math.max(points.length-1,1))),y=value=>145-value*1.15;
-    const values=points.map(m=>m.top3DiagnosisPercent);
-    return `<svg class="progress-svg" viewBox="0 0 520 190" role="img" aria-label="Top 3 score for all four models evaluated on the same 65-patient cohort">${[0,25,50,75,100].map(v=>`<g><line x1="45" y1="${y(v)}" x2="485" y2="${y(v)}" class="chart-grid"/><text x="38" y="${y(v)+4}" class="chart-tick">${v}%</text></g>`).join('')}<polyline points="${values.map((v,i)=>`${xs[i]},${y(v)}`).join(' ')}" class="trend-line top3-line"/>${values.map((v,i)=>`<g><circle cx="${xs[i]}" cy="${y(v)}" r="6" class="top3-line"/><text x="${xs[i]}" y="${y(v)-11}" class="chart-value">${v.toFixed(1)}%</text></g>`).join('')}${points.map((m,i)=>`<text x="${xs[i]}" y="174" class="chart-label">${esc(m.shortDate)}</text>`).join('')}</svg>`;
-  }
-  function render(){
-    $('patient-growth-chart').innerHTML=patientChart();$('outcome-trend-chart').innerHTML=outcomeChart();
-  }
+  function render(){$('tracking-progress-chart').innerHTML=chart();}
   document.addEventListener('nebula:progress-open',render);render();
 })();
