@@ -1,0 +1,1317 @@
+{
+  "version": 1,
+  "name": "Knowledge-Guided Residual Graph Neural Network",
+  "questionnaireRevision": "km2-duration-multi-v2",
+  "cohort": {
+    "patients": 50,
+    "multiLabelPatients": 5,
+    "labelCounts": {
+      "Bilateral": 6,
+      "BPPV": 11,
+      "Concussion": 0,
+      "Meniere's": 5,
+      "Migraine": 13,
+      "Neuritis": 10,
+      "Neurological Other": 0,
+      "PPPD": 7,
+      "Third Window": 3
+    }
+  },
+  "graph": {
+    "questionNodes": 50,
+    "answerNodes": 160,
+    "diagnosisNodes": 9,
+    "expertEvidenceEdges": 120,
+    "messagePassingLayers": 2
+  },
+  "constraints": {
+    "fixedExpertGraph": true,
+    "signsPreserved": true,
+    "hardMinus100ExclusionsFrozen": true,
+    "unobservedRulesFrozen": true,
+    "edgeAdjustmentRadius": 0.25,
+    "positiveBudgetCapForExcludedClasses": 100,
+    "baselineSupportGuard": true
+  },
+  "crossValidation": {
+    "design": "3 repeats of 5-fold patient-level multi-label-balanced cross-validation",
+    "seedEnsemblePerFold": 1,
+    "metrics": {
+      "pairwiseConcordance": 0.7410714285714286,
+      "meanRecordedRank": 3.1,
+      "top1Recorded": 0.32,
+      "recallAt3": 0.65
+    },
+    "deltaVsBaseline95PercentBootstrap": {
+      "pairwiseConcordance": [
+        -0.01214732142857151,
+        0.03393303571428557
+      ],
+      "top1Recorded": [
+        -0.12,
+        0.03999999999999998
+      ],
+      "recallAt3": [
+        -0.02025,
+        0.13
+      ],
+      "meanRecordedRank": [
+        -0.28000000000000025,
+        0.0900000000000003
+      ]
+    },
+    "folds": [
+      {
+        "repeat": 1,
+        "fold": 1,
+        "train": 40,
+        "test": 10,
+        "testLabelCounts": {
+          "Bilateral": 1,
+          "BPPV": 2,
+          "Concussion": 0,
+          "Meniere's": 1,
+          "Migraine": 2,
+          "Neuritis": 2,
+          "Neurological Other": 0,
+          "PPPD": 2,
+          "Third Window": 1
+        }
+      },
+      {
+        "repeat": 1,
+        "fold": 2,
+        "train": 40,
+        "test": 10,
+        "testLabelCounts": {
+          "Bilateral": 1,
+          "BPPV": 2,
+          "Concussion": 0,
+          "Meniere's": 1,
+          "Migraine": 3,
+          "Neuritis": 2,
+          "Neurological Other": 0,
+          "PPPD": 1,
+          "Third Window": 1
+        }
+      },
+      {
+        "repeat": 1,
+        "fold": 3,
+        "train": 39,
+        "test": 11,
+        "testLabelCounts": {
+          "Bilateral": 2,
+          "BPPV": 2,
+          "Concussion": 0,
+          "Meniere's": 1,
+          "Migraine": 2,
+          "Neuritis": 2,
+          "Neurological Other": 0,
+          "PPPD": 1,
+          "Third Window": 1
+        }
+      },
+      {
+        "repeat": 1,
+        "fold": 4,
+        "train": 41,
+        "test": 9,
+        "testLabelCounts": {
+          "Bilateral": 1,
+          "BPPV": 3,
+          "Concussion": 0,
+          "Meniere's": 1,
+          "Migraine": 3,
+          "Neuritis": 2,
+          "Neurological Other": 0,
+          "PPPD": 1,
+          "Third Window": 0
+        }
+      },
+      {
+        "repeat": 1,
+        "fold": 5,
+        "train": 40,
+        "test": 10,
+        "testLabelCounts": {
+          "Bilateral": 1,
+          "BPPV": 2,
+          "Concussion": 0,
+          "Meniere's": 1,
+          "Migraine": 3,
+          "Neuritis": 2,
+          "Neurological Other": 0,
+          "PPPD": 2,
+          "Third Window": 0
+        }
+      },
+      {
+        "repeat": 2,
+        "fold": 1,
+        "train": 40,
+        "test": 10,
+        "testLabelCounts": {
+          "Bilateral": 1,
+          "BPPV": 2,
+          "Concussion": 0,
+          "Meniere's": 1,
+          "Migraine": 2,
+          "Neuritis": 2,
+          "Neurological Other": 0,
+          "PPPD": 2,
+          "Third Window": 1
+        }
+      },
+      {
+        "repeat": 2,
+        "fold": 2,
+        "train": 40,
+        "test": 10,
+        "testLabelCounts": {
+          "Bilateral": 1,
+          "BPPV": 2,
+          "Concussion": 0,
+          "Meniere's": 1,
+          "Migraine": 3,
+          "Neuritis": 2,
+          "Neurological Other": 0,
+          "PPPD": 1,
+          "Third Window": 1
+        }
+      },
+      {
+        "repeat": 2,
+        "fold": 3,
+        "train": 39,
+        "test": 11,
+        "testLabelCounts": {
+          "Bilateral": 2,
+          "BPPV": 2,
+          "Concussion": 0,
+          "Meniere's": 1,
+          "Migraine": 2,
+          "Neuritis": 2,
+          "Neurological Other": 0,
+          "PPPD": 1,
+          "Third Window": 1
+        }
+      },
+      {
+        "repeat": 2,
+        "fold": 4,
+        "train": 41,
+        "test": 9,
+        "testLabelCounts": {
+          "Bilateral": 1,
+          "BPPV": 3,
+          "Concussion": 0,
+          "Meniere's": 1,
+          "Migraine": 3,
+          "Neuritis": 2,
+          "Neurological Other": 0,
+          "PPPD": 1,
+          "Third Window": 0
+        }
+      },
+      {
+        "repeat": 2,
+        "fold": 5,
+        "train": 40,
+        "test": 10,
+        "testLabelCounts": {
+          "Bilateral": 1,
+          "BPPV": 2,
+          "Concussion": 0,
+          "Meniere's": 1,
+          "Migraine": 3,
+          "Neuritis": 2,
+          "Neurological Other": 0,
+          "PPPD": 2,
+          "Third Window": 0
+        }
+      },
+      {
+        "repeat": 3,
+        "fold": 1,
+        "train": 40,
+        "test": 10,
+        "testLabelCounts": {
+          "Bilateral": 1,
+          "BPPV": 2,
+          "Concussion": 0,
+          "Meniere's": 1,
+          "Migraine": 2,
+          "Neuritis": 2,
+          "Neurological Other": 0,
+          "PPPD": 2,
+          "Third Window": 1
+        }
+      },
+      {
+        "repeat": 3,
+        "fold": 2,
+        "train": 40,
+        "test": 10,
+        "testLabelCounts": {
+          "Bilateral": 1,
+          "BPPV": 2,
+          "Concussion": 0,
+          "Meniere's": 1,
+          "Migraine": 3,
+          "Neuritis": 2,
+          "Neurological Other": 0,
+          "PPPD": 1,
+          "Third Window": 1
+        }
+      },
+      {
+        "repeat": 3,
+        "fold": 3,
+        "train": 39,
+        "test": 11,
+        "testLabelCounts": {
+          "Bilateral": 2,
+          "BPPV": 2,
+          "Concussion": 0,
+          "Meniere's": 1,
+          "Migraine": 2,
+          "Neuritis": 2,
+          "Neurological Other": 0,
+          "PPPD": 1,
+          "Third Window": 1
+        }
+      },
+      {
+        "repeat": 3,
+        "fold": 4,
+        "train": 41,
+        "test": 9,
+        "testLabelCounts": {
+          "Bilateral": 1,
+          "BPPV": 3,
+          "Concussion": 0,
+          "Meniere's": 1,
+          "Migraine": 3,
+          "Neuritis": 2,
+          "Neurological Other": 0,
+          "PPPD": 1,
+          "Third Window": 0
+        }
+      },
+      {
+        "repeat": 3,
+        "fold": 5,
+        "train": 40,
+        "test": 10,
+        "testLabelCounts": {
+          "Bilateral": 1,
+          "BPPV": 2,
+          "Concussion": 0,
+          "Meniere's": 1,
+          "Migraine": 3,
+          "Neuritis": 2,
+          "Neurological Other": 0,
+          "PPPD": 2,
+          "Third Window": 0
+        }
+      }
+    ]
+  },
+  "developmentFit": {
+    "baseline": {
+      "pairwiseConcordance": 0.7305357142857143,
+      "meanRecordedRank": 3.19,
+      "top1Recorded": 0.36,
+      "recallAt3": 0.6
+    },
+    "deployedIntegerModel": {
+      "pairwiseConcordance": 0.76625,
+      "meanRecordedRank": 2.91,
+      "top1Recorded": 0.32,
+      "recallAt3": 0.72
+    },
+    "gnn": {
+      "pairwiseConcordance": 0.765,
+      "meanRecordedRank": 2.91,
+      "top1Recorded": 0.3,
+      "recallAt3": 0.7
+    },
+    "gnnRoundedInteger": {
+      "pairwiseConcordance": 0.7610714285714286,
+      "meanRecordedRank": 2.96,
+      "top1Recorded": 0.3,
+      "recallAt3": 0.69
+    },
+    "bestEpoch": 697,
+    "objective": 0.060217734426259995
+  },
+  "limitations": [
+    "This is an exploratory development experiment on 50 merged patients.",
+    "Unrecorded diagnoses are treated as assumed negatives.",
+    "The GNN changes edge magnitudes only; it does not add new clinical rules.",
+    "Cross-validation estimates are highly uncertain for rare classes."
+  ],
+  "learnedRules": [
+    {
+      "category": "BPPV",
+      "questionId": "259364",
+      "answer": "Yes",
+      "baselineWeight": 20.0,
+      "gnnWeight": 15.040563583374023,
+      "roundedWeight": 15
+    },
+    {
+      "category": "BPPV",
+      "questionId": "259369",
+      "answer": "Seconds",
+      "baselineWeight": 10.0,
+      "gnnWeight": 7.546751022338867,
+      "roundedWeight": 8
+    },
+    {
+      "category": "BPPV",
+      "questionId": "259369",
+      "answer": "Minutes",
+      "baselineWeight": 10.0,
+      "gnnWeight": 7.550641059875488,
+      "roundedWeight": 8
+    },
+    {
+      "category": "BPPV",
+      "questionId": "259370",
+      "answer": "once a day",
+      "baselineWeight": 10.0,
+      "gnnWeight": 8.59814739227295,
+      "roundedWeight": 9
+    },
+    {
+      "category": "BPPV",
+      "questionId": "259370",
+      "answer": "several times a day",
+      "baselineWeight": 10.0,
+      "gnnWeight": 7.512618064880371,
+      "roundedWeight": 8
+    },
+    {
+      "category": "BPPV",
+      "questionId": "259371",
+      "answer": "looking up",
+      "baselineWeight": 4.0,
+      "gnnWeight": 3.095134973526001,
+      "roundedWeight": 3
+    },
+    {
+      "category": "BPPV",
+      "questionId": "259371",
+      "answer": "lying down",
+      "baselineWeight": 4.0,
+      "gnnWeight": 3.236947536468506,
+      "roundedWeight": 3
+    },
+    {
+      "category": "BPPV",
+      "questionId": "259371",
+      "answer": "rolling over",
+      "baselineWeight": 3.0,
+      "gnnWeight": 3.3506906032562256,
+      "roundedWeight": 3
+    },
+    {
+      "category": "BPPV",
+      "questionId": "259371",
+      "answer": "getting into or out of bed",
+      "baselineWeight": 3.0,
+      "gnnWeight": 3.412353038787842,
+      "roundedWeight": 3
+    },
+    {
+      "category": "BPPV",
+      "questionId": "259371",
+      "answer": "sitting up",
+      "baselineWeight": 3.0,
+      "gnnWeight": 3.272150993347168,
+      "roundedWeight": 3
+    },
+    {
+      "category": "BPPV",
+      "questionId": "259371",
+      "answer": "reaching or bending",
+      "baselineWeight": 3.0,
+      "gnnWeight": 2.290215492248535,
+      "roundedWeight": 2
+    },
+    {
+      "category": "BPPV",
+      "questionId": "259362",
+      "answer": "No",
+      "baselineWeight": 20.0,
+      "gnnWeight": 15.033380508422852,
+      "roundedWeight": 15
+    },
+    {
+      "category": "Neuritis",
+      "questionId": "259361",
+      "answer": "Sudden",
+      "baselineWeight": 17.0,
+      "gnnWeight": 16.62175941467285,
+      "roundedWeight": 17
+    },
+    {
+      "category": "Neuritis",
+      "questionId": "259362",
+      "answer": "Yes",
+      "baselineWeight": 17.0,
+      "gnnWeight": 12.973766326904297,
+      "roundedWeight": 13
+    },
+    {
+      "category": "Neuritis",
+      "questionId": "259367",
+      "answer": "Only 1 episode",
+      "baselineWeight": 17.0,
+      "gnnWeight": 18.93294906616211,
+      "roundedWeight": 19
+    },
+    {
+      "category": "Neuritis",
+      "questionId": "259371",
+      "answer": "walking in the dark",
+      "baselineWeight": 8.0,
+      "gnnWeight": 9.977622985839844,
+      "roundedWeight": 10
+    },
+    {
+      "category": "Neuritis",
+      "questionId": "259371",
+      "answer": "any kind of head movement",
+      "baselineWeight": 8.0,
+      "gnnWeight": 9.960713386535645,
+      "roundedWeight": 10
+    },
+    {
+      "category": "Neuritis",
+      "questionId": "260448",
+      "answer": "Yes",
+      "baselineWeight": 17.0,
+      "gnnWeight": 18.635814666748047,
+      "roundedWeight": 19
+    },
+    {
+      "category": "Neuritis",
+      "questionId": "260451",
+      "answer": "Yes",
+      "baselineWeight": 16.0,
+      "gnnWeight": 12.060699462890625,
+      "roundedWeight": 12
+    },
+    {
+      "category": "Neuritis",
+      "questionId": "260451",
+      "answer": "No",
+      "baselineWeight": -17.0,
+      "gnnWeight": -12.83913516998291,
+      "roundedWeight": -13
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259369",
+      "answer": "Hours",
+      "baselineWeight": 4.0,
+      "gnnWeight": 4.988504409790039,
+      "roundedWeight": 5
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259369",
+      "answer": "Days",
+      "baselineWeight": 4.0,
+      "gnnWeight": 4.990859031677246,
+      "roundedWeight": 5
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259369",
+      "answer": "Days and can last continuously for weeks",
+      "baselineWeight": 4.0,
+      "gnnWeight": 4.989991188049316,
+      "roundedWeight": 5
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259381",
+      "answer": "Nausea or vomiting",
+      "baselineWeight": 13.0,
+      "gnnWeight": 16.20941734313965,
+      "roundedWeight": 16
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259417",
+      "answer": "Yes, right ear only",
+      "baselineWeight": 7.0,
+      "gnnWeight": 8.626604080200195,
+      "roundedWeight": 9
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259417",
+      "answer": "Yes, left ear only",
+      "baselineWeight": 6.0,
+      "gnnWeight": 6.981877326965332,
+      "roundedWeight": 7
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259418",
+      "answer": "Yes, right ear only",
+      "baselineWeight": 6.0,
+      "gnnWeight": 7.392352104187012,
+      "roundedWeight": 7
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259418",
+      "answer": "Yes, left ear only",
+      "baselineWeight": 6.0,
+      "gnnWeight": 6.989121437072754,
+      "roundedWeight": 7
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259416",
+      "answer": "Yes, right ear only",
+      "baselineWeight": 6.0,
+      "gnnWeight": 5.146656036376953,
+      "roundedWeight": 5
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259416",
+      "answer": "Yes, left ear only",
+      "baselineWeight": 6.0,
+      "gnnWeight": 7.37687873840332,
+      "roundedWeight": 7
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "260448",
+      "answer": "Yes",
+      "baselineWeight": 13.0,
+      "gnnWeight": 15.998754501342773,
+      "roundedWeight": 16
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "260450",
+      "answer": "changes in the weather",
+      "baselineWeight": 4.0,
+      "gnnWeight": 4.991873264312744,
+      "roundedWeight": 5
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "260450",
+      "answer": "certain foods",
+      "baselineWeight": 4.0,
+      "gnnWeight": 4.973350524902344,
+      "roundedWeight": 5
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "260450",
+      "answer": "certain beverages",
+      "baselineWeight": 4.0,
+      "gnnWeight": 4.0831522941589355,
+      "roundedWeight": 4
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259363",
+      "answer": "No",
+      "baselineWeight": 13.0,
+      "gnnWeight": 12.321975708007812,
+      "roundedWeight": 12
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259400",
+      "answer": "no",
+      "baselineWeight": -6.0,
+      "gnnWeight": -7.358038902282715,
+      "roundedWeight": -7
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259416",
+      "answer": "No",
+      "baselineWeight": -13.0,
+      "gnnWeight": -15.542952537536621,
+      "roundedWeight": -16
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259417",
+      "answer": "No",
+      "baselineWeight": -25.0,
+      "gnnWeight": -19.462413787841797,
+      "roundedWeight": -19
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "259418",
+      "answer": "No",
+      "baselineWeight": -13.0,
+      "gnnWeight": -13.0,
+      "roundedWeight": -13
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "260448",
+      "answer": "No",
+      "baselineWeight": -6.0,
+      "gnnWeight": -5.089550495147705,
+      "roundedWeight": -5
+    },
+    {
+      "category": "Meniere's",
+      "questionId": "260450",
+      "answer": "none of the above",
+      "baselineWeight": -6.0,
+      "gnnWeight": -7.229158401489258,
+      "roundedWeight": -7
+    },
+    {
+      "category": "Third Window",
+      "questionId": "259369",
+      "answer": "Seconds",
+      "baselineWeight": 33.0,
+      "gnnWeight": 41.12940216064453,
+      "roundedWeight": 41
+    },
+    {
+      "category": "Third Window",
+      "questionId": "259372",
+      "answer": "blowing your nose",
+      "baselineWeight": 9.0,
+      "gnnWeight": 9.0,
+      "roundedWeight": 9
+    },
+    {
+      "category": "Third Window",
+      "questionId": "259372",
+      "answer": "loud sounds",
+      "baselineWeight": 9.0,
+      "gnnWeight": 11.218839645385742,
+      "roundedWeight": 11
+    },
+    {
+      "category": "Third Window",
+      "questionId": "259372",
+      "answer": "lifting or straining",
+      "baselineWeight": 8.0,
+      "gnnWeight": 7.307567596435547,
+      "roundedWeight": 7
+    },
+    {
+      "category": "Third Window",
+      "questionId": "259372",
+      "answer": "coughing",
+      "baselineWeight": 8.0,
+      "gnnWeight": 7.187358379364014,
+      "roundedWeight": 7
+    },
+    {
+      "category": "Third Window",
+      "questionId": "259421",
+      "answer": "Yes",
+      "baselineWeight": 33.0,
+      "gnnWeight": 27.610057830810547,
+      "roundedWeight": 28
+    },
+    {
+      "category": "Third Window",
+      "questionId": "259421",
+      "answer": "No",
+      "baselineWeight": -33.0,
+      "gnnWeight": -24.8853702545166,
+      "roundedWeight": -25
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259369",
+      "answer": "Hours",
+      "baselineWeight": 4.0,
+      "gnnWeight": 4.7918901443481445,
+      "roundedWeight": 5
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259369",
+      "answer": "Days",
+      "baselineWeight": 3.0,
+      "gnnWeight": 2.3209447860717773,
+      "roundedWeight": 2
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259369",
+      "answer": "Days and can last continuously for weeks",
+      "baselineWeight": 3.0,
+      "gnnWeight": 3.716111898422241,
+      "roundedWeight": 4
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259372",
+      "answer": "hot bath or shower",
+      "baselineWeight": 3.0,
+      "gnnWeight": 3.7379558086395264,
+      "roundedWeight": 4
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259372",
+      "answer": "menstrual cycle",
+      "baselineWeight": 3.0,
+      "gnnWeight": 3.730844020843506,
+      "roundedWeight": 4
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259372",
+      "answer": "exercise",
+      "baselineWeight": 3.0,
+      "gnnWeight": 3.7362589836120605,
+      "roundedWeight": 4
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259383",
+      "answer": "Yes",
+      "baselineWeight": 10.0,
+      "gnnWeight": 8.913749694824219,
+      "roundedWeight": 9
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259384",
+      "answer": "Yes",
+      "baselineWeight": 10.0,
+      "gnnWeight": 10.735950469970703,
+      "roundedWeight": 11
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259385",
+      "answer": "Yes",
+      "baselineWeight": 10.0,
+      "gnnWeight": 7.5989203453063965,
+      "roundedWeight": 8
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259386",
+      "answer": "Yes",
+      "baselineWeight": 10.0,
+      "gnnWeight": 10.317068099975586,
+      "roundedWeight": 10
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259387",
+      "answer": "Yes",
+      "baselineWeight": 10.0,
+      "gnnWeight": 11.999113082885742,
+      "roundedWeight": 12
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259389",
+      "answer": "increased sensitivity to light during a headache",
+      "baselineWeight": 2.0,
+      "gnnWeight": 2.4826250076293945,
+      "roundedWeight": 2
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259389",
+      "answer": "increased sensitivity to sound during a headache",
+      "baselineWeight": 2.0,
+      "gnnWeight": 2.4892237186431885,
+      "roundedWeight": 2
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259389",
+      "answer": "increased sensitivity to smell during a headache",
+      "baselineWeight": 2.0,
+      "gnnWeight": 2.455044746398926,
+      "roundedWeight": 2
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259389",
+      "answer": "headaches that happen when you are feeling dizzy or off balance",
+      "baselineWeight": 2.0,
+      "gnnWeight": 2.493952751159668,
+      "roundedWeight": 2
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259389",
+      "answer": "certain foods or beverages increase the chance of getting a headache",
+      "baselineWeight": 2.0,
+      "gnnWeight": 1.5522403717041016,
+      "roundedWeight": 2
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259389",
+      "answer": "headaches where the pain throbs or pulses",
+      "baselineWeight": 2.0,
+      "gnnWeight": 2.496511936187744,
+      "roundedWeight": 2
+    },
+    {
+      "category": "Migraine",
+      "questionId": "260450",
+      "answer": "changes in the weather",
+      "baselineWeight": 3.0,
+      "gnnWeight": 3.676898956298828,
+      "roundedWeight": 4
+    },
+    {
+      "category": "Migraine",
+      "questionId": "260450",
+      "answer": "certain foods",
+      "baselineWeight": 3.0,
+      "gnnWeight": 2.698101282119751,
+      "roundedWeight": 3
+    },
+    {
+      "category": "Migraine",
+      "questionId": "260450",
+      "answer": "certain beverages",
+      "baselineWeight": 3.0,
+      "gnnWeight": 3.0594406127929688,
+      "roundedWeight": 3
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259363",
+      "answer": "No",
+      "baselineWeight": 10.0,
+      "gnnWeight": 7.574629306793213,
+      "roundedWeight": 8
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259383",
+      "answer": "No",
+      "baselineWeight": -10.0,
+      "gnnWeight": -9.979765892028809,
+      "roundedWeight": -10
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259384",
+      "answer": "No",
+      "baselineWeight": -10.0,
+      "gnnWeight": -12.16680908203125,
+      "roundedWeight": -12
+    },
+    {
+      "category": "Migraine",
+      "questionId": "259386",
+      "answer": "No",
+      "baselineWeight": -5.0,
+      "gnnWeight": -5.243656158447266,
+      "roundedWeight": -5
+    },
+    {
+      "category": "Migraine",
+      "questionId": "260450",
+      "answer": "none of the above",
+      "baselineWeight": -5.0,
+      "gnnWeight": -6.20775032043457,
+      "roundedWeight": -6
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259361",
+      "answer": "Gradual",
+      "baselineWeight": 20.0,
+      "gnnWeight": 15.098705291748047,
+      "roundedWeight": 15
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259363",
+      "answer": "Yes",
+      "baselineWeight": 20.0,
+      "gnnWeight": 15.076425552368164,
+      "roundedWeight": 15
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259372",
+      "answer": "car rides",
+      "baselineWeight": 2.0,
+      "gnnWeight": 1.9113686084747314,
+      "roundedWeight": 2
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259372",
+      "answer": "reading",
+      "baselineWeight": 2.0,
+      "gnnWeight": 1.9763227701187134,
+      "roundedWeight": 2
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259372",
+      "answer": "stress, nerves, or anxiety",
+      "baselineWeight": 2.0,
+      "gnnWeight": 2.48474383354187,
+      "roundedWeight": 2
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259372",
+      "answer": "windshield wipers",
+      "baselineWeight": 2.0,
+      "gnnWeight": 2.0637760162353516,
+      "roundedWeight": 2
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259372",
+      "answer": "supermarket aisles, malls, or tunnels",
+      "baselineWeight": 2.0,
+      "gnnWeight": 2.394669771194458,
+      "roundedWeight": 2
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259372",
+      "answer": "restaurants or movie theaters",
+      "baselineWeight": 2.0,
+      "gnnWeight": 2.4453296661376953,
+      "roundedWeight": 2
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259372",
+      "answer": "turning your head while walking",
+      "baselineWeight": 1.0,
+      "gnnWeight": 1.230025291442871,
+      "roundedWeight": 1
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259372",
+      "answer": "large crowds/social gatherings",
+      "baselineWeight": 1.0,
+      "gnnWeight": 1.1699053049087524,
+      "roundedWeight": 1
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259372",
+      "answer": "watching TV",
+      "baselineWeight": 1.0,
+      "gnnWeight": 0.9641400575637817,
+      "roundedWeight": 1
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259372",
+      "answer": "walking on carpeting with a complex pattern",
+      "baselineWeight": 1.0,
+      "gnnWeight": 1.2118757963180542,
+      "roundedWeight": 1
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259372",
+      "answer": "working on the computer",
+      "baselineWeight": 1.0,
+      "gnnWeight": 0.9042907357215881,
+      "roundedWeight": 1
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259372",
+      "answer": "traffic",
+      "baselineWeight": 1.0,
+      "gnnWeight": 0.8926894664764404,
+      "roundedWeight": 1
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259372",
+      "answer": "movement of things around you",
+      "baselineWeight": 1.0,
+      "gnnWeight": 0.8881044387817383,
+      "roundedWeight": 1
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259372",
+      "answer": "your own movement",
+      "baselineWeight": 1.0,
+      "gnnWeight": 1.2202731370925903,
+      "roundedWeight": 1
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259374",
+      "answer": "unsteady when standing",
+      "baselineWeight": 10.0,
+      "gnnWeight": 12.434268951416016,
+      "roundedWeight": 12
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259374",
+      "answer": "unsteady when walking",
+      "baselineWeight": 10.0,
+      "gnnWeight": 11.087867736816406,
+      "roundedWeight": 11
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259381",
+      "answer": "heart racing",
+      "baselineWeight": 10.0,
+      "gnnWeight": 12.296649932861328,
+      "roundedWeight": 12
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259381",
+      "answer": "panic feeling or sudden need to leave a place",
+      "baselineWeight": 10.0,
+      "gnnWeight": 12.192583084106445,
+      "roundedWeight": 12
+    },
+    {
+      "category": "PPPD",
+      "questionId": "259363",
+      "answer": "No",
+      "baselineWeight": -100.0,
+      "gnnWeight": -100.0,
+      "roundedWeight": -100
+    },
+    {
+      "category": "Neurological Other",
+      "questionId": "259374",
+      "answer": "unsteady when sitting",
+      "baselineWeight": 6.0,
+      "gnnWeight": 6.0,
+      "roundedWeight": 6
+    },
+    {
+      "category": "Neurological Other",
+      "questionId": "259374",
+      "answer": "unsteady when standing",
+      "baselineWeight": 6.0,
+      "gnnWeight": 6.0,
+      "roundedWeight": 6
+    },
+    {
+      "category": "Neurological Other",
+      "questionId": "259374",
+      "answer": "unsteady when walking",
+      "baselineWeight": 6.0,
+      "gnnWeight": 6.0,
+      "roundedWeight": 6
+    },
+    {
+      "category": "Neurological Other",
+      "questionId": "259374",
+      "answer": "stumbling or falling when walking",
+      "baselineWeight": 6.0,
+      "gnnWeight": 6.0,
+      "roundedWeight": 6
+    },
+    {
+      "category": "Neurological Other",
+      "questionId": "259375",
+      "answer": "Yes",
+      "baselineWeight": 25.0,
+      "gnnWeight": 25.0,
+      "roundedWeight": 25
+    },
+    {
+      "category": "Neurological Other",
+      "questionId": "259380",
+      "answer": "tripped",
+      "baselineWeight": 6.0,
+      "gnnWeight": 6.0,
+      "roundedWeight": 6
+    },
+    {
+      "category": "Neurological Other",
+      "questionId": "259380",
+      "answer": "slipped",
+      "baselineWeight": 6.0,
+      "gnnWeight": 6.0,
+      "roundedWeight": 6
+    },
+    {
+      "category": "Neurological Other",
+      "questionId": "259380",
+      "answer": "fainted or light-headed",
+      "baselineWeight": 6.0,
+      "gnnWeight": 6.0,
+      "roundedWeight": 6
+    },
+    {
+      "category": "Neurological Other",
+      "questionId": "259380",
+      "answer": "I'm not sure why I fell",
+      "baselineWeight": 6.0,
+      "gnnWeight": 6.0,
+      "roundedWeight": 6
+    },
+    {
+      "category": "Neurological Other",
+      "questionId": "259382",
+      "answer": "Stroke",
+      "baselineWeight": 3.0,
+      "gnnWeight": 3.0,
+      "roundedWeight": 3
+    },
+    {
+      "category": "Neurological Other",
+      "questionId": "259382",
+      "answer": "anxiety or depression",
+      "baselineWeight": 3.0,
+      "gnnWeight": 3.0,
+      "roundedWeight": 3
+    },
+    {
+      "category": "Neurological Other",
+      "questionId": "259382",
+      "answer": "cancer",
+      "baselineWeight": 3.0,
+      "gnnWeight": 3.0,
+      "roundedWeight": 3
+    },
+    {
+      "category": "Neurological Other",
+      "questionId": "259382",
+      "answer": "ongoing numbness or tingling",
+      "baselineWeight": 3.0,
+      "gnnWeight": 3.0,
+      "roundedWeight": 3
+    },
+    {
+      "category": "Neurological Other",
+      "questionId": "259382",
+      "answer": "motion sickness",
+      "baselineWeight": 3.0,
+      "gnnWeight": 3.0,
+      "roundedWeight": 3
+    },
+    {
+      "category": "Neurological Other",
+      "questionId": "259382",
+      "answer": "history of COVID infection",
+      "baselineWeight": 3.0,
+      "gnnWeight": 3.0,
+      "roundedWeight": 3
+    },
+    {
+      "category": "Neurological Other",
+      "questionId": "259382",
+      "answer": "Diabetes",
+      "baselineWeight": 3.0,
+      "gnnWeight": 3.0,
+      "roundedWeight": 3
+    },
+    {
+      "category": "Neurological Other",
+      "questionId": "259382",
+      "answer": "High blood pressure",
+      "baselineWeight": 3.0,
+      "gnnWeight": 3.0,
+      "roundedWeight": 3
+    },
+    {
+      "category": "Neurological Other",
+      "questionId": "259382",
+      "answer": "seizures",
+      "baselineWeight": 3.0,
+      "gnnWeight": 3.0,
+      "roundedWeight": 3
+    },
+    {
+      "category": "Bilateral",
+      "questionId": "259356",
+      "answer": "dizziness",
+      "baselineWeight": 9.0,
+      "gnnWeight": 6.763288497924805,
+      "roundedWeight": 7
+    },
+    {
+      "category": "Bilateral",
+      "questionId": "259356",
+      "answer": "imbalance",
+      "baselineWeight": 8.0,
+      "gnnWeight": 6.009934902191162,
+      "roundedWeight": 6
+    },
+    {
+      "category": "Bilateral",
+      "questionId": "259356",
+      "answer": "dizziness and imbalance",
+      "baselineWeight": 8.0,
+      "gnnWeight": 6.013243675231934,
+      "roundedWeight": 6
+    },
+    {
+      "category": "Bilateral",
+      "questionId": "259371",
+      "answer": "any kind of head movement",
+      "baselineWeight": 25.0,
+      "gnnWeight": 18.96050453186035,
+      "roundedWeight": 19
+    },
+    {
+      "category": "Bilateral",
+      "questionId": "259362",
+      "answer": "No",
+      "baselineWeight": 25.0,
+      "gnnWeight": 18.9364070892334,
+      "roundedWeight": 19
+    },
+    {
+      "category": "Bilateral",
+      "questionId": "259381",
+      "answer": "Vision \"jumping\" or \"bouncing\" when walking or riding",
+      "baselineWeight": 25.0,
+      "gnnWeight": 19.1995792388916,
+      "roundedWeight": 19
+    },
+    {
+      "category": "Concussion",
+      "questionId": "260452",
+      "answer": "Yes",
+      "baselineWeight": 100.0,
+      "gnnWeight": 100.0,
+      "roundedWeight": 100
+    },
+    {
+      "category": "Concussion",
+      "questionId": "260452",
+      "answer": "No",
+      "baselineWeight": -100.0,
+      "gnnWeight": -100.0,
+      "roundedWeight": -100
+    }
+  ]
+}
